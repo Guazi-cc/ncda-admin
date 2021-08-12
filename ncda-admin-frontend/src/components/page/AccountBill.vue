@@ -10,6 +10,9 @@
         >
         </el-option>
       </el-select>
+      <el-button @click="openUploadDialog" type="primary" size="mini"
+        >上传Bill</el-button
+      >
     </div>
     <!--表格内容-->
     <el-table
@@ -107,6 +110,54 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 上传Dialog -->
+    <el-dialog
+      title="账单上传"
+      :visible.sync="uploadDialogVisible"
+      width="35%"
+      :before-close="handleClose"
+    >
+      <div style="height: 400px">
+        <el-tabs v-model="activeName" @tab-click="tabHandleClick">
+          <el-tab-pane label="文本输入" name="first">
+            <div class="upload-box">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 14, maxRows: 14 }"
+                v-model="uploadForm.accBillText"
+              ></el-input>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="文件上传" name="second">
+            <div class="upload-box">
+              <el-upload
+                class="upload-demo"
+                drag
+                action="https://jsonplaceholder.typicode.com/posts/"
+                multiple
+              >
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">
+                  将文件拖到此处，或<em>点击上传</em>
+                </div>
+                <div class="el-upload__tip" slot="tip">
+                  只能上传jpg/png文件，且不超过500kb
+                </div>
+              </el-upload>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="uploadDialogVisible = false" size="mini"
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="uploadDialogVisible = false" size="mini"
+            >确 定</el-button
+          >
+        </span>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,7 +230,12 @@ export default {
           label: "北京烤鸭"
         }
       ],
-      value: ""
+      value: "",
+      uploadDialogVisible: false,
+      activeName: "first",
+      uploadForm: {
+        accBillText: "这里是可以输入内容的"
+      }
     };
   },
   mounted() {
@@ -248,7 +304,14 @@ export default {
           this.screenHeight = document.documentElement.clientHeight;
         })();
       };
-    }
+    },
+    openUploadDialog() {
+      this.uploadDialogVisible = true;
+    },
+    handleClose() {
+      this.uploadDialogVisible = false;
+    },
+    tabHandleClick() {}
   },
   computed: {
     tableHeight() {
@@ -267,5 +330,12 @@ export default {
 }
 .search-box {
   margin-bottom: 10px;
+}
+.upload-box {
+  height: 308px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
 }
 </style>
