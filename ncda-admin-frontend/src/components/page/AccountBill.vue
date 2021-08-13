@@ -377,7 +377,9 @@ export default {
       }
     },
     uploadDialogOpen() {
+      // 弹窗内容初始化
       this.uploadForm.accBillText = "👉这里是可以输入内容的✨";
+      this.uploadForm.fileList = [];
       this.activeName = "first";
     },
     searchClick() {},
@@ -392,6 +394,8 @@ export default {
         const formData = new FormData();
         formData.append("file", this.uploadForm.fileList[0].raw);
         this.fileUpload(formData);
+      } else {
+        this.$message.warning("文件大小限制为5M，你的很大，我忍不了");
       }
     },
     fileUpload(formData) {
@@ -400,11 +404,12 @@ export default {
         .then(res => {
           this.uploadDialogVisible = false;
           const { data } = res;
-          debugger;
           this.previewTableData = data;
           this.previewDialogVisible = true;
         })
-        .then(err => [console.log(err)]);
+        .then(err => {
+          console.log(err);
+        });
     },
     /***************文件上传相关方法*******************/
     handleUploadChange(file, fileList) {
@@ -421,18 +426,8 @@ export default {
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    /************************************************/
-    moneyFormatter(val) {
-      let money = val.money;
-      if (val.moneyState === "1") {
-        // 收入
-        money = `+${money}`;
-      } else {
-        // 支出
-        money = `-${money}`;
-      }
     }
+    /************************************************/
   },
   computed: {
     tableHeight() {
