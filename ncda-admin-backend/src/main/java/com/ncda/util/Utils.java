@@ -38,6 +38,7 @@ public class Utils {
                         ExtAccountBill accountBill = new ExtAccountBill();
                         String formatDate = dateFormatter(currYear, aa[0]);
                         System.out.println(formatDate);
+                        sdf.setLenient(false);
                         accountBill.setDate(sdf.parse(formatDate));     // 第一项为时间
                         String str1 = aa[i].trim();
                         if(strIsNotNull(str1)) {
@@ -122,12 +123,12 @@ public class Utils {
     public static String dateFormatter(String year, String monDay) {
         StringBuilder sb = new StringBuilder();
         sb.append(year).append(".");
-        sb.append(monDay);
-//        String[] split = monDay.split(".");
+//        sb.append(monDay);
+        String[] split = monDay.split(".");
 
-//        for (String s : split) {
-//            sb.append(s);
-//        }
+        for (String s : split) {
+            sb.append(s);
+        }
         return sb.toString();
     }
 }
