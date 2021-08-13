@@ -9,10 +9,11 @@
     <result column="TYPE" property="type" jdbcType="VARCHAR" />
     <result column="COMMENT" property="comment" jdbcType="VARCHAR" />
     <result column="DEL_STATE" property="delState" jdbcType="CHAR" />
+    <result column="ITEM_NAME" jdbcType="VARCHAR" property="itemName" />
   </resultMap>
 
   <sql id="Base_Column_List" >
-    ID, DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE
+    ID, DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME
   </sql>
 
   <select id="getAll" resultMap="BaseResultMap">

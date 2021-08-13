@@ -1,18 +1,47 @@
 <template>
   <div>
     <div class="search-box">
-      <el-select v-model="value" placeholder="请选择" size="mini">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+      <el-row>
+        <el-col :span="1"><span class="search-label">月份：</span></el-col>
+        <el-col :span="4">
+          <el-date-picker
+            v-model="searchForm.month"
+            type="month"
+            placeholder="选择月"
+            size="mini"
+            value-format="yyyy-MM-dd"
+            format="yyyy年MM月"
+            style="width: 160px !important;"
+          >
+          </el-date-picker
+        ></el-col>
+        <el-col :span="1"><span class="search-label">类型：</span></el-col>
+        <el-col :span="4">
+          <el-select
+            v-model="searchForm.type"
+            placeholder="请选择"
+            size="mini"
+            style="width: 160px !important;"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option> </el-select
+        ></el-col>
+        <el-col :span="1">
+          <el-button type="primary" size="mini" @click="searchClick"
+            >搜索</el-button
+          ></el-col
         >
-        </el-option>
-      </el-select>
-      <el-button @click="openUploadDialog" type="primary" size="mini"
-        >上传Bill</el-button
-      >
+        <el-col :span="1" :offset="10">
+          <el-button @click="openUploadDialog" type="primary" size="mini"
+            >上传Bill</el-button
+          ></el-col
+        >
+      </el-row>
     </div>
     <!--表格内容-->
     <el-table
@@ -38,9 +67,11 @@
           <span style="margin-left: 5px">{{ scope.row.date }}</span>
         </template>
       </el-table-column>
-      <el-table-column property="name" label="姓名" width="180">
+      <el-table-column property="itemName" label="名称" width="180">
       </el-table-column>
-      <el-table-column property="address" label="地址"> </el-table-column>
+      <el-table-column property="money" label="金额"> </el-table-column>
+      <el-table-column property="type" label="类型"> </el-table-column>
+      <el-table-column property="comment" label="备注"> </el-table-column>
       <el-table-column label="操作" width="130" align="center">
         <template slot-scope="scope">
           <el-button
@@ -116,7 +147,8 @@
       title="账单上传"
       :visible.sync="uploadDialogVisible"
       width="35%"
-      :before-close="handleClose"
+      :before-close="uploadDialogClosd"
+      @open="uploadDialogOpen"
     >
       <div style="height: 400px">
         <el-tabs v-model="activeName" @tab-click="tabHandleClick">
@@ -126,6 +158,7 @@
                 type="textarea"
                 :autosize="{ minRows: 14, maxRows: 14 }"
                 v-model="uploadForm.accBillText"
+                @focus="accBillTextSelect"
               ></el-input>
             </div>
           </el-tab-pane>
@@ -134,15 +167,23 @@
               <el-upload
                 class="upload-demo"
                 drag
-                action="https://jsonplaceholder.typicode.com/posts/"
-                multiple
+                ref="upload"
+                :limit="1"
+                :auto-upload="false"
+                accept=".txt"
+                action="/api/acbi/fileUpload"
+                :file-list="uploadForm.fileList"
+                :on-remove="handleUploadRemove"
+                :on-change="handleUploadChange"
+                :on-exceed="handleUploadExceed"
+                :before-remove="beforeRemove"
               >
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">
                   将文件拖到此处，或<em>点击上传</em>
                 </div>
                 <div class="el-upload__tip" slot="tip">
-                  只能上传jpg/png文件，且不超过500kb
+                  只能上传txt文件，且不超过500kb
                 </div>
               </el-upload>
             </div>
@@ -152,10 +193,34 @@
           <el-button @click="uploadDialogVisible = false" size="mini"
             >取 消</el-button
           >
-          <el-button type="primary" @click="uploadDialogVisible = false" size="mini"
+          <el-button type="primary" @click="submitUpload" size="mini"
             >确 定</el-button
           >
         </span>
+      </div>
+    </el-dialog>
+
+    <!-- 上传成功预览Dialog  -->
+    <el-dialog
+      title="账单预览"
+      width="35%"
+      :visible.sync="previewDialogVisible"
+    >
+      <div style="height: 500px;">
+        <el-table height="450px" :data="previewTableData">
+          <el-table-column property="date" label="日期" width="180" sortable>
+          </el-table-column>
+          <el-table-column property="itemName" label="名称" width="180">
+          </el-table-column>
+          <el-table-column property="money" label="金额">
+            <template slot-scope="scope">
+              <span v-if="scope.row.moneyState == 1" class="money-state-in"
+                >+{{ scope.row.money }}</span
+              >
+              <span v-else class="money-state-out">-{{ scope.row.money }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
     </el-dialog>
   </div>
@@ -181,32 +246,8 @@ export default {
           { required: true, message: "地址不能为空", trigger: "blur, change" }
         ]
       },
-      tableData: [
-        {
-          id: 0,
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          id: 1,
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          id: 2,
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          id: 3,
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ],
+      tableData: [],
+      previewTableData: [],
       isShowEditDialog: false,
       options: [
         {
@@ -230,18 +271,36 @@ export default {
           label: "北京烤鸭"
         }
       ],
-      value: "",
+      searchForm: {
+        month: "",
+        type: ""
+      },
       uploadDialogVisible: false,
+      previewDialogVisible: false,
       activeName: "first",
       uploadForm: {
-        accBillText: "这里是可以输入内容的"
+        accBillText: "👉这里是可以输入内容的✨",
+        fileList: []
       }
     };
   },
   mounted() {
     this.getScreenHeight();
+    this.getTableData();
   },
   methods: {
+    getTableData() {
+      this.$axios
+        .get("/api/acbi/getAll")
+        .then(res => {
+          console.log(res.data);
+          const { data } = res;
+          this.tableData = data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     handleRowClick(row, event, column) {
       // 仅选中当前行
       this.setCurRowChecked(row);
@@ -308,10 +367,72 @@ export default {
     openUploadDialog() {
       this.uploadDialogVisible = true;
     },
-    handleClose() {
+    uploadDialogClosd() {
       this.uploadDialogVisible = false;
     },
-    tabHandleClick() {}
+    tabHandleClick() {},
+    accBillTextSelect() {
+      if (this.uploadForm.accBillText.substring(0, 1) == "\ud83d") {
+        this.uploadForm.accBillText = "";
+      }
+    },
+    uploadDialogOpen() {
+      this.uploadForm.accBillText = "👉这里是可以输入内容的✨";
+      this.activeName = "first";
+    },
+    searchClick() {},
+    submitUpload() {
+      // this.$refs.upload.submit();    // 不用他原生的的上传方法
+      if (this.uploadForm.fileList.length == 0) {
+        this.$message.warning("没文件你上传个J8，往里整文件啊！");
+        return;
+      }
+      const fileSize = this.uploadForm.fileList[0].size / 1024 / 1024;
+      if (fileSize < 5) {
+        const formData = new FormData();
+        formData.append("file", this.uploadForm.fileList[0].raw);
+        this.fileUpload(formData);
+      }
+    },
+    fileUpload(formData) {
+      this.$axios
+        .post("api/acbi/fileUpload", formData)
+        .then(res => {
+          this.uploadDialogVisible = false;
+          const { data } = res;
+          debugger;
+          this.previewTableData = data;
+          this.previewDialogVisible = true;
+        })
+        .then(err => [console.log(err)]);
+    },
+    /***************文件上传相关方法*******************/
+    handleUploadChange(file, fileList) {
+      // 文件状态改变时的钩子
+      this.uploadForm.fileList = fileList;
+    },
+    handleUploadRemove(file, fileList) {
+      // 文件列表移除文件时的钩子
+      this.uploadForm.fileList = fileList;
+    },
+    handleUploadExceed(files, fileList) {
+      // 文件超出个数限制时的钩子
+      this.$message.warning(`只允许选择一个文件`);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    /************************************************/
+    moneyFormatter(val) {
+      let money = val.money;
+      if (val.moneyState === "1") {
+        // 收入
+        money = `+${money}`;
+      } else {
+        // 支出
+        money = `-${money}`;
+      }
+    }
   },
   computed: {
     tableHeight() {
@@ -337,5 +458,23 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: #fff;
+}
+.search-label {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-size: 14px;
+  color: #606266;
+}
+.money-state-out {
+  font: 1rem "微软雅黑", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei",
+    "sans-serif" !important;
+  font-size: 14px;
+  color: #67c23a;
+}
+.money-state-in {
+  font: 1rem "微软雅黑", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei",
+    "sans-serif" !important;
+  font-size: 14px;
+  color: #f56c6c;
 }
 </style>

@@ -47,4 +47,6 @@ public class ExtAccountBill extends AccountBill {
     public void setDate(Date date) {
         this.date = date;
     }
+
+
 }
