@@ -21,4 +21,13 @@
     <include refid="Base_Column_List" />
     from account_bill
   </select>
+
+  <insert id="saveUploadData" parameterType="com.ncda.entity.ext.ExtAccountBill">
+    insert into account_bill (DATE, MONEY,
+    MONEY_STATE, TYPE, COMMENT,
+    DEL_STATE, ITEM_NAME)
+    values (#{date,jdbcType=DATE}, #{money,jdbcType=DECIMAL},
+    #{moneyState,jdbcType=CHAR}, #{type,jdbcType=VARCHAR}, #{comment,jdbcType=VARCHAR},
+    #{delState,jdbcType=CHAR}, #{itemName,jdbcType=VARCHAR})
+  </insert>
 </mapper>

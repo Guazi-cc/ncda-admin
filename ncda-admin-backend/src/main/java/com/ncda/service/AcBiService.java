@@ -7,4 +7,6 @@ import java.util.List;
 public interface AcBiService {
 
     List<ExtAccountBill> getAll();
+
+    Integer saveUploadData(List<ExtAccountBill> accountBillList);
 }

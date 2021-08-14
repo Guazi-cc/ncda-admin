@@ -1,8 +1,10 @@
 package com.ncda.controller;
 
+import com.ncda.entity.AccountBill;
 import com.ncda.entity.ext.ExtAccountBill;
+import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
-import com.ncda.util.Utils;
+import com.ncda.util.AcBiReadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,19 +25,29 @@ public class AcBiController {
     }
 
     @PostMapping("fileUpload")
-    public List<ExtAccountBill> fileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+    public ResultData fileUpload(@RequestParam("file") MultipartFile file) {
         String fileName = file.getOriginalFilename();
+        assert fileName != null;
         String suffix = fileName.substring(fileName.lastIndexOf("."), fileName.length());
         if(".txt".equals(suffix)) {
             try {
-                List<ExtAccountBill> bills = Utils.analysisAcBiFile(file.getInputStream());
-                System.out.println(bills);
-                return bills;
-            } catch (IOException e) {
+                List<ExtAccountBill> bills = AcBiReadUtil.analysisAcBiFile(file.getInputStream());
+                return ResultData.createSuccessResultData("成功", bills, (long) bills.size());
+            } catch (Exception e) {
                 e.printStackTrace();
+                return ResultData.createFailResultData(e.getMessage());
             }
         }
-        return null;
+        return ResultData.createFailResultData("格式不正确，只接收txt格式文件");
+    }
+
+    @PostMapping("/saveUploadData")
+    public ResultData saveData(@RequestBody List<ExtAccountBill> accountBills) {
+        Integer num = acBiService.saveUploadData(accountBills);
+        if (num == 1) {
+            return ResultData.createSuccessResultData("", num, num.longValue());
+        }
+        return ResultData.createFailResultData("");
     }
 
     @GetMapping("/getAll")

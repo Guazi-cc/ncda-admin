@@ -46,9 +46,9 @@
     <!--表格内容-->
     <el-table
       ref="list"
+      v-loading="loading"
       :data="tableData"
       style="width: 100%"
-      size="mini"
       border
       stripe
       highlight-current-row
@@ -69,7 +69,14 @@
       </el-table-column>
       <el-table-column property="itemName" label="名称" width="180">
       </el-table-column>
-      <el-table-column property="money" label="金额"> </el-table-column>
+      <el-table-column property="money" label="金额">
+        <template slot-scope="scope">
+              <span v-if="scope.row.moneyState == 1" class="money-state-in"
+              >+{{ scope.row.money }}</span
+              >
+          <span v-else class="money-state-out">-{{ scope.row.money }}</span>
+        </template>
+      </el-table-column>
       <el-table-column property="type" label="类型"> </el-table-column>
       <el-table-column property="comment" label="备注"> </el-table-column>
       <el-table-column label="操作" width="130" align="center">
@@ -207,7 +214,7 @@
       :visible.sync="previewDialogVisible"
     >
       <div style="height: 500px;">
-        <el-table height="450px" :data="previewTableData">
+        <el-table height="450px" :data="previewTableData" size="mini">
           <el-table-column property="date" label="日期" width="180" sortable>
           </el-table-column>
           <el-table-column property="itemName" label="名称" width="180">
@@ -221,6 +228,11 @@
             </template>
           </el-table-column>
         </el-table>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="savePreviewData" size="mini"
+          >保 存</el-button
+          >
+        </span>
       </div>
     </el-dialog>
   </div>
@@ -232,6 +244,7 @@ export default {
   data() {
     return {
       screenHeight: 0, // 屏幕高度
+      loading: false,
       formFileds: {
         date: "",
         name: "",
@@ -290,15 +303,18 @@ export default {
   },
   methods: {
     getTableData() {
+      this.loading = true
       this.$axios
         .get("/api/acbi/getAll")
         .then(res => {
           console.log(res.data);
           const { data } = res;
           this.tableData = data;
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
+          this.loading = false;
         });
     },
     handleRowClick(row, event, column) {
@@ -307,7 +323,7 @@ export default {
     },
     handleCheckedAllAndCheckedNone(selection) {
       // 当前选中仅一行时操作-（当前表格行高亮）
-      selection.length != 1 && this.$refs.list.setCurrentRow();
+      selection.length !== 1 && this.$refs.list.setCurrentRow();
     },
     dialogClose() {
       // 清空编辑表单
@@ -372,7 +388,7 @@ export default {
     },
     tabHandleClick() {},
     accBillTextSelect() {
-      if (this.uploadForm.accBillText.substring(0, 1) == "\ud83d") {
+      if (this.uploadForm.accBillText.substring(0, 1) === "\ud83d") {
         this.uploadForm.accBillText = "";
       }
     },
@@ -385,7 +401,7 @@ export default {
     searchClick() {},
     submitUpload() {
       // this.$refs.upload.submit();    // 不用他原生的的上传方法
-      if (this.uploadForm.fileList.length == 0) {
+      if (this.uploadForm.fileList.length === 0) {
         this.$message.warning("没文件你上传个J8，往里整文件啊！");
         return;
       }
@@ -402,13 +418,31 @@ export default {
       this.$axios
         .post("api/acbi/fileUpload", formData)
         .then(res => {
-          this.uploadDialogVisible = false;
           const { data } = res;
-          this.previewTableData = data;
-          this.previewDialogVisible = true;
+          if (data.success) {
+            this.uploadDialogVisible = false;
+            this.previewTableData = data.data;
+            this.previewDialogVisible = true;
+            this.$message({
+              message: data.message,
+              type: 'success',
+              customClass: 'my-msg'
+            });
+          } else {
+            this.$message({
+              message: data.message,
+              type: 'error',
+              customClass: 'my-msg'
+            });
+          }
         })
-        .then(err => {
+        .catch(err => {
           console.log(err);
+          this.$message({
+            message: '发生了一些错误！！！',
+            type: 'error',
+            customClass: 'my-msg'
+          });
         });
     },
     /***************文件上传相关方法*******************/
@@ -426,8 +460,25 @@ export default {
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
-    }
+    },
     /************************************************/
+    savePreviewData() {
+      this.$axios.post("/api/acbi/saveUploadData", this.previewTableData)
+      .then(res => {
+        const { data } = res;
+        if (data.success) {
+          this.previewDialogVisible = false;
+          this.getTableData();
+          this.$message.success("数据保存成功！")
+        } else {
+          this.$message.error("数据保存失败")
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.$message.error("数据保存失败，并给你一个大大的异常")
+      })
+    }
   },
   computed: {
     tableHeight() {
@@ -461,15 +512,14 @@ export default {
   color: #606266;
 }
 .money-state-out {
-  font: 1rem "微软雅黑", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei",
-    "sans-serif" !important;
-  font-size: 14px;
+  font-size: 12px;
   color: #67c23a;
 }
 .money-state-in {
-  font: 1rem "微软雅黑", "Helvetica", "Hiragino Sans GB", "Microsoft YaHei",
-    "sans-serif" !important;
-  font-size: 14px;
+  font-size: 12px;
   color: #f56c6c;
+}
+.my-msg {
+  z-index: 9999 !important;
 }
 </style>
