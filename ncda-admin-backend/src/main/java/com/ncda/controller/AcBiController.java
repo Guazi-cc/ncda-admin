@@ -31,7 +31,7 @@ public class AcBiController {
         String suffix = fileName.substring(fileName.lastIndexOf("."), fileName.length());
         if(".txt".equals(suffix)) {
             try {
-                List<ExtAccountBill> bills = AcBiReadUtil.analysisAcBiFile(file.getInputStream());
+                List<ExtAccountBill> bills = acBiService.fileUpload(file.getInputStream());
                 return ResultData.createSuccessResultData("成功", bills, (long) bills.size());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -39,6 +39,17 @@ public class AcBiController {
             }
         }
         return ResultData.createFailResultData("格式不正确，只接收txt格式文件");
+    }
+
+    @PostMapping("/textUpload")
+    public ResultData textUpload(@RequestBody ExtAccountBill accountBill) {
+        try {
+            List<ExtAccountBill> bills = acBiService.textUpload(accountBill.getText());
+            return ResultData.createSuccessResultData("成功", bills, (long) bills.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultData.createFailResultData(e.getMessage());
+        }
     }
 
     @PostMapping("/saveUploadData")

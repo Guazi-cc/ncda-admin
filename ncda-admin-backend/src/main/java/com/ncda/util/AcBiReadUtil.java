@@ -13,19 +13,74 @@ import java.util.regex.Pattern;
 
 /**
  * 读取账单信息
+ * @version 1.0
+ * @description 第一个版本，想到哪写到哪，不太完善。以后打算改用正则表达式解析
  */
 public class AcBiReadUtil {
 
+    /**
+     * 解析文件
+     * @param inputStream
+     * @return
+     * @throws Exception
+     */
     public static List<ExtAccountBill> analysisAcBiFile(InputStream inputStream) throws Exception {
-        List<ExtAccountBill> billList = new ArrayList<>();
+        return readText(getContent(inputStream));
+    }
+
+    /**
+     * 解析文本
+     * @param text
+     * @return
+     * @throws Exception
+     */
+    public static List<ExtAccountBill> analysisAcBiText(String text) throws Exception {
+        return readText(getContent(text));
+    }
+
+    /**
+     * 从流中获取文本内容
+     * @param inputStream 输入流
+     * @return 内容
+     * @throws Exception
+     */
+    public static String getContent(InputStream inputStream) throws Exception {
+        String text = "";
         InputStreamReader read = new InputStreamReader(inputStream, StandardCharsets.UTF_8.name());
         BufferedReader bufferedReader = new BufferedReader(read);
         String lineTxt;         // 每行数据
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            if (strIsNull(text)) {
+                text = text + lineTxt;
+            } else  {
+                text = text + "\n" + lineTxt;
+            }
+        }
+        return text;
+    }
+
+    /**
+     * 从文本中获取文本内容
+     * @param text
+     * @return
+     */
+    public static String getContent(String text) {
+        return text;
+    }
+
+    /**
+     * 读取文字中的账单信息
+     * @param text 账单信息文本
+     * @return 账单数据集合
+     * @throws Exception
+     */
+    private static List<ExtAccountBill> readText(String text) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        List<ExtAccountBill> billList = new ArrayList<>();
+        String[] lineTxts = text.split("\\\n");      // 保存每一行数据
         int lineNum = 0;      //记录行数
         String currYear = null;     // 当前年份
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        sdf.setLenient(false);      // 关闭严格模式
-        while((lineTxt = bufferedReader.readLine()) != null) {
+        for (String lineTxt : lineTxts) {
             lineNum++;
             if(lineNum == 1) {
                 // 第一行获取年份
@@ -33,15 +88,14 @@ public class AcBiReadUtil {
                 if (currYear == null) {
                     throw new Exception("第一行格式错误，没找到年份");
                 }
-            } else {     // 跳过第一行
+            } else {
                 lineTxt = lineTxt.contains("=") ? lineTxt.substring(0, lineTxt.indexOf("=")).trim() : lineTxt;      // 若末尾有"=" 去掉
                 String[] billItems = lineTxt.split("/");       // 提取出"/"分隔的每一项
-                for (int i = 1; i < billItems.length; i++) {
-                    ExtAccountBill accountBill = new ExtAccountBill();
-                    String formatDate = dateFormatter(currYear, billItems[0], lineNum);
-                    accountBill.setDate(sdf.parse(formatDate));     // 第一项为时间
+                for (int i = 1; i < billItems.length; i++) {        // 这里从1开始，也就是跳过第一项
                     String billItem = billItems[i].trim();
-                    if(strIsNotNull(billItem)) {
+                    ExtAccountBill accountBill = new ExtAccountBill();
+                    accountBill.setDate(sdf.parse(dateFormatter(currYear, billItems[0], lineNum)));     // 第一项为时间
+                    if(!strIsNull(billItem)) {
                         for (int j = billItem.length()-1; j >= 0; j--) {
                             if(!isNumber(billItem.charAt(j))) {
                                 String substr = billItem.substring(j+1, billItem.length());
@@ -67,7 +121,7 @@ public class AcBiReadUtil {
     /**
      * 判断字符是否是数字，本方法中小数点也算数字
      * @param c 字符
-     * @return 是不是？
+     * @return 是数字 true， 不是数字 false
      */
     public static boolean isNumber(char c) {
         return c >= 48 && c <= 57 || c == 46;
@@ -76,10 +130,10 @@ public class AcBiReadUtil {
     /**
      * 判断字符串是否为空
      * @param str 字符串本串
-     * @return 是不是？
+     * @return 为空 true
      */
-    public static boolean strIsNotNull(String str) {
-        return str != null && !"".equals(str);
+    public static boolean strIsNull(String str) {
+        return str == null || "".equals(str);
     }
 
     /**

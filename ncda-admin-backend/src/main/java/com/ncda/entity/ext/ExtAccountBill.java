@@ -22,6 +22,8 @@ public class ExtAccountBill extends AccountBill {
     @DateTimeFormat(pattern = "yyyy-MM-dd")     // 前后到后台的时间格式的转换
     private Date date;
 
+    private String text;    //接收字符串用的
+
     public Integer getPageSize() {
         return pageSize;
     }
@@ -48,5 +50,11 @@ public class ExtAccountBill extends AccountBill {
         this.date = date;
     }
 
+    public String getText() {
+        return text;
+    }
 
+    public void setText(String text) {
+        this.text = text;
+    }
 }

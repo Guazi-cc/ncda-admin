@@ -71,9 +71,9 @@
       </el-table-column>
       <el-table-column property="money" label="金额">
         <template slot-scope="scope">
-              <span v-if="scope.row.moneyState == 1" class="money-state-in"
-              >+{{ scope.row.money }}</span
-              >
+          <span v-if="scope.row.moneyState == 1" class="money-state-in"
+            >+{{ scope.row.money }}</span
+          >
           <span v-else class="money-state-out">-{{ scope.row.money }}</span>
         </template>
       </el-table-column>
@@ -197,11 +197,18 @@
           </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="uploadDialogVisible = false" size="mini" class="pull-right"
-            >取 消</el-button
-          >
-          <el-button type="primary" @click="submitUpload" size="mini" class="pull-right margin-l-25"
+          <el-button
+            type="primary"
+            @click="submitUpload"
+            size="mini"
+            class="pull-right margin-l-10"
             >确 定</el-button
+          >
+          <el-button
+            @click="uploadDialogVisible = false"
+            size="mini"
+            class="pull-right"
+            >取 消</el-button
           >
         </span>
       </div>
@@ -230,7 +237,7 @@
         </el-table>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="savePreviewData" size="mini"
-          >保 存</el-button
+            >保 存</el-button
           >
         </span>
       </div>
@@ -303,7 +310,7 @@ export default {
   },
   methods: {
     getTableData() {
-      this.loading = true
+      this.loading = true;
       this.$axios
         .get("/api/acbi/getAll")
         .then(res => {
@@ -400,18 +407,22 @@ export default {
     },
     searchClick() {},
     submitUpload() {
-      // this.$refs.upload.submit();    // 不用他原生的的上传方法
-      if (this.uploadForm.fileList.length === 0) {
-        this.$message.warning("没文件你上传个J8，往里整文件啊！");
-        return;
-      }
-      const fileSize = this.uploadForm.fileList[0].size / 1024 / 1024;
-      if (fileSize < 5) {
-        const formData = new FormData();
-        formData.append("file", this.uploadForm.fileList[0].raw);
-        this.fileUpload(formData);
+      if (this.activeName === "first") {
+        this.textUpload();
       } else {
-        this.$message.warning("文件大小限制为5M，你的很大，我忍不了");
+        // this.$refs.upload.submit();    // 不用他原生的的上传方法
+        if (this.uploadForm.fileList.length === 0) {
+          this.$message.warning("没文件你上传个J8，往里整文件啊！");
+          return;
+        }
+        const fileSize = this.uploadForm.fileList[0].size / 1024 / 1024;
+        if (fileSize < 5) {
+          const formData = new FormData();
+          formData.append("file", this.uploadForm.fileList[0].raw);
+          this.fileUpload(formData);
+        } else {
+          this.$message.warning("文件大小限制为5M，你的很大，我忍不了");
+        }
       }
     },
     fileUpload(formData) {
@@ -425,23 +436,56 @@ export default {
             this.previewDialogVisible = true;
             this.$message({
               message: data.message,
-              type: 'success',
-              customClass: 'my-msg'
+              type: "success",
+              customClass: "my-msg"
             });
           } else {
             this.$message({
               message: data.message,
-              type: 'error',
-              customClass: 'my-msg'
+              type: "error",
+              customClass: "my-msg"
             });
           }
         })
         .catch(err => {
           console.log(err);
           this.$message({
-            message: '发生了一些错误！！！',
-            type: 'error',
-            customClass: 'my-msg'
+            message: "发生了一些错误！！！",
+            type: "error",
+            customClass: "my-msg"
+          });
+        });
+    },
+    textUpload() {
+      this.$axios
+        .post("/api/acbi/textUpload", {
+          text: this.uploadForm.accBillText
+        })
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.uploadDialogVisible = false;
+            this.previewTableData = data.data;
+            this.previewDialogVisible = true;
+            this.$message({
+              message: data.message,
+              type: "success",
+              customClass: "my-msg"
+            });
+          } else {
+            this.$message({
+              message: data.message,
+              type: "error",
+              customClass: "my-msg"
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message({
+            message: "发生了一些错误！！！",
+            type: "error",
+            customClass: "my-msg"
           });
         });
     },
@@ -463,21 +507,22 @@ export default {
     },
     /************************************************/
     savePreviewData() {
-      this.$axios.post("/api/acbi/saveUploadData", this.previewTableData)
-      .then(res => {
-        const { data } = res;
-        if (data.success) {
-          this.previewDialogVisible = false;
-          this.getTableData();
-          this.$message.success("数据保存成功！")
-        } else {
-          this.$message.error("数据保存失败")
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        this.$message.error("数据保存失败，并给你一个大大的异常")
-      })
+      this.$axios
+        .post("/api/acbi/saveUploadData", this.previewTableData)
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.previewDialogVisible = false;
+            this.getTableData();
+            this.$message.success("数据保存成功！");
+          } else {
+            this.$message.error("数据保存失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("数据保存失败，并给你一个大大的异常");
+        });
     }
   },
   computed: {

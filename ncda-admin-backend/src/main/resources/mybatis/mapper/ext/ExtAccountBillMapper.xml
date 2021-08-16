@@ -22,12 +22,12 @@
     from account_bill
   </select>
 
-  <insert id="saveUploadData" parameterType="com.ncda.entity.ext.ExtAccountBill">
-    insert into account_bill (DATE, MONEY,
-    MONEY_STATE, TYPE, COMMENT,
-    DEL_STATE, ITEM_NAME)
-    values (#{date,jdbcType=DATE}, #{money,jdbcType=DECIMAL},
-    #{moneyState,jdbcType=CHAR}, #{type,jdbcType=VARCHAR}, #{comment,jdbcType=VARCHAR},
-    #{delState,jdbcType=CHAR}, #{itemName,jdbcType=VARCHAR})
+  <insert id="batchSaveUploadData" parameterType="com.ncda.entity.ext.ExtAccountBill">
+    insert into account_bill (DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME) values
+      <foreach collection="acBiList" item="acBi" separator=",">
+        (#{acBi.date}, #{acBi.money,jdbcType=DECIMAL},
+        #{acBi.moneyState}, #{acBi.type}, #{acBi.comment},
+        #{acBi.delState}, #{acBi.itemName)
+      </foreach>
   </insert>
 </mapper>
