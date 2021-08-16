@@ -23,13 +23,6 @@ class NcdaAdminBackendApplicationTests {
                 System.out.println(year);
             }
         }
-
-//        for (int i = yearss.length() - 1; i >=0; i--) {
-//            System.out.println(yearss.charAt(i));
-//            if(yearss.charAt(i) == '月') {
-//
-//            }
-//        }
     }
 
     @Test

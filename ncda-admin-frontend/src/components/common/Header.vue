@@ -5,7 +5,7 @@
       <i class="el-icon-menu"></i>
     </span>
     <!-- 系统标题 -->
-    <h3 class="header-title margin-l-10">后台管理系统模板</h3>
+    <h3 class="header-title margin-l-10">MAA</h3>
     <div class="header-right">
       <!-- 消息中心 -->
       <div class="btn-info">

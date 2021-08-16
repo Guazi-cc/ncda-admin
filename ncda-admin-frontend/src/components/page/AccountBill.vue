@@ -102,7 +102,7 @@
     </el-table>
     <!--分页-->
     <el-pagination
-      :page-sizes="[10, 20, 30, 40]"
+      :page-sizes="[50, 100, 150, 200]"
       :page-size="10"
       :total="100"
       layout="total, sizes, prev, pager, next, jumper"
@@ -197,10 +197,10 @@
           </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="uploadDialogVisible = false" size="mini"
+          <el-button @click="uploadDialogVisible = false" size="mini" class="pull-right"
             >取 消</el-button
           >
-          <el-button type="primary" @click="submitUpload" size="mini"
+          <el-button type="primary" @click="submitUpload" size="mini" class="pull-right margin-l-25"
             >确 定</el-button
           >
         </span>
