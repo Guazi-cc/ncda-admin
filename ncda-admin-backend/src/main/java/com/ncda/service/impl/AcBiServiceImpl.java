@@ -1,7 +1,10 @@
 package com.ncda.service.impl;
 
 import com.ncda.dao.ext.AcBiMapper;
+import com.ncda.dao.ext.AcBilUploadRecordMapper;
 import com.ncda.entity.ext.ExtAccountBill;
+import com.ncda.entity.ext.ExtAccountBillUploadRecord;
+import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import com.ncda.util.AcBiReadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -17,9 +23,14 @@ public class AcBiServiceImpl implements AcBiService {
 
     private final AcBiMapper acBiMapper;
 
+    private final AcBilUploadRecordMapper acBilUploadRecordMapper;
+
+    private static String content;
+
     @Autowired
-    public AcBiServiceImpl(AcBiMapper acBiMapper) {
+    public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper) {
         this.acBiMapper = acBiMapper;
+        this.acBilUploadRecordMapper = acBilUploadRecordMapper;
     }
 
     @Override
@@ -29,22 +40,46 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public List<ExtAccountBill> fileUpload(InputStream inputStream) throws Exception {
+        content = AcBiReadUtil.getContent(inputStream);
         return AcBiReadUtil.analysisAcBiFile(inputStream);
     }
 
     @Override
     public List<ExtAccountBill> textUpload(String text) throws Exception {
+        content = AcBiReadUtil.getContent(text);
         return AcBiReadUtil.analysisAcBiText(text);
     }
 
+    /**
+     * 文件上传完成后保存数据，因此该方法必须在上传方法调用后使用
+     * @param accountBillList
+     * @return
+     */
     @Override
-    public Integer saveUploadData(List<ExtAccountBill> accountBillList) {
-//        Integer count = 0;
-//        for (ExtAccountBill extAccountBill : accountBillList) {
-//            count += acBiMapper.saveUploadData(extAccountBill);
-//        }
-//        return accountBillList.size() == count ? 1 : 0;
-        Integer integer = acBiMapper.batchSaveUploadData(accountBillList);
-        return 1;
+    public ResultData saveUploadData(List<ExtAccountBill> accountBillList) {
+        Integer state = acBiMapper.batchSaveUploadData(accountBillList);
+        if (state == accountBillList.size()) {
+            Date date = accountBillList.get(0).getDate();       // 获取数据的时间，主要是年月，所以可以选择集合中的任意数据
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;       // 获取的月份要 +1 才是真实的月份
+            Integer count = acBilUploadRecordMapper.selectCountByYearMonth(year, month);
+            if (count > 0) {
+                // 该月份数据已经存在
+                ExtAccountBillUploadRecord uploadRecord = acBilUploadRecordMapper.selectDataByYearMonth(year, month);
+                // 将冲突月份数据返回，让用户比较，谁去谁留
+                HashMap<Object, String> map = new HashMap<>();
+                map.put("oldData", uploadRecord.getFileContent());
+                map.put("newData", content);
+                return ResultData.createFailResult("该月份数据已经存在", map);
+            }
+            ExtAccountBillUploadRecord uploadRecord = new ExtAccountBillUploadRecord();
+            uploadRecord.setDate(date);
+            uploadRecord.setFileContent(content);
+            Integer integer = acBilUploadRecordMapper.saveUploadRecordData(uploadRecord);
+            return ResultData.createSuccessResult("", integer);
+        }
+        return ResultData.createFailResultData("保存失败");
     }
 }

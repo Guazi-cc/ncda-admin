@@ -3,10 +3,28 @@
 <mapper namespace="com.ncda.dao.ext.AcBilUploadRecordMapper" >
 
   <insert id="saveUploadRecordData" parameterType="com.ncda.entity.ext.ExtAccountBillUploadRecord" >
-    insert into account_bill_upload_record (ID, YEAR_MONTH, FILE_CONTENT
-    )
-    values (#{id,jdbcType=INTEGER}, #{yearMonth,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR}
-    )
+    insert into account_bill_upload_record (DATE, FILE_CONTENT)
+    values (#{date,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR})
   </insert>
+
+  <select id="selectCountByYearMonth" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    SELECT
+      COUNT( 1 )
+    FROM
+      account_bill_upload_record
+    WHERE
+        YEAR ( DATE ) = #{year}
+        AND MONTH ( DATE ) = #{month}
+  </select>
+
+  <select id="selectDataByYearMonth" parameterType="java.lang.Integer" resultType="com.ncda.entity.ext.ExtAccountBillUploadRecord">
+    SELECT
+      ID, DATE, FILE_CONTENT fileContent
+    FROM
+      account_bill_upload_record
+    WHERE
+      YEAR ( DATE ) = #{year}
+      AND MONTH ( DATE ) = #{month}
+  </select>
 
 </mapper>

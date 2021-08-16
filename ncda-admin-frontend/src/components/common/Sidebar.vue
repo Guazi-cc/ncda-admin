@@ -77,6 +77,11 @@
             path: '/accountBill',
             icon: 'el-icon-tickets'
           },
+          {
+            title: '测试',
+            path: '/test',
+            icon: 'el-icon-tickets'
+          },
         ]
       }
     },

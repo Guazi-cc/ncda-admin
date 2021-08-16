@@ -1,6 +1,7 @@
 package com.ncda.service;
 
 import com.ncda.entity.ext.ExtAccountBill;
+import com.ncda.entity.result.ResultData;
 
 import java.io.InputStream;
 import java.util.List;
@@ -13,5 +14,5 @@ public interface AcBiService {
 
     List<ExtAccountBill> textUpload(String text) throws Exception;
 
-    Integer saveUploadData(List<ExtAccountBill> accountBillList);
+    ResultData saveUploadData(List<ExtAccountBill> accountBillList);
 }

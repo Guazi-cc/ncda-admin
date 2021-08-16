@@ -57,6 +57,13 @@ const routes = [
         meta: {
           title: '表格1'
         }
+      },
+      {
+        path: '/test',
+        component: () => import('@/components/page/Test'),
+        meta: {
+          title: '测试'
+        }
       }
     ]
   },

@@ -242,12 +242,34 @@
         </span>
       </div>
     </el-dialog>
+
+    <!-- 比较Dialog  -->
+    <el-dialog
+      title="数据比较"
+      width="70%"
+      :visible.sync="compareDialogVisible"
+    >
+      <div style="height: 550px;" class="codeDiff">
+        <code-diff
+          :old-string="'2021年8月'"
+          :new-string="'2021年8月'"
+          output-format="side-by-side"
+        />
+        <!-- <span slot="footer" class="dialog-footer">
+          <el-button type="primary" size="mini">保 存</el-button>
+        </span> -->
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { CodeDiff } from "v-code-diff";
 export default {
   name: "Table",
+  components: {
+    CodeDiff
+  },
   data() {
     return {
       screenHeight: 0, // 屏幕高度
@@ -297,10 +319,15 @@ export default {
       },
       uploadDialogVisible: false,
       previewDialogVisible: false,
+      compareDialogVisible: false,
       activeName: "first",
       uploadForm: {
         accBillText: "👉这里是可以输入内容的✨",
         fileList: []
+      },
+      compareForm: {
+        oldStr: "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6",
+        newStr: "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6"
       }
     };
   },
@@ -405,9 +432,18 @@ export default {
       this.uploadForm.fileList = [];
       this.activeName = "first";
     },
-    searchClick() {},
+    searchClick() {
+      this.compareDialogVisible = true;
+    },
     submitUpload() {
       if (this.activeName === "first") {
+        if (
+          this.uploadForm.accBillText.trim() === "" ||
+          this.uploadForm.accBillText === "👉这里是可以输入内容的✨"
+        ) {
+          this.$message.warning("请填写内容！");
+          return;
+        }
         this.textUpload();
       } else {
         // this.$refs.upload.submit();    // 不用他原生的的上传方法
@@ -516,12 +552,20 @@ export default {
             this.getTableData();
             this.$message.success("数据保存成功！");
           } else {
-            this.$message.error("数据保存失败");
+            if (data.message === "该月份数据已经存在") {
+              this.$message.warning("该月份数据已经存在，请对照文件差异");
+              this.previewDialogVisible = false;
+              this.compareForm.oldStr = data.data.oldData;
+              this.compareForm.newStr = data.data.newData;
+              this.compareDialogVisible = true;
+            } else {
+              this.$message.error("数据保存失败");
+            }
           }
         })
         .catch(err => {
           console.log(err);
-          this.$message.error("数据保存失败，并给你一个大大的异常");
+          this.$message.error("数据保存失败，程序出现了异常");
         });
     }
   },
@@ -566,5 +610,14 @@ export default {
 }
 .my-msg {
   z-index: 9999 !important;
+}
+.versionComparison {
+  height: 671px;
+  padding: 20px;
+  line-height: 1;
+  .codeDiff {
+    width: 1127px;
+    height: 300px;
+  }
 }
 </style>

@@ -1,16 +1,12 @@
 package com.ncda.controller;
 
-import com.ncda.entity.AccountBill;
 import com.ncda.entity.ext.ExtAccountBill;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
-import com.ncda.util.AcBiReadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -28,7 +24,7 @@ public class AcBiController {
     public ResultData fileUpload(@RequestParam("file") MultipartFile file) {
         String fileName = file.getOriginalFilename();
         assert fileName != null;
-        String suffix = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
         if(".txt".equals(suffix)) {
             try {
                 List<ExtAccountBill> bills = acBiService.fileUpload(file.getInputStream());
@@ -54,11 +50,11 @@ public class AcBiController {
 
     @PostMapping("/saveUploadData")
     public ResultData saveData(@RequestBody List<ExtAccountBill> accountBills) {
-        Integer num = acBiService.saveUploadData(accountBills);
-        if (num == 1) {
-            return ResultData.createSuccessResultData("", num, num.longValue());
+        ResultData resultData = acBiService.saveUploadData(accountBills);
+        if (resultData.isSuccess()) {
+            return resultData;
         }
-        return ResultData.createFailResultData("");
+        return resultData;
     }
 
     @GetMapping("/getAll")
