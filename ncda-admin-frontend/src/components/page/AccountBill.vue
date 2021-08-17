@@ -246,18 +246,25 @@
     <!-- 比较Dialog  -->
     <el-dialog
       title="数据比较"
-      width="70%"
+      width="60%"
       :visible.sync="compareDialogVisible"
     >
-      <div style="height: 550px;" class="codeDiff">
+      <div class="compare-title">旧数据：</div>
+      <div class="compare-title">新数据：</div>
+      <div class="compare-box">
+        <!-- https://github.com/Shimada666/v-code-diff -->
         <code-diff
-          :old-string="'2021年8月'"
-          :new-string="'2021年8月'"
+          :old-string="compareForm.oldStr"
+          :new-string="compareForm.newStr"
+          :isShowNoChange="true"
+          :context="100"
+          diffStyle="word"
           output-format="side-by-side"
         />
-        <!-- <span slot="footer" class="dialog-footer">
+        <span slot="footer" class="dialog-footer btn-bottom">
+          <el-button size="mini" >取 消</el-button>
           <el-button type="primary" size="mini">保 存</el-button>
-        </span> -->
+        </span>
       </div>
     </el-dialog>
   </div>
@@ -326,8 +333,10 @@ export default {
         fileList: []
       },
       compareForm: {
-        oldStr: "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6",
-        newStr: "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6"
+        oldStr:
+          "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6",
+        newStr:
+          "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6"
       }
     };
   },
@@ -471,13 +480,13 @@ export default {
             this.previewTableData = data.data;
             this.previewDialogVisible = true;
             this.$message({
-              message: data.message,
+              message: "文件解析成功",
               type: "success",
               customClass: "my-msg"
             });
           } else {
             this.$message({
-              message: data.message,
+              message: "文件解析失败",
               type: "error",
               customClass: "my-msg"
             });
@@ -504,13 +513,13 @@ export default {
             this.previewTableData = data.data;
             this.previewDialogVisible = true;
             this.$message({
-              message: data.message,
+              message: "文本解析成功",
               type: "success",
               customClass: "my-msg"
             });
           } else {
             this.$message({
-              message: data.message,
+              message: "文本解析失败",
               type: "error",
               customClass: "my-msg"
             });
@@ -550,22 +559,38 @@ export default {
           if (data.success) {
             this.previewDialogVisible = false;
             this.getTableData();
-            this.$message.success("数据保存成功！");
+            this.$message({
+              message: "数据保存成功！",
+              type: "success",
+              customClass: "my-msg"
+            });
           } else {
             if (data.message === "该月份数据已经存在") {
-              this.$message.warning("该月份数据已经存在，请对照文件差异");
+              this.$message({
+                message: "该月份数据已经存在，请对照文件差异",
+                type: "warning",
+                customClass: "my-msg"
+              });
               this.previewDialogVisible = false;
               this.compareForm.oldStr = data.data.oldData;
               this.compareForm.newStr = data.data.newData;
               this.compareDialogVisible = true;
             } else {
-              this.$message.error("数据保存失败");
+              this.$message({
+                message: "数据保存失败",
+                type: "error",
+                customClass: "my-msg"
+              });
             }
           }
         })
         .catch(err => {
           console.log(err);
-          this.$message.error("数据保存失败，程序出现了异常");
+          this.$message({
+            message: "数据保存失败，程序出现了异常",
+            type: "error",
+            customClass: "my-msg"
+          });
         });
     }
   },
@@ -611,13 +636,20 @@ export default {
 .my-msg {
   z-index: 9999 !important;
 }
-.versionComparison {
-  height: 671px;
-  padding: 20px;
-  line-height: 1;
-  .codeDiff {
-    width: 1127px;
-    height: 300px;
-  }
+.compare-box {
+  position: relative;
+  height: 500px;
+  overflow: auto;
+}
+.compare-title {
+  display: inline-block;
+  width: 50%;
+  font-size: 14px;
+  color: #606266;
+}
+.btn-bottom {
+  position: absolute;
+  bottom: 2%;
+  right: 2%;
 }
 </style>

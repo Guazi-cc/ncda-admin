@@ -25,8 +25,6 @@ public class AcBiServiceImpl implements AcBiService {
 
     private final AcBilUploadRecordMapper acBilUploadRecordMapper;
 
-    private static String content;
-
     @Autowired
     public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper) {
         this.acBiMapper = acBiMapper;
@@ -40,13 +38,11 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public List<ExtAccountBill> fileUpload(InputStream inputStream) throws Exception {
-        content = AcBiReadUtil.getContent(inputStream);
         return AcBiReadUtil.analysisAcBiFile(inputStream);
     }
 
     @Override
     public List<ExtAccountBill> textUpload(String text) throws Exception {
-        content = AcBiReadUtil.getContent(text);
         return AcBiReadUtil.analysisAcBiText(text);
     }
 
@@ -57,28 +53,28 @@ public class AcBiServiceImpl implements AcBiService {
      */
     @Override
     public ResultData saveUploadData(List<ExtAccountBill> accountBillList) {
-        Integer state = acBiMapper.batchSaveUploadData(accountBillList);
+        Date date = accountBillList.get(0).getDate();       // 获取数据的时间，主要是年月，所以可以选择集合中的任意数据
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;       // 获取的月份要 +1 才是真实的月份
+        Integer count = acBilUploadRecordMapper.selectCountByYearMonth(year, month);
+        if (count > 0) {
+            // 该月份数据已经存在
+            ExtAccountBillUploadRecord uploadRecord = acBilUploadRecordMapper.selectDataByYearMonth(year, month);
+            // 将冲突月份数据返回，让用户比较，谁去谁留
+            HashMap<Object, String> map = new HashMap<>();
+            map.put("oldData", uploadRecord.getFileContent());
+            map.put("newData", AcBiReadUtil.getContent());
+            return ResultData.createFailResult("该月份数据已经存在", map);
+        }
+        Integer state = acBiMapper.batchSaveUploadData(accountBillList);    // 没有数据才可以保存
         if (state == accountBillList.size()) {
-            Date date = accountBillList.get(0).getDate();       // 获取数据的时间，主要是年月，所以可以选择集合中的任意数据
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH) + 1;       // 获取的月份要 +1 才是真实的月份
-            Integer count = acBilUploadRecordMapper.selectCountByYearMonth(year, month);
-            if (count > 0) {
-                // 该月份数据已经存在
-                ExtAccountBillUploadRecord uploadRecord = acBilUploadRecordMapper.selectDataByYearMonth(year, month);
-                // 将冲突月份数据返回，让用户比较，谁去谁留
-                HashMap<Object, String> map = new HashMap<>();
-                map.put("oldData", uploadRecord.getFileContent());
-                map.put("newData", content);
-                return ResultData.createFailResult("该月份数据已经存在", map);
-            }
             ExtAccountBillUploadRecord uploadRecord = new ExtAccountBillUploadRecord();
             uploadRecord.setDate(date);
-            uploadRecord.setFileContent(content);
+            uploadRecord.setFileContent(AcBiReadUtil.getContent());
             Integer integer = acBilUploadRecordMapper.saveUploadRecordData(uploadRecord);
-            return ResultData.createSuccessResult("", integer);
+            return ResultData.createSuccessResult("保存成功", integer);
         }
         return ResultData.createFailResultData("保存失败");
     }

@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class AcBiReadUtil {
 
+    public static String content;
+
     /**
      * 解析文件
      * @param inputStream
@@ -25,7 +27,8 @@ public class AcBiReadUtil {
      * @throws Exception
      */
     public static List<ExtAccountBill> analysisAcBiFile(InputStream inputStream) throws Exception {
-        return readText(getContent(inputStream));
+        setContent(inputStream);
+        return readText();
     }
 
     /**
@@ -35,7 +38,8 @@ public class AcBiReadUtil {
      * @throws Exception
      */
     public static List<ExtAccountBill> analysisAcBiText(String text) throws Exception {
-        return readText(getContent(text));
+        setContent(text);
+        return readText();
     }
 
     /**
@@ -44,19 +48,18 @@ public class AcBiReadUtil {
      * @return 内容
      * @throws Exception
      */
-    public static String getContent(InputStream inputStream) throws Exception {
-        String text = "";
+    public static void setContent(InputStream inputStream) throws Exception {
+        content = "";
         InputStreamReader read = new InputStreamReader(inputStream, StandardCharsets.UTF_8.name());
         BufferedReader bufferedReader = new BufferedReader(read);
         String lineTxt;         // 每行数据
         while ((lineTxt = bufferedReader.readLine()) != null) {
-            if (strIsNull(text)) {
-                text = text + lineTxt;
+            if (strIsNull(content)) {
+                content = content + lineTxt;
             } else  {
-                text = text + "\n" + lineTxt;
+                content = content + "\n" + lineTxt;
             }
         }
-        return text;
     }
 
     /**
@@ -64,20 +67,23 @@ public class AcBiReadUtil {
      * @param text
      * @return
      */
-    public static String getContent(String text) {
-        return text;
+    public static void setContent(String text) {
+        content = text;
+    }
+
+    public static String getContent() {
+        return content;
     }
 
     /**
      * 读取文字中的账单信息
-     * @param text 账单信息文本
      * @return 账单数据集合
      * @throws Exception
      */
-    private static List<ExtAccountBill> readText(String text) throws Exception {
+    private static List<ExtAccountBill> readText() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         List<ExtAccountBill> billList = new ArrayList<>();
-        String[] lineTxts = text.split("\\\n");      // 保存每一行数据
+        String[] lineTxts = content.split("\\\n");      // 保存每一行数据
         int lineNum = 0;      //记录行数
         String currYear = null;     // 当前年份
         for (String lineTxt : lineTxts) {
