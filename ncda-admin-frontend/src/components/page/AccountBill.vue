@@ -45,7 +45,7 @@
     </div>
     <!--表格内容-->
     <el-table
-      ref="list"
+      ref="tableRef"
       v-loading="loading"
       :data="tableData"
       style="width: 100%"
@@ -57,9 +57,12 @@
       @row-click="handleRowClick"
       @select-all="handleCheckedAllAndCheckedNone"
       @select="handleCheckedAllAndCheckedNone"
+      show-summary
+      :summary-method="getSummaries"
+      sum-text="合计"
     >
-      <el-table-column type="selection" width="45" align="center">
-      </el-table-column>
+      <!-- <el-table-column type="selection" width="45" align="center">
+      </el-table-column> -->
       <!-- <el-table-column type="index" label="序号" width="50"> </el-table-column> -->
       <el-table-column property="date" label="日期" width="180" sortable>
         <template slot-scope="scope">
@@ -94,7 +97,7 @@
     </el-table>
     <!--分页-->
     <el-pagination
-      :page-sizes="[31, 62, 93]"
+      :page-sizes="[10, 50, 100, 150]"
       :total="pagination.total"
       :current-page.sync="pagination.currentPage"
       @current-change="handleCurrentChange"
@@ -337,7 +340,7 @@ export default {
         }
       ],
       pagination: {
-        pageSize: 31,
+        pageSize: 10,
         currentPage: 1,
         total: 0
       },
@@ -409,7 +412,7 @@ export default {
     handleEdit() {
       this.$refs.editForm.validate(isValid => {
         if (!isValid) return;
-        console.log(this.formFileds)
+        console.log(this.formFileds);
       });
     },
     setCurRowChecked(row) {
@@ -637,20 +640,28 @@ export default {
         .catch(() => {});
     },
     handleCurrentChange(val) {
-      debugger;
       this.pagination.currentPage = val;
       this.getTableData();
     },
     handleSizeChange(val) {
-      debugger;
       this.pagination.pageSize = val;
       this.getTableData();
+    },
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      return sums;
     }
   },
   computed: {
     tableHeight() {
-      return this.screenHeight - 200 + "px";
+      return this.screenHeight - 250 + "px";
     }
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.$refs["tableRef"].doLayout();
+    });
   }
 };
 </script>
