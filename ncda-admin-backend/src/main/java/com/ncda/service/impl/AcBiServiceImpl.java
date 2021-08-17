@@ -66,7 +66,7 @@ public class AcBiServiceImpl implements AcBiService {
             HashMap<Object, String> map = new HashMap<>();
             map.put("oldData", uploadRecord.getFileContent());
             map.put("newData", AcBiReadUtil.getContent());
-            return ResultData.createFailResult("该月份数据已经存在", map);
+            return ResultData.createFailResult("该月份数据已经存在，请对照文件差异", map);
         }
         Integer state = acBiMapper.batchSaveUploadData(accountBillList);    // 没有数据才可以保存
         if (state == accountBillList.size()) {

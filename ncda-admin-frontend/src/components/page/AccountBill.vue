@@ -262,7 +262,7 @@
           output-format="side-by-side"
         />
         <span slot="footer" class="dialog-footer btn-bottom">
-          <el-button size="mini" >取 消</el-button>
+          <el-button size="mini">取 消</el-button>
           <el-button type="primary" size="mini">保 存</el-button>
         </span>
       </div>
@@ -486,7 +486,7 @@ export default {
             });
           } else {
             this.$message({
-              message: "文件解析失败",
+              message: `文本解析失败，${data.message}`,
               type: "error",
               customClass: "my-msg"
             });
@@ -519,7 +519,7 @@ export default {
             });
           } else {
             this.$message({
-              message: "文本解析失败",
+              message: "文本解析失败，" + data.message,
               type: "error",
               customClass: "my-msg"
             });
@@ -565,9 +565,14 @@ export default {
               customClass: "my-msg"
             });
           } else {
-            if (data.message === "该月份数据已经存在") {
+            if (
+              data.data.oldData !== null &&
+              data.data.oldData !== "" &&
+              data.data.newData !== null &&
+              data.data.newData !== ""
+            ) {
               this.$message({
-                message: "该月份数据已经存在，请对照文件差异",
+                message: `数据保存失败，${data.message}`,
                 type: "warning",
                 customClass: "my-msg"
               });
@@ -577,7 +582,7 @@ export default {
               this.compareDialogVisible = true;
             } else {
               this.$message({
-                message: "数据保存失败",
+                message: `数据保存失败，${data.message}`,
                 type: "error",
                 customClass: "my-msg"
               });

@@ -6,8 +6,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +17,10 @@ import java.util.regex.Pattern;
  */
 public class AcBiReadUtil {
 
-    public static String content;
+    /**
+     * 用于记录文本信息
+     */
+    private static String content;
 
     /**
      * 解析文件
@@ -67,7 +69,7 @@ public class AcBiReadUtil {
      * @param text
      * @return
      */
-    public static void setContent(String text) {
+    private static void setContent(String text) {
         content = text;
     }
 
@@ -83,6 +85,7 @@ public class AcBiReadUtil {
     private static List<ExtAccountBill> readText() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         List<ExtAccountBill> billList = new ArrayList<>();
+        List<Date> dateList = new ArrayList<>();                // 保存所有的日期，用于检验日期是否有重复
         String[] lineTxts = content.split("\\\n");      // 保存每一行数据
         int lineNum = 0;      //记录行数
         String currYear = null;     // 当前年份
@@ -97,10 +100,13 @@ public class AcBiReadUtil {
             } else {
                 lineTxt = lineTxt.contains("=") ? lineTxt.substring(0, lineTxt.indexOf("=")).trim() : lineTxt;      // 若末尾有"=" 去掉
                 String[] billItems = lineTxt.split("/");       // 提取出"/"分隔的每一项
+                String dateStr = billItems[0];
+                Date date = sdf.parse(dateFormatter(currYear, dateStr, lineNum));
+                dateList.add(date);
                 for (int i = 1; i < billItems.length; i++) {        // 这里从1开始，也就是跳过第一项
                     String billItem = billItems[i].trim();
                     ExtAccountBill accountBill = new ExtAccountBill();
-                    accountBill.setDate(sdf.parse(dateFormatter(currYear, billItems[0], lineNum)));     // 第一项为时间
+                    accountBill.setDate(date);     // 第一项为时间
                     if(!strIsNull(billItem)) {
                         for (int j = billItem.length()-1; j >= 0; j--) {
                             if(!isNumber(billItem.charAt(j))) {
@@ -121,7 +127,20 @@ public class AcBiReadUtil {
                 }
             }
         }
-        return billList;
+        if (checkRepeatedDate(dateList)) {
+            return billList;
+        } else {
+            throw new Exception("内容中有重复日期，请你检查检查");
+        }
+    }
+
+    /**
+     * 检查集合中的日期是否有重复的
+     * @param list
+     * @return
+     */
+    private static boolean checkRepeatedDate(List<Date> list) {
+        return new HashSet<>(list).size() == list.size();
     }
 
     /**
@@ -129,7 +148,7 @@ public class AcBiReadUtil {
      * @param c 字符
      * @return 是数字 true， 不是数字 false
      */
-    public static boolean isNumber(char c) {
+    private static boolean isNumber(char c) {
         return c >= 48 && c <= 57 || c == 46;
     }
 
@@ -138,7 +157,7 @@ public class AcBiReadUtil {
      * @param str 字符串本串
      * @return 为空 true
      */
-    public static boolean strIsNull(String str) {
+    private static boolean strIsNull(String str) {
         return str == null || "".equals(str);
     }
 
@@ -147,7 +166,7 @@ public class AcBiReadUtil {
      * @param yearStr 一个包含年份的字符串，如 ddddsss2018dfd
      * @return  若包含年份返回长度为4的年份，否则返回null
      */
-    public static String getYear(String yearStr) {
+    private static String getYear(String yearStr) {
         for (int i = 0; i < yearStr.length(); i++) {
             if (yearStr.charAt(i) == '2' && yearStr.charAt(i+1) == '0') {
                 String year =  yearStr.substring(i, i+4);
@@ -165,7 +184,7 @@ public class AcBiReadUtil {
      * @param strNum 字符串
      * @return boolean
      */
-    public static boolean strIsDigit(String strNum) {
+    private static boolean strIsDigit(String strNum) {
         Pattern pattern = Pattern.compile("[0-9]{1,}");
         Matcher matcher = pattern.matcher((CharSequence) strNum);
         return matcher.matches();
@@ -179,7 +198,7 @@ public class AcBiReadUtil {
      * @return 年月日组合并按照格式返回，格式：2021.07.22
      * @throws Exception
      */
-    public static String dateFormatter(String year, String monDay, int lineNum) throws Exception {
+    private static String dateFormatter(String year, String monDay, int lineNum) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(year).append(".");
         if (!monDay.contains(".")) {

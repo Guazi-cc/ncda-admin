@@ -28,7 +28,7 @@ public class AcBiController {
         if(".txt".equals(suffix)) {
             try {
                 List<ExtAccountBill> bills = acBiService.fileUpload(file.getInputStream());
-                return ResultData.createSuccessResultData("成功", bills, (long) bills.size());
+                return ResultData.createSuccessResultData("文件解析成功", bills, (long) bills.size());
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResultData.createFailResultData(e.getMessage());
