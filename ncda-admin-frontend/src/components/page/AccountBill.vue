@@ -89,22 +89,24 @@
             size="small"
             @click="rowEdit(scope.$index, scope.row)"
           ></el-button>
-          <el-button
+          <!-- <el-button
             circle
             icon="el-icon-delete"
             type="danger"
             title="删除"
             size="small"
             @click="rowDel(scope.$index, scope.row, $event)"
-          ></el-button>
+          ></el-button> -->
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination
-      :page-sizes="[50, 100, 150, 200]"
-      :page-size="10"
-      :total="100"
+      :page-sizes="[31, 62, 93]"
+      :total="pagination.total"
+      :current-page.sync="pagination.currentPage"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
       layout="total, sizes, prev, pager, next, jumper"
     >
     </el-pagination>
@@ -129,11 +131,24 @@
             :clearable="false"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="formFileds.name"></el-input>
+        <el-form-item label="名称" prop="itemName">
+          <el-input v-model="formFileds.itemName"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="formFileds.address"></el-input>
+        <el-form-item label="金额" prop="money">
+          <el-input v-model="formFileds.money"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="money">
+          <el-radio-group v-model="formFileds.moneyState">
+            <el-radio-button label="收入"></el-radio-button>
+            <el-radio-button label="支出"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="类型" prop="type">
+          <el-input v-model="formFileds.type"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="comment">
+          <el-input v-model="formFileds.comment"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -284,17 +299,23 @@ export default {
       screenHeight: 0, // 屏幕高度
       loading: false,
       formFileds: {
+        id: null,
         date: "",
-        name: "",
-        address: "",
-        id: ""
+        itemName: "",
+        money: 0,
+        moneyState: "",
+        comment: "",
+        type: null
       },
       rules: {
-        name: [
-          { required: true, message: "姓名不能为空", trigger: "blur, change" }
+        date: [
+          { required: true, message: "日期不能为空", trigger: "blur, change" }
         ],
-        address: [
-          { required: true, message: "地址不能为空", trigger: "blur, change" }
+        itemName: [
+          { required: true, message: "名称不能为空", trigger: "blur, change" }
+        ],
+        money: [
+          { required: true, message: "金额不能为空", trigger: "blur, change" }
         ]
       },
       tableData: [],
@@ -322,6 +343,11 @@ export default {
           label: "北京烤鸭"
         }
       ],
+      pagination: {
+        pageSize: 31,
+        currentPage: 1,
+        total: 0
+      },
       searchForm: {
         month: "",
         type: ""
@@ -349,10 +375,14 @@ export default {
     getTableData() {
       this.loading = true;
       this.$axios
-        .get("/api/acbi/getAll")
+        .post("/api/acbi/getAccountBill", {
+          pageSize: this.pagination.pageSize,
+          currentPage: this.pagination.currentPage
+        })
         .then(res => {
           const { data } = res;
-          this.tableData = data;
+          this.tableData = data.data.list;
+          this.pagination.total = data.total;
           this.loading = false;
         })
         .catch(err => {
@@ -385,11 +415,9 @@ export default {
     handleEdit(id) {
       this.$refs.editForm.validate(isValid => {
         if (!isValid) return;
-
         // 保存编辑后的数据
         Object.assign(this.tableData[id], this.formFileds);
         this.isShowEditDialog = false;
-
         // 考虑到可能编辑了日期-需要重新排序
         // ***注意：手动排序传参和表格的default-sort属性格式不太一样
         this.$refs.list.sort("date", "descending");
@@ -397,19 +425,19 @@ export default {
         this.$message.success("编辑成功");
       });
     },
-    rowDel(index, row, event) {
-      // 让当前删除按钮失焦
-      event.target.blur();
+    // rowDel(index, row, event) {
+    //   // 让当前删除按钮失焦
+    //   event.target.blur();
 
-      this.$confirm("确定要删除当前行吗？", "删除", {
-        comfirmButtonText: "确定",
-        cancelButtonText: "取消"
-      }).then(() => {
-        this.tableData.splice(row.id, 1);
-        this.$message.success("删除成功");
-        return false;
-      });
-    },
+    //   this.$confirm("确定要删除当前行吗？", "删除", {
+    //     comfirmButtonText: "确定",
+    //     cancelButtonText: "取消"
+    //   }).then(() => {
+    //     this.tableData.splice(row.id, 1);
+    //     this.$message.success("删除成功");
+    //     return false;
+    //   });
+    // },
     // 选中当前行-当前行的复选框被勾选
     setCurRowChecked(row) {
       this.$refs.list.clearSelection();
@@ -607,9 +635,7 @@ export default {
         .then(() => {
           this.compareDialogVisible = false;
         })
-        .catch(() => {
-          
-        });
+        .catch(() => {});
     },
     compareDataSave() {
       this.$confirm("新数据将覆盖原始数据", "提示", {
@@ -621,13 +647,13 @@ export default {
             .post("/api/acbi/saveNewData", this.compareForm.newData)
             .then(res => {
               const { data } = res;
-              if(data.success) {
-                this.compareDialogVisible =false;
+              if (data.success) {
+                this.compareDialogVisible = false;
                 this.$message({
-                  message: '数据更新成功',
-                  type: 'success',
+                  message: "数据更新成功",
+                  type: "success",
                   customClass: "my-msg"
-                })
+                });
                 this.getTableData();
               }
             })
@@ -636,6 +662,16 @@ export default {
             });
         })
         .catch(() => {});
+    },
+    handleCurrentChange(val) {
+      debugger;
+      this.pagination.currentPage = val;
+      this.getTableData();
+    },
+    handleSizeChange(val) {
+      debugger;
+      this.pagination.pageSize = val;
+      this.getTableData();
     }
   },
   computed: {

@@ -1,5 +1,8 @@
 package com.ncda.controller;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ncda.entity.ext.ExtAccountBill;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
@@ -49,7 +52,7 @@ public class AcBiController {
     }
 
     @PostMapping("/saveUploadData")
-    public ResultData saveData(@RequestBody List<ExtAccountBill> accountBills) {
+    public ResultData saveUploadData(@RequestBody List<ExtAccountBill> accountBills) {
         ResultData resultData = acBiService.saveUploadData(accountBills);
         if (resultData.isSuccess()) {
             return resultData;
@@ -62,9 +65,11 @@ public class AcBiController {
         return acBiService.saveNewData(accountBills);
     }
 
-    @GetMapping("/getAll")
-    public List<ExtAccountBill> getAccountBill() {
-        List<ExtAccountBill> bills = acBiService.getAll();
-        return bills;
+    @PostMapping("/getAccountBill")
+    public ResultData getAccountBill(@RequestBody ExtAccountBill accountBill) {
+        PageHelper.startPage(accountBill.getCurrentPage(), accountBill.getPageSize());
+        List<ExtAccountBill> bills = acBiService.getAccountBill(accountBill);
+        PageInfo<ExtAccountBill> pageInfo = new PageInfo<>(bills);
+        return ResultData.createSuccessResultData("查询成功", pageInfo, pageInfo.getTotal());
     }
 }

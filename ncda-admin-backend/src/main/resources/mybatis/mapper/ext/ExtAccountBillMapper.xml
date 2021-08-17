@@ -16,7 +16,7 @@
     ID, DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME
   </sql>
 
-  <select id="getAll" resultMap="BaseResultMap">
+  <select id="getAccountBill" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from account_bill

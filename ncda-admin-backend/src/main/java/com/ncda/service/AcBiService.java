@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AcBiService {
 
-    List<ExtAccountBill> getAll();
+    List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill);
 
     List<ExtAccountBill> fileUpload(InputStream inputStream) throws Exception;
 

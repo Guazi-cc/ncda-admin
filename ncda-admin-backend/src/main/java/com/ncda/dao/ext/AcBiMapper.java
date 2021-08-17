@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public interface AcBiMapper {
 
-    List<ExtAccountBill> getAll();
+    List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill);
 
 //    Integer saveUploadData(ExtAccountBill accountBill);
 

@@ -32,8 +32,8 @@ public class AcBiServiceImpl implements AcBiService {
     }
 
     @Override
-    public List<ExtAccountBill> getAll() {
-        return acBiMapper.getAll();
+    public List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill) {
+        return acBiMapper.getAccountBill(accountBill);
     }
 
     @Override
