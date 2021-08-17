@@ -89,14 +89,6 @@
             size="small"
             @click="rowEdit(scope.$index, scope.row)"
           ></el-button>
-          <!-- <el-button
-            circle
-            icon="el-icon-delete"
-            type="danger"
-            title="删除"
-            size="small"
-            @click="rowDel(scope.$index, scope.row, $event)"
-          ></el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -126,21 +118,22 @@
         <el-form-item label="日期">
           <el-date-picker
             v-model="formFileds.date"
+            disabled
             value-format="yyyy-MM-dd"
             :editable="false"
             :clearable="false"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="名称" prop="itemName">
-          <el-input v-model="formFileds.itemName"></el-input>
+          <el-input v-model="formFileds.itemName" disabled></el-input>
         </el-form-item>
         <el-form-item label="金额" prop="money">
-          <el-input v-model="formFileds.money"></el-input>
+          <el-input v-model="formFileds.money" disabled></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="money">
-          <el-radio-group v-model="formFileds.moneyState">
-            <el-radio-button label="收入"></el-radio-button>
-            <el-radio-button label="支出"></el-radio-button>
+          <el-radio-group v-model="formFileds.moneyState" disabled>
+            <el-radio-button :label="0">支出</el-radio-button>
+            <el-radio-button :label="1">收入</el-radio-button>
           </el-radio-group>
         </el-form-item>
 
@@ -153,7 +146,7 @@
         <el-form-item>
           <el-button
             type="primary"
-            @click="handleEdit(formFileds.id)"
+            @click="handleEdit()"
             class="pull-right margin-l-25"
             >确定</el-button
           >
@@ -376,6 +369,7 @@ export default {
       this.loading = true;
       this.$axios
         .post("/api/acbi/getAccountBill", {
+          date: this.searchForm.month,
           pageSize: this.pagination.pageSize,
           currentPage: this.pagination.currentPage
         })
@@ -412,33 +406,12 @@ export default {
       }
       this.isShowEditDialog = true;
     },
-    handleEdit(id) {
+    handleEdit() {
       this.$refs.editForm.validate(isValid => {
         if (!isValid) return;
-        // 保存编辑后的数据
-        Object.assign(this.tableData[id], this.formFileds);
-        this.isShowEditDialog = false;
-        // 考虑到可能编辑了日期-需要重新排序
-        // ***注意：手动排序传参和表格的default-sort属性格式不太一样
-        this.$refs.list.sort("date", "descending");
-
-        this.$message.success("编辑成功");
+        console.log(this.formFileds)
       });
     },
-    // rowDel(index, row, event) {
-    //   // 让当前删除按钮失焦
-    //   event.target.blur();
-
-    //   this.$confirm("确定要删除当前行吗？", "删除", {
-    //     comfirmButtonText: "确定",
-    //     cancelButtonText: "取消"
-    //   }).then(() => {
-    //     this.tableData.splice(row.id, 1);
-    //     this.$message.success("删除成功");
-    //     return false;
-    //   });
-    // },
-    // 选中当前行-当前行的复选框被勾选
     setCurRowChecked(row) {
       this.$refs.list.clearSelection();
       this.$refs.list.toggleRowSelection(row);
@@ -470,7 +443,7 @@ export default {
       this.activeName = "first";
     },
     searchClick() {
-      this.compareDialogVisible = true;
+      this.getTableData();
     },
     submitUpload() {
       if (this.activeName === "first") {

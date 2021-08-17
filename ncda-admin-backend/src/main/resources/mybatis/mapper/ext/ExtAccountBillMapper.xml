@@ -17,10 +17,15 @@
   </sql>
 
   <select id="getAccountBill" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from account_bill
-    where DEL_STATE = '1'
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM account_bill
+      <where>
+          DEL_STATE = '1'
+          <if test="date != null">
+             AND date_format(DATE, '%Y-%m-01') = date_format(#{date}, '%Y-%m-01')
+          </if>
+      </where>
   </select>
 
   <insert id="batchSaveUploadData" parameterType="java.util.List">
