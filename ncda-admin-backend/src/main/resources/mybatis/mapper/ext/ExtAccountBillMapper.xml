@@ -9,7 +9,7 @@
     <result column="TYPE" property="type" jdbcType="VARCHAR" />
     <result column="COMMENT" property="comment" jdbcType="VARCHAR" />
     <result column="DEL_STATE" property="delState" jdbcType="CHAR" />
-    <result column="ITEM_NAME" jdbcType="VARCHAR" property="itemName" />
+    <result column="ITEM_NAME" property="itemName" jdbcType="VARCHAR"/>
   </resultMap>
 
   <sql id="Base_Column_List" >
@@ -20,14 +20,26 @@
     select
     <include refid="Base_Column_List" />
     from account_bill
+    where DEL_STATE = '1'
   </select>
 
   <insert id="batchSaveUploadData" parameterType="java.util.List">
     insert into account_bill (DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME) values
       <foreach collection="acBiList" item="acBi" separator=",">
-        (#{acBi.date}, #{acBi.money},
-        #{acBi.moneyState}, #{acBi.type}, #{acBi.comment},
-        #{acBi.delState}, #{acBi.itemName})
+        (#{acBi.date},
+         #{acBi.money},
+        #{acBi.moneyState},
+         #{acBi.type},
+         #{acBi.comment},
+        '1',
+         #{acBi.itemName})
       </foreach>
   </insert>
+
+    <delete id="deleteDataByYearMonth" parameterType="java.lang.Integer">
+        DELETE FROM account_bill
+        WHERE
+            YEAR ( DATE ) = #{year}
+            AND MONTH ( DATE ) = #{month}
+    </delete>
 </mapper>

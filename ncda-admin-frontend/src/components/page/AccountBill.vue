@@ -262,8 +262,10 @@
           output-format="side-by-side"
         />
         <span slot="footer" class="dialog-footer btn-bottom">
-          <el-button size="mini">取 消</el-button>
-          <el-button type="primary" size="mini">保 存</el-button>
+          <el-button size="mini" @click="compareDataNoSave">取 消</el-button>
+          <el-button type="primary" size="mini" @click="compareDataSave"
+            >保 存</el-button
+          >
         </span>
       </div>
     </el-dialog>
@@ -333,10 +335,9 @@ export default {
         fileList: []
       },
       compareForm: {
-        oldStr:
-          "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6",
-        newStr:
-          "2021年8月\n8.1/问题1.5/改哦99/看看55\n8.2/赤鸡223/咳咳66/低昂自一哦+600/\n8.3/来了23\n8.4/改了98/扣扣954/\n8.5/单丝+6"
+        oldStr: "",
+        newStr: "",
+        newData: null
       }
     };
   },
@@ -350,7 +351,6 @@ export default {
       this.$axios
         .get("/api/acbi/getAll")
         .then(res => {
-          console.log(res.data);
           const { data } = res;
           this.tableData = data;
           this.loading = false;
@@ -566,10 +566,10 @@ export default {
             });
           } else {
             if (
-              data.data.oldData !== null &&
-              data.data.oldData !== "" &&
-              data.data.newData !== null &&
-              data.data.newData !== ""
+              data.data.oldContent !== null &&
+              data.data.oldContent !== "" &&
+              data.data.newContent !== null &&
+              data.data.newContent !== ""
             ) {
               this.$message({
                 message: `数据保存失败，${data.message}`,
@@ -577,8 +577,9 @@ export default {
                 customClass: "my-msg"
               });
               this.previewDialogVisible = false;
-              this.compareForm.oldStr = data.data.oldData;
-              this.compareForm.newStr = data.data.newData;
+              this.compareForm.oldStr = data.data.oldContent;
+              this.compareForm.newStr = data.data.newContent;
+              this.compareForm.newData = data.data.newData;
               this.compareDialogVisible = true;
             } else {
               this.$message({
@@ -597,6 +598,44 @@ export default {
             customClass: "my-msg"
           });
         });
+    },
+    compareDataNoSave() {
+      this.$confirm("将保留原始数据并删除新数据，你真的要这样做吗？", "提示", {
+        comfirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(() => {
+          this.compareDialogVisible = false;
+        })
+        .catch(() => {
+          
+        });
+    },
+    compareDataSave() {
+      this.$confirm("新数据将覆盖原始数据", "提示", {
+        comfirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(() => {
+          this.$axios
+            .post("/api/acbi/saveNewData", this.compareForm.newData)
+            .then(res => {
+              const { data } = res;
+              if(data.success) {
+                this.compareDialogVisible =false;
+                this.$message({
+                  message: '数据更新成功',
+                  type: 'success',
+                  customClass: "my-msg"
+                })
+                this.getTableData();
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(() => {});
     }
   },
   computed: {

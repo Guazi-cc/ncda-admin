@@ -3,8 +3,8 @@
 <mapper namespace="com.ncda.dao.ext.AcBilUploadRecordMapper" >
 
   <insert id="saveUploadRecordData" parameterType="com.ncda.entity.ext.ExtAccountBillUploadRecord" >
-    insert into account_bill_upload_record (DATE, FILE_CONTENT)
-    values (#{date,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR})
+    insert into account_bill_upload_record (DATE, FILE_CONTENT, DEL_STATE, UPLOAD_TIME)
+    values (#{date,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR}, '1', #{uploadTime,jdbcType=TIMESTAMP})
   </insert>
 
   <select id="selectCountByYearMonth" parameterType="java.lang.Integer" resultType="java.lang.Integer">
@@ -15,16 +15,29 @@
     WHERE
         YEAR ( DATE ) = #{year}
         AND MONTH ( DATE ) = #{month}
+        AND DEL_STATE = '1'
   </select>
 
   <select id="selectDataByYearMonth" parameterType="java.lang.Integer" resultType="com.ncda.entity.ext.ExtAccountBillUploadRecord">
     SELECT
-      ID, DATE, FILE_CONTENT fileContent
+      ID, DATE, FILE_CONTENT fileContent, UPLOAD_TIME uploadTime
     FROM
       account_bill_upload_record
     WHERE
       YEAR ( DATE ) = #{year}
       AND MONTH ( DATE ) = #{month}
+      AND DEL_STATE = '1'
   </select>
+
+  <update id="deleteOldDataByYearMonth" parameterType="java.lang.Integer">
+    update account_bill_upload_record
+    <set>
+      DEL_STATE = '0',
+    </set>
+    where
+      YEAR ( DATE ) = #{year}
+      AND MONTH ( DATE ) = #{month}
+      AND DEL_STATE = '1'
+  </update>
 
 </mapper>

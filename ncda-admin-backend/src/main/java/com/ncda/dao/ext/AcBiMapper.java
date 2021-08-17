@@ -14,4 +14,6 @@ public interface AcBiMapper {
 //    Integer saveUploadData(ExtAccountBill accountBill);
 
     Integer batchSaveUploadData(@Param("acBiList") List<ExtAccountBill> acBiList);
+
+    Integer deleteDataByYearMonth(@Param("year") int year, @Param("month") int month);
 }

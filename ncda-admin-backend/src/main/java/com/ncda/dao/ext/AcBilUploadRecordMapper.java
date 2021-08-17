@@ -15,4 +15,6 @@ public interface AcBilUploadRecordMapper {
     Integer selectCountByYearMonth(@Param("year") int year, @Param("month") int month);
 
     ExtAccountBillUploadRecord selectDataByYearMonth(@Param("year") int year, @Param("month") int month);
+
+    Integer deleteOldDataByYearMonth(@Param("year") int year, @Param("month") int month);
 }

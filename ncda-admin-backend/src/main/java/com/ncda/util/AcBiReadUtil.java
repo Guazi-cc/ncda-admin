@@ -22,6 +22,10 @@ public class AcBiReadUtil {
      */
     private static String content;
 
+    public static String getContent() {
+        return content;
+    }
+
     /**
      * 解析文件
      * @param inputStream
@@ -71,10 +75,6 @@ public class AcBiReadUtil {
      */
     private static void setContent(String text) {
         content = text;
-    }
-
-    public static String getContent() {
-        return content;
     }
 
     /**

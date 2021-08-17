@@ -41,7 +41,7 @@ public class AcBiController {
     public ResultData textUpload(@RequestBody ExtAccountBill accountBill) {
         try {
             List<ExtAccountBill> bills = acBiService.textUpload(accountBill.getText());
-            return ResultData.createSuccessResultData("成功", bills, (long) bills.size());
+            return ResultData.createSuccessResultData("文本解析成功", bills, (long) bills.size());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultData.createFailResultData(e.getMessage());
@@ -55,6 +55,11 @@ public class AcBiController {
             return resultData;
         }
         return resultData;
+    }
+
+    @PostMapping("/saveNewData")
+    public ResultData saveNewData(@RequestBody List<ExtAccountBill> accountBills) {
+        return acBiService.saveNewData(accountBills);
     }
 
     @GetMapping("/getAll")
