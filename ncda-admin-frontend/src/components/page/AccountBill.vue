@@ -48,12 +48,17 @@
             >
             </el-option> </el-select
         ></el-col>
-        <el-col :span="1">
+        <el-col :span="2">
           <el-button type="primary" size="mini" @click="searchClick"
             >搜索</el-button
           ></el-col
         >
-        <el-col :span="1" :offset="5">
+        <el-col :span="1">
+          <el-button type="primary" size="mini" @click="statistic"
+            >统计分析</el-button
+          ></el-col
+        >
+        <el-col :span="1" :offset="3">
           <el-button @click="openUploadDialog" type="primary" size="mini"
             >上传Bill</el-button
           ></el-col
@@ -308,6 +313,11 @@
         </span>
       </div>
     </el-dialog>
+
+    <!-- 统计  -->
+    <el-dialog title="数据统计" width="60%" :visible.sync="sticDialogVisible">
+      <div class="stic-box"></div>
+    </el-dialog>
   </div>
 </template>
 
@@ -370,6 +380,7 @@ export default {
       uploadDialogVisible: false,
       previewDialogVisible: false,
       compareDialogVisible: false,
+      sticDialogVisible: false,
       activeName: "first",
       uploadForm: {
         accBillText: "👉这里是可以输入内容的✨",
@@ -382,7 +393,7 @@ export default {
       },
       pickerOptions: {
         cellClassName: time => {
-          debugger
+          debugger;
           // for (let i = 0; i < this.arr.length; i++) {
           //   if (this.arr[i].time.includes(this.getLocalTime(time.getTime()))) {
           //     return `red ${this.flag == this.arr[i].fy ? "green" : ""}`;
@@ -738,6 +749,9 @@ export default {
       sums[3] = "N/A";
       sums[4] = "N/A";
       return sums;
+    },
+    statistic() {
+      this.sticDialogVisible = true;
     }
   },
   computed: {
@@ -803,20 +817,25 @@ export default {
   bottom: 2%;
   right: 2%;
 }
-.circle::after {
-  position: absolute;
-  content: "";
-  right: 2px;
-  top: 4px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background-color: red;
+.stic-box {
+  position: relative;
+  height: 500px;
+  overflow: auto;
 }
+// .circle::after {
+//   position: absolute;
+//   content: "";
+//   right: 2px;
+//   top: 4px;
+//   width: 5px;
+//   height: 5px;
+//   border-radius: 50%;
+//   background-color: red;
+// }
 
-.background span {
-  background-color: #c6cdeb;
-  border-radius: 50%;
-  color: #000;
-}
+// .background span {
+//   background-color: #c6cdeb;
+//   border-radius: 50%;
+//   color: #000;
+// }
 </style>
