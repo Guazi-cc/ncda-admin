@@ -11,6 +11,7 @@
             size="mini"
             value-format="yyyy-MM-dd"
             format="yyyy年MM月"
+            :picker-options="pickerOptions"
             style="width: 160px !important;"
           >
           </el-date-picker
@@ -24,7 +25,23 @@
             style="width: 160px !important;"
           >
             <el-option
-              v-for="item in options"
+              v-for="item in typeOptions"
+              :key="item.typeId"
+              :label="item.typeOneName"
+              :value="item.typeId"
+            >
+            </el-option> </el-select
+        ></el-col>
+        <el-col :span="2"><span class="search-label">出入：</span></el-col>
+        <el-col :span="4">
+          <el-select
+            v-model="searchForm.sumType"
+            placeholder="请选择"
+            size="mini"
+            style="width: 160px !important;"
+          >
+            <el-option
+              v-for="item in sumTypeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -36,7 +53,7 @@
             >搜索</el-button
           ></el-col
         >
-        <el-col :span="1" :offset="10">
+        <el-col :span="1" :offset="5">
           <el-button @click="openUploadDialog" type="primary" size="mini"
             >上传Bill</el-button
           ></el-col
@@ -59,7 +76,6 @@
       @select="handleCheckedAllAndCheckedNone"
       show-summary
       :summary-method="getSummaries"
-      sum-text="合计"
     >
       <!-- <el-table-column type="selection" width="45" align="center">
       </el-table-column> -->
@@ -80,7 +96,7 @@
           <span v-else class="money-state-out">-{{ scope.row.money }}</span>
         </template>
       </el-table-column>
-      <el-table-column property="type" label="类型"> </el-table-column>
+      <el-table-column property="typeOneName" label="类型"> </el-table-column>
       <el-table-column property="comment" label="备注"> </el-table-column>
       <el-table-column label="操作" width="130" align="center">
         <template slot-scope="scope">
@@ -141,7 +157,19 @@
         </el-form-item>
 
         <el-form-item label="类型" prop="type">
-          <el-input v-model="formFileds.type"></el-input>
+          <el-select
+            v-model="formFileds.type"
+            placeholder="请选择"
+            style="width: 100% !important;"
+          >
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.typeId"
+              :label="item.typeOneName"
+              :value="item.typeId"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="comment">
           <el-input v-model="formFileds.comment"></el-input>
@@ -291,6 +319,7 @@ export default {
     CodeDiff
   },
   data() {
+    let _self = this;
     return {
       screenHeight: 0, // 屏幕高度
       loading: false,
@@ -300,7 +329,7 @@ export default {
         itemName: "",
         money: 0,
         moneyState: "",
-        comment: "",
+        comment: null,
         type: null
       },
       rules: {
@@ -317,28 +346,17 @@ export default {
       tableData: [],
       previewTableData: [],
       isShowEditDialog: false,
-      options: [
+      sumTypeOptions: [
         {
-          value: "选项1",
-          label: "黄金糕"
+          value: "1",
+          label: "收入"
         },
         {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
+          value: "0",
+          label: "支出"
         }
       ],
+      typeOptions: [],
       pagination: {
         pageSize: 10,
         currentPage: 1,
@@ -346,7 +364,8 @@ export default {
       },
       searchForm: {
         month: "",
-        type: ""
+        type: "",
+        sumType: "0"
       },
       uploadDialogVisible: false,
       previewDialogVisible: false,
@@ -360,12 +379,23 @@ export default {
         oldStr: "",
         newStr: "",
         newData: null
+      },
+      pickerOptions: {
+        cellClassName: time => {
+          debugger
+          // for (let i = 0; i < this.arr.length; i++) {
+          //   if (this.arr[i].time.includes(this.getLocalTime(time.getTime()))) {
+          //     return `red ${this.flag == this.arr[i].fy ? "green" : ""}`;
+          //   }
+          // }
+        }
       }
     };
   },
   mounted() {
     this.getScreenHeight();
     this.getTableData();
+    this.getOneType();
   },
   methods: {
     getTableData() {
@@ -385,6 +415,22 @@ export default {
         .catch(err => {
           console.log(err);
           this.loading = false;
+        });
+    },
+    getOneType() {
+      this.$axios
+        .get("/api/acbi/getOneType")
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.typeOptions = data.data;
+          } else {
+            this.$message.warning("分类加载失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("分类加载失败");
         });
     },
     handleRowClick(row, event, column) {
@@ -413,11 +459,27 @@ export default {
       this.$refs.editForm.validate(isValid => {
         if (!isValid) return;
         console.log(this.formFileds);
+        this.$axios
+          .post("/api/acbi/updateAcBiData", this.formFileds)
+          .then(res => {
+            const { data } = res;
+            if (data.success) {
+              this.$message.success("数据更新成功");
+              this.getTableData();
+              this.isShowEditDialog = false;
+            } else {
+              this.$message.warning("数据更新失败");
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            this.$message.error("数据更新失败，发生了一些错误哈哈");
+          });
       });
     },
     setCurRowChecked(row) {
-      this.$refs.list.clearSelection();
-      this.$refs.list.toggleRowSelection(row);
+      this.$refs.tableRef.clearSelection();
+      this.$refs.tableRef.toggleRowSelection(row);
     },
     getScreenHeight() {
       this.screenHeight = document.documentElement.clientHeight;
@@ -649,13 +711,38 @@ export default {
     },
     getSummaries(param) {
       const { columns, data } = param;
-      const sums = [];
+      let sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          const title = this.searchForm.sumType === "0" ? "支出" : "收入";
+          sums[index] = title + "合计";
+          return;
+        }
+        const values = data
+          .filter(item => item.moneyState == this.searchForm.sumType)
+          .map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] += " 元";
+        } else {
+          sums[index] = "N/A";
+        }
+      });
+      sums[3] = "N/A";
+      sums[4] = "N/A";
       return sums;
     }
   },
   computed: {
     tableHeight() {
-      return this.screenHeight - 250 + "px";
+      return this.screenHeight - 200 + "px";
     }
   },
   updated() {
@@ -715,5 +802,21 @@ export default {
   position: absolute;
   bottom: 2%;
   right: 2%;
+}
+.circle::after {
+  position: absolute;
+  content: "";
+  right: 2px;
+  top: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.background span {
+  background-color: #c6cdeb;
+  border-radius: 50%;
+  color: #000;
 }
 </style>

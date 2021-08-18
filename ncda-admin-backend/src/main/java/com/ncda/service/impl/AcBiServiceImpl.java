@@ -1,8 +1,10 @@
 package com.ncda.service.impl;
 
 import com.ncda.dao.ext.AcBiMapper;
+import com.ncda.dao.ext.AcBiTypeMapper;
 import com.ncda.dao.ext.AcBilUploadRecordMapper;
 import com.ncda.entity.ext.ExtAccountBill;
+import com.ncda.entity.ext.ExtAccountBillType;
 import com.ncda.entity.ext.ExtAccountBillUploadRecord;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
@@ -12,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -25,15 +24,23 @@ public class AcBiServiceImpl implements AcBiService {
 
     private final AcBilUploadRecordMapper acBilUploadRecordMapper;
 
+    private final AcBiTypeMapper acBiTypeMapper;
+
     @Autowired
-    public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper) {
+    public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper, AcBiTypeMapper acBiTypeMapper) {
         this.acBiMapper = acBiMapper;
         this.acBilUploadRecordMapper = acBilUploadRecordMapper;
+        this.acBiTypeMapper = acBiTypeMapper;
     }
 
     @Override
     public List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill) {
         return acBiMapper.getAccountBill(accountBill);
+    }
+
+    @Override
+    public Integer updateAcBiData(ExtAccountBill accountBill) {
+        return acBiMapper.updateAcBiData(accountBill);
     }
 
     @Override
@@ -117,4 +124,15 @@ public class AcBiServiceImpl implements AcBiService {
         calendar.setTime(date);
         return calendar;
     }
+
+    @Override
+    public List<ExtAccountBillType> selectLevelOneType() {
+        return acBiTypeMapper.selectLevelOneType();
+    }
+
+    @Override
+    public List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId) {
+        return acBiTypeMapper.selectLevelTwoType(oneTypeId);
+    }
+
 }

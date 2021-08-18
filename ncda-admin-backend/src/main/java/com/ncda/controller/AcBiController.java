@@ -1,9 +1,9 @@
 package com.ncda.controller;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ncda.entity.ext.ExtAccountBill;
+import com.ncda.entity.ext.ExtAccountBillType;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,23 @@ public class AcBiController {
     @Autowired
     public AcBiController(AcBiService acBiService) {
         this.acBiService = acBiService;
+    }
+
+    @PostMapping("/getAccountBill")
+    public ResultData getAccountBill(@RequestBody ExtAccountBill accountBill) {
+        PageHelper.startPage(accountBill.getCurrentPage(), accountBill.getPageSize());
+        List<ExtAccountBill> bills = acBiService.getAccountBill(accountBill);
+        PageInfo<ExtAccountBill> pageInfo = new PageInfo<>(bills);
+        return ResultData.createSuccessResultData("查询成功", pageInfo, pageInfo.getTotal());
+    }
+
+    @PostMapping("/updateAcBiData")
+    public ResultData updateAcBiData(@RequestBody ExtAccountBill accountBill) {
+        Integer num = acBiService.updateAcBiData(accountBill);
+        if (num == 1) {
+            return ResultData.createSuccessResult("更新成功", num);
+        }
+        return ResultData.createFailResultData("更新失败");
     }
 
     @PostMapping("fileUpload")
@@ -65,11 +82,15 @@ public class AcBiController {
         return acBiService.saveNewData(accountBills);
     }
 
-    @PostMapping("/getAccountBill")
-    public ResultData getAccountBill(@RequestBody ExtAccountBill accountBill) {
-        PageHelper.startPage(accountBill.getCurrentPage(), accountBill.getPageSize());
-        List<ExtAccountBill> bills = acBiService.getAccountBill(accountBill);
-        PageInfo<ExtAccountBill> pageInfo = new PageInfo<>(bills);
-        return ResultData.createSuccessResultData("查询成功", pageInfo, pageInfo.getTotal());
+    @GetMapping("/getOneType")
+    public ResultData getOneType() {
+        List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelOneType();
+        return ResultData.createSuccessResultData("一级分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+    }
+
+    @GetMapping("/getTwoType")
+    public ResultData getTwoType(String oneTypeID) {
+        List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelTwoType(Integer.parseInt(oneTypeID));
+        return ResultData.createSuccessResultData("二级分类查询成功", accountBillTypes, (long) accountBillTypes.size());
     }
 }

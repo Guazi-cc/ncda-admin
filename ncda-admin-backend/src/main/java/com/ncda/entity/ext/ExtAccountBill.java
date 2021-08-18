@@ -24,6 +24,8 @@ public class ExtAccountBill extends AccountBill {
 
     private String text;    //接收字符串用的
 
+    private String typeOneName;
+
     public Integer getPageSize() {
         return pageSize;
     }
@@ -56,5 +58,13 @@ public class ExtAccountBill extends AccountBill {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getTypeOneName() {
+        return typeOneName;
+    }
+
+    public void setTypeOneName(String typeOneName) {
+        this.typeOneName = typeOneName;
     }
 }

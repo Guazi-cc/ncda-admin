@@ -6,10 +6,11 @@
     <result column="DATE" property="date" jdbcType="DATE" />
     <result column="MONEY" property="money" jdbcType="DECIMAL" />
     <result column="MONEY_STATE" property="moneyState" jdbcType="CHAR" />
-    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="INTEGER" />
     <result column="COMMENT" property="comment" jdbcType="VARCHAR" />
     <result column="DEL_STATE" property="delState" jdbcType="CHAR" />
     <result column="ITEM_NAME" property="itemName" jdbcType="VARCHAR"/>
+    <result column="TYPE_ONE_NAME" property="typeOneName" jdbcType="VARCHAR"/>
   </resultMap>
 
   <sql id="Base_Column_List" >
@@ -18,8 +19,10 @@
 
   <select id="getAccountBill" resultMap="BaseResultMap">
     SELECT
-      <include refid="Base_Column_List" />
-    FROM account_bill
+        a.ID, a.DATE, a.MONEY, a.MONEY_STATE, a.TYPE, a.COMMENT, a.DEL_STATE, a.ITEM_NAME, b.TYPE_ONE_NAME
+    FROM
+        account_bill a
+      LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
       <where>
           DEL_STATE = '1'
           <if test="date != null">
@@ -47,4 +50,36 @@
             YEAR ( DATE ) = #{year}
             AND MONTH ( DATE ) = #{month}
     </delete>
+
+    <update id="updateAcBiData" parameterType="com.ncda.entity.ext.ExtAccountBill">
+        update account_bill
+        <set>
+            <if test="date != null">
+                DATE = #{date,jdbcType=DATE},
+            </if>
+            <if test="money != null">
+                MONEY = #{money,jdbcType=DECIMAL},
+            </if>
+            <if test="moneyState != null">
+                MONEY_STATE = #{moneyState,jdbcType=CHAR},
+            </if>
+            <if test="type != null">
+                TYPE = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="comment != null">
+                COMMENT = #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="delState != null">
+                DEL_STATE = #{delState,jdbcType=CHAR},
+            </if>
+            <if test="itemName != null">
+                ITEM_NAME = #{itemName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--<select id="getAllYearAndMonth" resultType="map">-->
+        <!--SELECT YEAR(DATE) year, MONTH(DATE) month FROM account_bill GROUP BY YEAR(DATE), MONTH(DATE)-->
+    <!--</select>-->
 </mapper>

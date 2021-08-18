@@ -1,35 +1,20 @@
 package com.ncda.ncdaadminbackend;
 
+import com.ncda.service.AcBiService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @SpringBootTest
 class NcdaAdminBackendApplicationTests {
 
     @Test
     void contextLoads() {
-
-        String yearss = "2021年8月";
-        String year = null;
-        String month = null;
-        char[] yearStrArr = yearss.toCharArray();
-        for (int i = 0; i < yearss.length(); i++) {
-            if (yearss.charAt(i) == '2' && yearss.charAt(i+1) == '0') {
-                year = yearss.substring(i, i+4);
-                System.out.println(year);
-            }
-        }
-    }
-
-    @Test
-    void test2() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        Date parse = sdf.parse("2021.7.2");
-        System.out.println(parse);
 
     }
 
