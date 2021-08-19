@@ -118,7 +118,7 @@
     </el-table>
     <!--分页-->
     <el-pagination
-      :page-sizes="[10, 50, 100, 150]"
+      :page-sizes="[100, 200, 300, 500]"
       :total="pagination.total"
       :current-page.sync="pagination.currentPage"
       @current-change="handleCurrentChange"
@@ -368,7 +368,7 @@ export default {
       ],
       typeOptions: [],
       pagination: {
-        pageSize: 10,
+        pageSize: 100,
         currentPage: 1,
         total: 0
       },

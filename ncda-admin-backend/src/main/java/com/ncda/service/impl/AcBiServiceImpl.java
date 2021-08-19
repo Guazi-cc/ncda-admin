@@ -135,4 +135,8 @@ public class AcBiServiceImpl implements AcBiService {
         return acBiTypeMapper.selectLevelTwoType(oneTypeId);
     }
 
+    @Override
+    public List<ExtAccountBillUploadRecord> getAllYearAndMonth() {
+        return acBilUploadRecordMapper.getAllYearAndMonth();
+    }
 }

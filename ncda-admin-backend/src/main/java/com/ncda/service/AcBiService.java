@@ -2,6 +2,7 @@ package com.ncda.service;
 
 import com.ncda.entity.ext.ExtAccountBill;
 import com.ncda.entity.ext.ExtAccountBillType;
+import com.ncda.entity.ext.ExtAccountBillUploadRecord;
 import com.ncda.entity.result.ResultData;
 
 import java.io.InputStream;
@@ -61,4 +62,5 @@ public interface AcBiService {
      */
     List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId);
 
+    List<ExtAccountBillUploadRecord> getAllYearAndMonth();
 }

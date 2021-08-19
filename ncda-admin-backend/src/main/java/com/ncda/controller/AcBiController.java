@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ncda.entity.ext.ExtAccountBill;
 import com.ncda.entity.ext.ExtAccountBillType;
+import com.ncda.entity.ext.ExtAccountBillUploadRecord;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,5 +93,11 @@ public class AcBiController {
     public ResultData getTwoType(String oneTypeID) {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelTwoType(Integer.parseInt(oneTypeID));
         return ResultData.createSuccessResultData("二级分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+    }
+
+    @GetMapping("/getAllYearAndMonth")
+    public ResultData getAllYearAndMonth() {
+        List<ExtAccountBillUploadRecord> allYearAndMonth = acBiService.getAllYearAndMonth();
+        return ResultData.createSuccessResult("查询成功", allYearAndMonth);
     }
 }

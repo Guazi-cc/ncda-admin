@@ -40,4 +40,8 @@
       AND DEL_STATE = '1'
   </update>
 
+  <select id="getAllYearAndMonth" resultType="com.ncda.entity.ext.ExtAccountBillUploadRecord">
+    SELECT DATE FROM account_bill_upload_record WHERE DEL_STATE = 1
+  </select>
+
 </mapper>

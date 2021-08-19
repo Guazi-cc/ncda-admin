@@ -54,7 +54,7 @@ public class AcBiReadUtil {
      * @return 内容
      * @throws Exception
      */
-    public static void setContent(InputStream inputStream) throws Exception {
+    private static void setContent(InputStream inputStream) throws Exception {
         content = "";
         InputStreamReader read = new InputStreamReader(inputStream, StandardCharsets.UTF_8.name());
         BufferedReader bufferedReader = new BufferedReader(read);
@@ -162,7 +162,7 @@ public class AcBiReadUtil {
     }
 
     /**
-     * 从字符串中解析出年份
+     * 从字符串中解析出年份，但也仅限于2000~2999的年份，可以暂时坚持九百多年
      * @param yearStr 一个包含年份的字符串，如 ddddsss2018dfd
      * @return  若包含年份返回长度为4的年份，否则返回null
      */
