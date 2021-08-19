@@ -9,12 +9,39 @@
     <result column="TYPE_TWO_NAME" property="typeTwoName" jdbcType="VARCHAR" />
   </resultMap>
 
+  <resultMap id="TreeResultMap" type="com.ncda.entity.ext.ExtAccountBillType" >
+    <id column="TYPE_ID" property="typeId" jdbcType="INTEGER" />
+    <result column="TYPE_ONE_NAME" property="typeOneName" jdbcType="VARCHAR" />
+    <result column="TYPE_ONE_NAME" property="label" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="INTEGER" />
+    <result column="TYPE_TWO_NAME" property="typeTwoName" jdbcType="VARCHAR" />
+    <collection property="twoTypeList" ofType="com.ncda.entity.ext.ExtAccountBillType">
+      <result column="TYPE_ID" property="typeId" jdbcType="INTEGER" />
+      <result column="PARENT_ID" property="parentId" jdbcType="INTEGER" />
+      <result column="TYPE_TWO_NAME" property="typeTwoName" jdbcType="VARCHAR" />
+      <result column="TYPE_TWO_NAME" property="label" jdbcType="VARCHAR" />
+    </collection>
+  </resultMap>
+
   <select id="selectLevelOneType" resultMap="BaseResultMap">
-    SELECT TYPE_ID, TYPE_ONE_NAME FROM account_bill_type
+    SELECT TYPE_ID, TYPE_ONE_NAME FROM account_bill_type WHERE PARENT_ID IS NULL
   </select>
 
   <select id="selectLevelTwoType" resultMap="BaseResultMap" parameterType="com.ncda.entity.ext.ExtAccountBillType">
-    SELECT PARENT_ID, TYPE_TWO_NAME FROM account_bill_type WHERE TYPE_ID = #{0}
+    SELECT PARENT_ID, TYPE_TWO_NAME FROM account_bill_type WHERE PARENT_ID = #{0}
+  </select>
+
+  <select id="selectTypeOfTree" resultMap="TreeResultMap">
+    SELECT
+      a.TYPE_ID,
+      a.TYPE_ONE_NAME,
+      b.PARENT_ID,
+      b.TYPE_TWO_NAME
+    FROM
+      account_bill_type a
+        LEFT JOIN ( SELECT PARENT_ID, TYPE_TWO_NAME FROM account_bill_type WHERE PARENT_ID IS NOT NULL ) b ON a.TYPE_ID = b.PARENT_ID
+    WHERE
+      a.PARENT_ID IS NULL
   </select>
 
 </mapper>

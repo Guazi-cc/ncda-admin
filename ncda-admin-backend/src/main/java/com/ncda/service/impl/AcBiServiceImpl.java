@@ -9,6 +9,7 @@ import com.ncda.entity.ext.ExtAccountBillUploadRecord;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import com.ncda.util.AcBiReadUtil;
+import com.ncda.util.AcBiUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +102,7 @@ public class AcBiServiceImpl implements AcBiService {
      * @return 1 成功，0 失败
      */
     public Integer saveData(List<ExtAccountBill> accountBillList) {
-        Integer state = acBiMapper.batchSaveUploadData(accountBillList);    // 没有数据才可以保存
+        Integer state = acBiMapper.batchSaveUploadData(AcBiUtil.analysisType(accountBillList));    // 没有数据才可以保存
         if (state == accountBillList.size()) {
             ExtAccountBillUploadRecord uploadRecord = new ExtAccountBillUploadRecord();
             uploadRecord.setDate(accountBillList.get(0).getDate());
@@ -113,6 +114,8 @@ public class AcBiServiceImpl implements AcBiService {
         }
         return 0;
     }
+
+
 
     /**
      * date 转 Calendar
@@ -138,5 +141,10 @@ public class AcBiServiceImpl implements AcBiService {
     @Override
     public List<ExtAccountBillUploadRecord> getAllYearAndMonth() {
         return acBilUploadRecordMapper.getAllYearAndMonth();
+    }
+
+    @Override
+    public List<ExtAccountBillType> selectTypeOfTree() {
+        return acBiTypeMapper.selectTypeOfTree();
     }
 }

@@ -100,4 +100,10 @@ public class AcBiController {
         List<ExtAccountBillUploadRecord> allYearAndMonth = acBiService.getAllYearAndMonth();
         return ResultData.createSuccessResult("查询成功", allYearAndMonth);
     }
+
+    @GetMapping("/selectTypeOfTree")
+    public ResultData selectTypeOfTree() {
+        List<ExtAccountBillType> accountBillTypes = acBiService.selectTypeOfTree();
+        return ResultData.createSuccessResultData("树形分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+    }
 }

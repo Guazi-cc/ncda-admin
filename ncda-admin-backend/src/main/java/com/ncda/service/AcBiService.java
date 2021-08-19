@@ -62,5 +62,7 @@ public interface AcBiService {
      */
     List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId);
 
+    List<ExtAccountBillType> selectTypeOfTree();
+
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
 }

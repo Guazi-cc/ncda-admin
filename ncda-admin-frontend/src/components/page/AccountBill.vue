@@ -2,8 +2,18 @@
   <div>
     <div class="search-box">
       <el-row>
+        <el-col :span="1"><span class="search-label">名称：</span></el-col>
+        <el-col :span="3">
+          <el-input
+            v-model="searchForm.itemName"
+            placeholder="请输入内容"
+            style="width: 140px !important;"
+            size="mini"
+            clearable
+          ></el-input>
+        </el-col>
         <el-col :span="1"><span class="search-label">月份：</span></el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <el-date-picker
             v-model="searchForm.month"
             type="month"
@@ -12,17 +22,19 @@
             value-format="yyyy-MM-dd"
             format="yyyy年MM月"
             :picker-options="pickerOptions"
-            style="width: 160px !important;"
+            style="width: 140px !important;"
+            clearable
           >
           </el-date-picker
         ></el-col>
         <el-col :span="1"><span class="search-label">类型：</span></el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <el-select
             v-model="searchForm.type"
             placeholder="请选择"
             size="mini"
-            style="width: 160px !important;"
+            style="width: 140px !important;"
+            clearable
           >
             <el-option
               v-for="item in typeOptions"
@@ -31,17 +43,26 @@
               :value="item.typeId"
             >
             </el-option> </el-select
-        ></el-col>
-        <el-col :span="2"><span class="search-label">出入：</span></el-col>
-        <el-col :span="4">
+        >
+          <!-- <el-cascader
+            :options="typeData"
+            v-model="searchForm.type"
+            size="mini"
+            :props="{ label: 'label' }"
+            clearable
+          ></el-cascader> -->
+        </el-col>
+        <el-col :span="1"><span class="search-label">出/入：</span></el-col>
+        <el-col :span="3">
           <el-select
-            v-model="searchForm.sumType"
+            v-model="searchForm.moneyState"
             placeholder="请选择"
             size="mini"
-            style="width: 160px !important;"
+            style="width: 140px !important;"
+            clearable
           >
             <el-option
-              v-for="item in sumTypeOptions"
+              v-for="item in moneyStateOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -53,12 +74,17 @@
             >搜索</el-button
           ></el-col
         >
-        <el-col :span="1">
+        <el-col :span="2">
           <el-button type="primary" size="mini" @click="statistic"
             >统计分析</el-button
           ></el-col
         >
-        <el-col :span="1" :offset="3">
+        <el-col :span="1">
+          <el-button type="primary" size="mini" @click="typeManagement"
+            >分类管理</el-button
+          ></el-col
+        >
+        <el-col :span="1" :offset="1">
           <el-button @click="openUploadDialog" type="primary" size="mini"
             >上传Bill</el-button
           ></el-col
@@ -315,21 +341,40 @@
     </el-dialog>
 
     <!-- 统计  -->
-    <el-dialog title="数据统计" width="60%" :visible.sync="sticDialogVisible">
-      <div class="stic-box"></div>
+    <el-dialog
+      @open="sticDialogOpen"
+      title="数据统计"
+      width="60%"
+      :visible.sync="sticDialogVisible"
+    >
+      <div class="stic-box">
+        <div id="bar" class="chart"></div>
+      </div>
+    </el-dialog>
+
+    <!-- 分类管理 -->
+    <el-dialog title="分类管理" width="30%" :visible.sync="typeDialogVisible">
+      <div class="type-box">
+        <el-tree
+          :data="typeData"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        ></el-tree>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { CodeDiff } from "v-code-diff";
+import Util from "@/assets/js/util";
+
 export default {
   name: "Table",
   components: {
     CodeDiff
   },
   data() {
-    let _self = this;
     return {
       screenHeight: 0, // 屏幕高度
       loading: false,
@@ -356,7 +401,7 @@ export default {
       tableData: [],
       previewTableData: [],
       isShowEditDialog: false,
-      sumTypeOptions: [
+      moneyStateOptions: [
         {
           value: "1",
           label: "收入"
@@ -375,12 +420,13 @@ export default {
       searchForm: {
         month: "",
         type: "",
-        sumType: "0"
+        moneyState: ""
       },
       uploadDialogVisible: false,
       previewDialogVisible: false,
       compareDialogVisible: false,
       sticDialogVisible: false,
+      typeDialogVisible: false,
       activeName: "first",
       uploadForm: {
         accBillText: "👉这里是可以输入内容的✨",
@@ -400,6 +446,11 @@ export default {
           //   }
           // }
         }
+      },
+      typeData: [],
+      defaultProps: {
+        children: "twoTypeList",
+        label: "label"
       }
     };
   },
@@ -407,15 +458,20 @@ export default {
     this.getScreenHeight();
     this.getTableData();
     this.getOneType();
+    this.getTypeData();
+    // this.drawBar();
   },
   methods: {
     getTableData() {
       this.loading = true;
       this.$axios
         .post("/api/acbi/getAccountBill", {
+          itemName: this.searchForm.itemName,
           date: this.searchForm.month,
           pageSize: this.pagination.pageSize,
-          currentPage: this.pagination.currentPage
+          currentPage: this.pagination.currentPage,
+          type: this.searchForm.type,
+          moneyState: this.searchForm.moneyState
         })
         .then(res => {
           const { data } = res;
@@ -426,6 +482,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.loading = false;
+          this.$message.error("数据加载失败！");
         });
     },
     getOneType() {
@@ -442,6 +499,22 @@ export default {
         .catch(err => {
           console.log(err);
           this.$message.error("分类加载失败");
+        });
+    },
+    getTypeData() {
+      this.$axios
+        .get("/api/acbi/selectTypeOfTree")
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.typeData = data.data;
+          } else {
+            this.$message.warning("分类数据获取失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("分类数据获取失败!");
         });
     },
     handleRowClick(row, event, column) {
@@ -725,13 +798,14 @@ export default {
       let sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
-          const title = this.searchForm.sumType === "0" ? "支出" : "收入";
+          const title = this.searchForm.moneyState === "0" ? "支出" : "收入";
           sums[index] = title + "合计";
           return;
         }
         const values = data
-          .filter(item => item.moneyState == this.searchForm.sumType)
+          .filter(item => item.moneyState == this.searchForm.moneyState)
           .map(item => Number(item[column.property]));
+        // const values = data.map(item => Number(item[column.property]));
         if (!values.every(value => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -752,11 +826,112 @@ export default {
     },
     statistic() {
       this.sticDialogVisible = true;
+    },
+    typeManagement() {
+      this.typeDialogVisible = true;
+    },
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    sticDialogOpen() {
+      this.$nextTick(() => {
+        this.drawBar();
+      });
+    },
+    drawBar() {
+      this.$axios.get("/chart-simple/bar").then(res => {
+        const title = "商品日销量";
+        this.chartBar.setOption({
+          title: Object.assign({}, Util.defaultEchartsOpt.title, {
+            text: title
+          }),
+          tooltip: {
+            trigger: "item",
+            formatter: "{a} <br/>{b} : {c}"
+          },
+          xAxis: {
+            type: "category",
+            data: res.data.xData,
+            axisLine: {
+              lineStyle: {
+                color: "#999"
+              }
+            },
+            axisLabel: {
+              margin: 10,
+              textStyle: {
+                fontSize: 12
+              }
+            }
+          },
+          yAxis: {
+            type: "value",
+            splitLine: {
+              lineStyle: {
+                color: ["#D4DFF5"]
+              }
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#999"
+              }
+            },
+            axisLabel: {
+              margin: 10,
+              textStyle: {
+                fontSize: 12
+              }
+            }
+          },
+          series: [
+            {
+              name: title,
+              data: res.data.yData,
+              type: "bar",
+              symbol: "triangle",
+              symbolSize: 20,
+              lineStyle: {
+                normal: {
+                  color: "green",
+                  width: 4,
+                  type: "dashed"
+                }
+              },
+              barWidth: 25,
+              itemStyle: {
+                normal: {
+                  barBorderRadius: 30,
+                  color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "#00feff"
+                    },
+                    {
+                      offset: 0.5,
+                      color: "#027eff"
+                    },
+                    {
+                      offset: 1,
+                      color: "#0286ff"
+                    }
+                  ])
+                }
+              }
+            }
+          ]
+        });
+      });
     }
   },
   computed: {
     tableHeight() {
       return this.screenHeight - 200 + "px";
+    },
+    chartBar() {
+      return this.$echarts.init(Util.getDom("bar"));
     }
   },
   updated() {
@@ -822,20 +997,19 @@ export default {
   height: 500px;
   overflow: auto;
 }
-// .circle::after {
-//   position: absolute;
-//   content: "";
-//   right: 2px;
-//   top: 4px;
-//   width: 5px;
-//   height: 5px;
-//   border-radius: 50%;
-//   background-color: red;
-// }
-
-// .background span {
-//   background-color: #c6cdeb;
-//   border-radius: 50%;
-//   color: #000;
-// }
+.type-box {
+  position: relative;
+  height: 500px;
+  overflow: auto;
+}
+.chart {
+  width: 100%;
+  height: 330px;
+  .border-radius(8px);
+  background-color: @boxBgColor;
+  box-shadow: 0 0 5px transparent;
+  &:hover {
+    box-shadow: 0 0 5px @mainColor;
+  }
+}
 </style>

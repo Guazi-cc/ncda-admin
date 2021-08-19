@@ -25,8 +25,17 @@
       LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
       <where>
           DEL_STATE = '1'
+          <if test="itemName != null and itemName != ''">
+             AND a.ITEM_NAME LIKE concat('%', #{ itemName }, '%')
+          </if>
           <if test="date != null">
-             AND date_format(DATE, '%Y-%m-01') = date_format(#{date}, '%Y-%m-01')
+             AND date_format(a.DATE, '%Y-%m') = date_format(#{ date }, '%Y-%m')
+          </if>
+          <if test="type != null and type != ''">
+              AND a.TYPE = #{ type }
+          </if>
+          <if test="moneyState != null and moneyState != ''">
+              AND a.MONEY_STATE = #{ moneyState }
           </if>
       </where>
   </select>
@@ -34,21 +43,21 @@
   <insert id="batchSaveUploadData" parameterType="java.util.List">
     insert into account_bill (DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME) values
       <foreach collection="acBiList" item="acBi" separator=",">
-        (#{acBi.date},
-         #{acBi.money},
-        #{acBi.moneyState},
-         #{acBi.type},
-         #{acBi.comment},
+        (#{ acBi.date },
+         #{ acBi.money },
+         #{ acBi.moneyState },
+         #{ acBi.type },
+         #{ acBi.comment },
         '1',
-         #{acBi.itemName})
+         #{ acBi.itemName })
       </foreach>
   </insert>
 
     <delete id="deleteDataByYearMonth" parameterType="java.lang.Integer">
         DELETE FROM account_bill
         WHERE
-            YEAR ( DATE ) = #{year}
-            AND MONTH ( DATE ) = #{month}
+            YEAR ( DATE ) = #{ year }
+            AND MONTH ( DATE ) = #{ month }
     </delete>
 
     <update id="updateAcBiData" parameterType="com.ncda.entity.ext.ExtAccountBill">
@@ -79,7 +88,4 @@
         where ID = #{id,jdbcType=INTEGER}
     </update>
 
-    <!--<select id="getAllYearAndMonth" resultType="map">-->
-        <!--SELECT YEAR(DATE) year, MONTH(DATE) month FROM account_bill GROUP BY YEAR(DATE), MONTH(DATE)-->
-    <!--</select>-->
 </mapper>

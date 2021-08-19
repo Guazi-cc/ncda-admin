@@ -7,6 +7,8 @@ import '@/assets/css/common.less'
 import '@/assets/css/variable.less'
 import '@/assets/css/theme/459f75/index.css'
 // import 'element-ui/lib/theme-chalk/index.css';
+
+
 import axios from 'axios'
 import * as echarts from 'echarts';
 require('./mock')

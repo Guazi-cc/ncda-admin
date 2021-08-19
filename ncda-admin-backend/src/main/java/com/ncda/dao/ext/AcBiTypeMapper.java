@@ -11,4 +11,6 @@ public interface AcBiTypeMapper {
     List<ExtAccountBillType> selectLevelOneType();
 
     List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId);
+
+    List<ExtAccountBillType> selectTypeOfTree();
 }
