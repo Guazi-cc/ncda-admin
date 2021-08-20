@@ -86,13 +86,13 @@ public class AcBiController {
     @GetMapping("/getOneType")
     public ResultData getOneType() {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelOneType();
-        return ResultData.createSuccessResultData("一级分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+        return ResultData.createSuccessResult("一级分类查询成功", accountBillTypes);
     }
 
     @GetMapping("/getTwoType")
     public ResultData getTwoType(String oneTypeID) {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelTwoType(Integer.parseInt(oneTypeID));
-        return ResultData.createSuccessResultData("二级分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+        return ResultData.createSuccessResult("二级分类查询成功", accountBillTypes);
     }
 
     @GetMapping("/getAllYearAndMonth")
@@ -104,6 +104,12 @@ public class AcBiController {
     @GetMapping("/selectTypeOfTree")
     public ResultData selectTypeOfTree() {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectTypeOfTree();
-        return ResultData.createSuccessResultData("树形分类查询成功", accountBillTypes, (long) accountBillTypes.size());
+        return ResultData.createSuccessResult("树形分类查询成功", accountBillTypes);
+    }
+
+    @PostMapping("/selectChartData")
+    public ResultData selectChartData(@RequestBody ExtAccountBill accountBill) {
+        List<ExtAccountBill> accountBills = acBiService.selectChartData(accountBill);
+        return ResultData.createSuccessResult("图表信息查询成功", accountBills);
     }
 }

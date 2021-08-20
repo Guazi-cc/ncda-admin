@@ -8,6 +8,7 @@ public class AcBiUtil {
 
     /**
      * 分析类型
+     *
      * @param accountBillList
      * @return
      */
@@ -23,7 +24,7 @@ public class AcBiUtil {
                     || itemName.contains("电费")
                     || itemName.contains("水电费")) {
                 accountBill.setType(3);
-            }else if (itemName.contains("车") || itemName.contains("公交")) {
+            } else if (itemName.contains("车") || itemName.contains("公交")) {
                 accountBill.setType(4);
             }
         }

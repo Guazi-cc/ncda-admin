@@ -42,8 +42,8 @@
               :label="item.typeOneName"
               :value="item.typeId"
             >
-            </el-option> </el-select
-        >
+            </el-option>
+          </el-select>
           <!-- <el-cascader
             :options="typeData"
             v-model="searchForm.type"
@@ -839,8 +839,11 @@ export default {
       });
     },
     drawBar() {
-      this.$axios.get("/chart-simple/bar").then(res => {
-        const title = "商品日销量";
+      this.$axios.post("/api/acbi/selectChartData", {}).then(res => {
+        const { data } = res;
+        const xData = data.data.map(({ date }) => date.substring(0, 7));
+        const yData = data.data.map(({ money }) => money);
+        const title = "数据のdiao";
         this.chartBar.setOption({
           title: Object.assign({}, Util.defaultEchartsOpt.title, {
             text: title
@@ -851,7 +854,7 @@ export default {
           },
           xAxis: {
             type: "category",
-            data: res.data.xData,
+            data: xData,
             axisLine: {
               lineStyle: {
                 color: "#999"
@@ -889,7 +892,7 @@ export default {
           series: [
             {
               name: title,
-              data: res.data.yData,
+              data: yData,
               type: "bar",
               symbol: "triangle",
               symbolSize: 20,
@@ -903,21 +906,21 @@ export default {
               barWidth: 25,
               itemStyle: {
                 normal: {
-                  barBorderRadius: 30,
-                  color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {
-                      offset: 0,
-                      color: "#00feff"
-                    },
-                    {
-                      offset: 0.5,
-                      color: "#027eff"
-                    },
-                    {
-                      offset: 1,
-                      color: "#0286ff"
-                    }
-                  ])
+                  // barBorderRadius: 30,
+                  // color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  //   {
+                  //     offset: 0,
+                  //     color: "#00feff"
+                  //   },
+                  //   {
+                  //     offset: 0.5,
+                  //     color: "#027eff"
+                  //   },
+                  //   {
+                  //     offset: 1,
+                  //     color: "#0286ff"
+                  //   }
+                  // ])
                 }
               }
             }

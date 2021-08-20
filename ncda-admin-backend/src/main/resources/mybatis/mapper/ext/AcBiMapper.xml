@@ -13,6 +13,11 @@
     <result column="TYPE_ONE_NAME" property="typeOneName" jdbcType="VARCHAR"/>
   </resultMap>
 
+    <resultMap id="ChartResultMap" type="com.ncda.entity.ext.ExtAccountBill" >
+        <result column="fdate" property="date" jdbcType="DATE" />
+        <result column="MONEY" property="money" jdbcType="DECIMAL" />
+    </resultMap>
+
   <sql id="Base_Column_List" >
     ID, DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME
   </sql>
@@ -87,5 +92,17 @@
         </set>
         where ID = #{id,jdbcType=INTEGER}
     </update>
+
+    <select id="selectChartData" parameterType="com.ncda.entity.ext.ExtAccountBill" resultMap="ChartResultMap">
+        SELECT
+            DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
+            SUM( MONEY ) money
+        FROM
+            account_bill
+        WHERE
+            MONEY_STATE = 0
+        GROUP BY
+            fdate
+    </select>
 
 </mapper>

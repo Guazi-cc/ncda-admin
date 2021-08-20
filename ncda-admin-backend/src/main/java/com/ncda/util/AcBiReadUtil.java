@@ -182,7 +182,7 @@ public class AcBiReadUtil {
     /**
      * 判断字符串是否由数字组成
      * @param strNum 字符串
-     * @return boolean
+     * @return boolean 是数字 true， 不是数字 false
      */
     private static boolean strIsDigit(String strNum) {
         Pattern pattern = Pattern.compile("[0-9]{1,}");
@@ -202,12 +202,12 @@ public class AcBiReadUtil {
         StringBuilder sb = new StringBuilder();
         sb.append(year).append(".");
         if (!monDay.contains(".")) {
-            throw new Exception("第" + lineNum + "行 [" + monDay + "] 日期格式错误！");
+            throw new Exception("第" + lineNum + "行 " + monDay + " 日期格式错误！");
         }
         String[] split = monDay.split("\\.");       // 用.分割记得加转义符号，困扰了我好几个小时的问题
         for (String s : split) {
-            if (s.length() > 2) {
-                throw new Exception("第" + lineNum + "行 [" + monDay + "] 日期格式错误！");
+            if (s.length() > 2 || !strIsDigit(s)) {
+                throw new Exception("第" + lineNum + "行 " + monDay + " 日期格式错误！");
             }
             s = s.trim();
             String formatStr = s.length() == 1 ? "0" + s : s;

@@ -65,4 +65,7 @@ public interface AcBiService {
     List<ExtAccountBillType> selectTypeOfTree();
 
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
+
+    List<ExtAccountBill> selectChartData(ExtAccountBill accountBill);
+
 }

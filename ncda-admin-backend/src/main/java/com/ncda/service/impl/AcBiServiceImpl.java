@@ -147,4 +147,9 @@ public class AcBiServiceImpl implements AcBiService {
     public List<ExtAccountBillType> selectTypeOfTree() {
         return acBiTypeMapper.selectTypeOfTree();
     }
+
+    @Override
+    public List<ExtAccountBill> selectChartData(ExtAccountBill accountBill) {
+        return acBiMapper.selectChartData(accountBill);
+    }
 }
