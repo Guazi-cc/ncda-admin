@@ -85,7 +85,7 @@ public class AcBiServiceImpl implements AcBiService {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
         Integer count = acBiMapper.deleteDataByYearMonth(year, month);  // 删除旧数据（真删除）
-        if (count == accountBillList.size()) {
+        if (count > 0) {
             acBilUploadRecordMapper.deleteOldDataByYearMonth(year, month);  // 删除上传记录（逻辑删除）
             Integer num = saveData(accountBillList);
             if (num == 1) {
@@ -148,8 +148,14 @@ public class AcBiServiceImpl implements AcBiService {
         return acBiTypeMapper.selectTypeOfTree();
     }
 
+
     @Override
-    public List<ExtAccountBill> selectChartData(ExtAccountBill accountBill) {
-        return acBiMapper.selectChartData(accountBill);
+    public List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill) {
+        return acBiMapper.selectBarChartData(accountBill);
+    }
+
+    @Override
+    public List<ExtAccountBill> selectCalendarHeatmapChartData() {
+        return acBiMapper.selectCalendarHeatmapChartData();
     }
 }

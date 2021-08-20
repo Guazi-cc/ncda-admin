@@ -44,13 +44,6 @@
             >
             </el-option>
           </el-select>
-          <!-- <el-cascader
-            :options="typeData"
-            v-model="searchForm.type"
-            size="mini"
-            :props="{ label: 'label' }"
-            clearable
-          ></el-cascader> -->
         </el-col>
         <el-col :span="1"><span class="search-label">出/入：</span></el-col>
         <el-col :span="3">
@@ -228,7 +221,7 @@
       @open="uploadDialogOpen"
     >
       <div style="height: 400px">
-        <el-tabs v-model="activeName" @tab-click="tabHandleClick">
+        <el-tabs v-model="activeName">
           <el-tab-pane label="文本输入" name="first">
             <div class="upload-box">
               <el-input
@@ -264,6 +257,9 @@
                 </div>
               </el-upload>
             </div>
+          </el-tab-pane>
+          <el-tab-pane label="上传记录" name="third">
+            <div class="upload-box"></div>
           </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
@@ -348,7 +344,18 @@
       :visible.sync="sticDialogVisible"
     >
       <div class="stic-box">
-        <div id="bar" class="chart"></div>
+        <el-tabs v-model="sticActiveName" @tab-click="handleClick">
+          <el-tab-pane label="热力图" name="first">
+            <div id="calendarHeatmap" class="chart"></div>
+          </el-tab-pane>
+          <el-tab-pane label="柱状图" name="second"
+            ><div id="bar" class="chart"></div
+          ></el-tab-pane>
+          <el-tab-pane label="雷达图" name="third"
+            ><div id="radarChart" class="chart"></div
+          ></el-tab-pane>
+          <el-tab-pane label="giao" name="fourth">雷达图</el-tab-pane>
+        </el-tabs>
       </div>
     </el-dialog>
 
@@ -427,7 +434,8 @@ export default {
       compareDialogVisible: false,
       sticDialogVisible: false,
       typeDialogVisible: false,
-      activeName: "first",
+      activeName: "first", // 上传弹窗的 tab
+      sticActiveName: "first", // 统计图表弹窗的tab
       uploadForm: {
         accBillText: "👉这里是可以输入内容的✨",
         fileList: []
@@ -579,7 +587,6 @@ export default {
     uploadDialogClosd() {
       this.uploadDialogVisible = false;
     },
-    tabHandleClick() {},
     accBillTextSelect() {
       if (this.uploadForm.accBillText.substring(0, 1) === "\ud83d") {
         this.uploadForm.accBillText = "";
@@ -777,10 +784,21 @@ export default {
                   customClass: "my-msg"
                 });
                 this.getTableData();
+              } else {
+                this.$message({
+                  message: "数据更新失败",
+                  type: "warning",
+                  customClass: "my-msg"
+                });
               }
             })
             .catch(err => {
               console.log(err);
+              this.$message({
+                message: "数据更新失败",
+                type: "error",
+                customClass: "my-msg"
+              });
             });
         })
         .catch(() => {});
@@ -838,8 +856,21 @@ export default {
         this.drawBar();
       });
     },
+    handleClick({ paneName }) {
+      if (paneName === "first") {
+        this.$nextTick(() => {
+          this.drawBar();
+        });
+      } else if (paneName === "second") {
+        this.$nextTick(() => {
+          this.drawCalendarHeatmap();
+        });
+      } else if (paneName === "third") {
+      } else {
+      }
+    },
     drawBar() {
-      this.$axios.post("/api/acbi/selectChartData", {}).then(res => {
+      this.$axios.post("/api/acbi/selectBarChartData", {}).then(res => {
         const { data } = res;
         const xData = data.data.map(({ date }) => date.substring(0, 7));
         const yData = data.data.map(({ money }) => money);
@@ -927,6 +958,68 @@ export default {
           ]
         });
       });
+    },
+    drawCalendarHeatmap() {
+      this.$axios
+        .get("/api/acbi/selectCalendarHeatmapChartData")
+        .then(res => {
+          const { data } = res;
+          const cdata = data.data.map(({ date, money }) => [date, money]);
+          this.chartCalendarHeatmap.setOption({
+            title: {
+              top: 30,
+              left: "center",
+              text: "aaaaaaa"
+            },
+            tooltip: {},
+            visualMap: {
+              min: 0,
+              max: 200,
+              type: "piecewise",
+              orient: "horizontal",
+              left: "center",
+              top: 65,
+              splitNumber: 8,
+              inRange: {
+                color: [
+                  "#313695",
+                  "#4575b4",
+                  "#74add1",
+                  "#abd9e9",
+                  "#e0f3f8",
+                  "#ffffbf",
+                  "#fee090",
+                  "#fdae61",
+                  "#f46d43",
+                  "#d73027",
+                  "#a50026"
+                ]
+              }
+            },
+            calendar: {
+              top: 120,
+              left: 30,
+              right: 30,
+              cellSize: ["auto", 13],
+              range: new Date().getFullYear(),
+              itemStyle: {
+                borderWidth: 0.5
+              },
+              yearLabel: { show: true }
+            },
+            series: {
+              type: "heatmap",
+              coordinateSystem: "calendar",
+              data: cdata
+            }
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    drawRadarChart() {
+
     }
   },
   computed: {
@@ -935,6 +1028,12 @@ export default {
     },
     chartBar() {
       return this.$echarts.init(Util.getDom("bar"));
+    },
+    chartCalendarHeatmap() {
+      return this.$echarts.init(Util.getDom("calendarHeatmap"));
+    },
+    chrtRadar() {
+      return this.$echarts.init(Util.getDom("radarChart"))
     }
   },
   updated() {

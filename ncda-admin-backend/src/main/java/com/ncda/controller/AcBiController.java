@@ -107,9 +107,15 @@ public class AcBiController {
         return ResultData.createSuccessResult("树形分类查询成功", accountBillTypes);
     }
 
-    @PostMapping("/selectChartData")
-    public ResultData selectChartData(@RequestBody ExtAccountBill accountBill) {
-        List<ExtAccountBill> accountBills = acBiService.selectChartData(accountBill);
-        return ResultData.createSuccessResult("图表信息查询成功", accountBills);
+    @PostMapping("/selectBarChartData")
+    public ResultData selectBarChartData(@RequestBody ExtAccountBill accountBill) {
+        List<ExtAccountBill> accountBills = acBiService.selectBarChartData(accountBill);
+        return ResultData.createSuccessResult("柱状图信息查询成功", accountBills);
+    }
+
+    @GetMapping("/selectCalendarHeatmapChartData")
+    public ResultData selectCalendarHeatmapChartData() {
+        List<ExtAccountBill> accountBills = acBiService.selectCalendarHeatmapChartData();
+        return ResultData.createSuccessResult("日历热力图信息查询成功", accountBills);
     }
 }

@@ -15,6 +15,7 @@
 
     <resultMap id="ChartResultMap" type="com.ncda.entity.ext.ExtAccountBill" >
         <result column="fdate" property="date" jdbcType="DATE" />
+        <result column="DATE" property="date" jdbcType="DATE" />
         <result column="MONEY" property="money" jdbcType="DECIMAL" />
     </resultMap>
 
@@ -93,7 +94,7 @@
         where ID = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="selectChartData" parameterType="com.ncda.entity.ext.ExtAccountBill" resultMap="ChartResultMap">
+    <select id="selectBarChartData" parameterType="com.ncda.entity.ext.ExtAccountBill" resultMap="ChartResultMap">
         SELECT
             DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
             SUM( MONEY ) money
@@ -103,6 +104,18 @@
             MONEY_STATE = 0
         GROUP BY
             fdate
+    </select>
+
+    <select  id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
+        SELECT
+            DATE,
+            SUM( MONEY ) MONEY
+        FROM
+            account_bill
+        WHERE
+            MONEY_STATE = 0
+        GROUP BY
+            DATE
     </select>
 
 </mapper>

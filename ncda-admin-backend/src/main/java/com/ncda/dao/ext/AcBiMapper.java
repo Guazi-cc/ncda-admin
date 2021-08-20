@@ -43,5 +43,7 @@ public interface AcBiMapper {
      * @param accountBill 查询条件
      * @return 图表数据
      */
-    List<ExtAccountBill> selectChartData(ExtAccountBill accountBill);
+    List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
+
+    List<ExtAccountBill> selectCalendarHeatmapChartData();
 }

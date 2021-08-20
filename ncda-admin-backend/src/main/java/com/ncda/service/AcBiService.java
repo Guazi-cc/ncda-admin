@@ -66,6 +66,8 @@ public interface AcBiService {
 
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
 
-    List<ExtAccountBill> selectChartData(ExtAccountBill accountBill);
+    List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
+
+    List<ExtAccountBill> selectCalendarHeatmapChartData();
 
 }
