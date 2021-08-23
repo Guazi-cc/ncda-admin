@@ -45,5 +45,5 @@ public interface AcBiMapper {
      */
     List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData();
+    List<ExtAccountBill> selectCalendarHeatmapChartData(@Param("year") String year);
 }

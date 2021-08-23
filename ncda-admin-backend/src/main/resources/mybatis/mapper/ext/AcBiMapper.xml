@@ -112,8 +112,12 @@
             SUM( MONEY ) MONEY
         FROM
             account_bill
-        WHERE
+        <where>
             MONEY_STATE = 0
+            <if test="year != null and year != ''">
+                AND YEAR(DATE) = #{ year }
+            </if>
+        </where>
         GROUP BY
             DATE
     </select>

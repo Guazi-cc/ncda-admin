@@ -460,7 +460,7 @@ export default {
       },
       pickerOptions: {
         cellClassName: time => {
-          debugger;
+          // debugger;
           // for (let i = 0; i < this.arr.length; i++) {
           //   if (this.arr[i].time.includes(this.getLocalTime(time.getTime()))) {
           //     return `red ${this.flag == this.arr[i].fy ? "green" : ""}`;
@@ -472,7 +472,8 @@ export default {
       defaultProps: {
         children: "twoTypeList",
         label: "label"
-      }
+      },
+      currentYear: new Date().getFullYear()
     };
   },
   mounted() {
@@ -481,7 +482,7 @@ export default {
     this.getOneType();
     this.getTypeData();
     // this.drawBar();
-    this.initChart();
+    this.loadChart();
   },
   methods: {
     getTableData() {
@@ -614,6 +615,10 @@ export default {
     },
     searchClick() {
       this.getTableData();
+      if (this.searchForm.month != null && this.searchForm.month != "") {
+        this.currentYear = this.searchForm.month.substring(0, 4);
+      }
+      this.loadChart();
     },
     submitUpload() {
       if (this.activeName === "first") {
@@ -870,7 +875,7 @@ export default {
         this.drawBar();
       });
     },
-    initChart() {
+    loadChart() {
       this.$nextTick(() => {
         this.drawCalendarHeatmap();
       });
@@ -977,16 +982,20 @@ export default {
     },
     drawCalendarHeatmap() {
       this.$axios
-        .get("/api/acbi/selectCalendarHeatmapChartData")
+        .get("/api/acbi/selectCalendarHeatmapChartData", {
+          params: {
+            year: this.searchForm.month.substring(0, 4)
+          }
+        })
         .then(res => {
           const { data } = res;
           const cdata = data.data.map(({ date, money }) => [date, money]);
           this.chartCalendarHeatmap.setOption({
-            title: {
-              top: 5,
-              left: "center",
-              text: "aaaaaaa"
-            },
+            // title: {
+            //   top: 5,
+            //   left: "center",
+            //   text: "aaaaaaa"
+            // },
             tooltip: {},
             visualMap: {
               min: 0,
@@ -1015,15 +1024,15 @@ export default {
               // }
             },
             calendar: {
-              top: 90,
+              top: 60,
               left: 30,
               right: 30,
               bottom: 40,
               cellSize: ["auto", 5],
-              range: new Date().getFullYear(),
-              itemStyle: {
-                borderWidth: 0.5
-              },
+              range: this.currentYear,
+              // itemStyle: {
+              //   borderWidth: 0.5
+              // },
               yearLabel: { show: true },
               orient: "vertical"
             },

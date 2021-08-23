@@ -114,8 +114,8 @@ public class AcBiController {
     }
 
     @GetMapping("/selectCalendarHeatmapChartData")
-    public ResultData selectCalendarHeatmapChartData() {
-        List<ExtAccountBill> accountBills = acBiService.selectCalendarHeatmapChartData();
+    public ResultData selectCalendarHeatmapChartData(String year) {
+        List<ExtAccountBill> accountBills = acBiService.selectCalendarHeatmapChartData(year);
         return ResultData.createSuccessResult("日历热力图信息查询成功", accountBills);
     }
 }

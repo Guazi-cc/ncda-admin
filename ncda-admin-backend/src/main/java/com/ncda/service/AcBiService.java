@@ -68,6 +68,6 @@ public interface AcBiService {
 
     List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData();
+    List<ExtAccountBill> selectCalendarHeatmapChartData(String year);
 
 }
