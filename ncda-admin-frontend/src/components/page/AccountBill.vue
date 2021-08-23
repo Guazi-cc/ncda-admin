@@ -21,7 +21,6 @@
             size="mini"
             value-format="yyyy-MM-dd"
             format="yyyy年MM月"
-            :picker-options="pickerOptions"
             style="width: 140px !important;"
             clearable
           >
@@ -458,16 +457,6 @@ export default {
         newStr: "",
         newData: null
       },
-      pickerOptions: {
-        cellClassName: time => {
-          // debugger;
-          // for (let i = 0; i < this.arr.length; i++) {
-          //   if (this.arr[i].time.includes(this.getLocalTime(time.getTime()))) {
-          //     return `red ${this.flag == this.arr[i].fy ? "green" : ""}`;
-          //   }
-          // }
-        }
-      },
       typeData: [],
       defaultProps: {
         children: "twoTypeList",
@@ -735,6 +724,7 @@ export default {
           if (data.success) {
             this.previewDialogVisible = false;
             this.getTableData();
+            this.loadChart();
             this.$message({
               message: "数据保存成功！",
               type: "success",
@@ -803,6 +793,7 @@ export default {
                   customClass: "my-msg"
                 });
                 this.getTableData();
+                this.loadChart();
               } else {
                 this.$message({
                   message: "数据更新失败",
