@@ -84,67 +84,80 @@
         >
       </el-row>
     </div>
-    <!--表格内容-->
-    <el-table
-      ref="tableRef"
-      v-loading="loading"
-      :data="tableData"
-      style="width: 100%"
-      border
-      stripe
-      highlight-current-row
-      :height="tableHeight"
-      :default-sort="{ prop: 'date', order: 'descending' }"
-      @row-click="handleRowClick"
-      @select-all="handleCheckedAllAndCheckedNone"
-      @select="handleCheckedAllAndCheckedNone"
-      show-summary
-      :summary-method="getSummaries"
-    >
-      <!-- <el-table-column type="selection" width="45" align="center">
+    <el-row :gutter="10">
+      <el-col :span="20">
+        <!--表格内容-->
+        <el-table
+          ref="tableRef"
+          v-loading="loading"
+          :data="tableData"
+          style="width: 120%"
+          border
+          stripe
+          highlight-current-row
+          :height="tableHeight"
+          :default-sort="{ prop: 'date', order: 'descending' }"
+          @row-click="handleRowClick"
+          @select-all="handleCheckedAllAndCheckedNone"
+          @select="handleCheckedAllAndCheckedNone"
+          show-summary
+          :summary-method="getSummaries"
+        >
+          <!-- <el-table-column type="selection" width="45" align="center">
       </el-table-column> -->
-      <!-- <el-table-column type="index" label="序号" width="50"> </el-table-column> -->
-      <el-table-column property="date" label="日期" width="180" sortable>
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 5px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column property="itemName" label="名称" width="180">
-      </el-table-column>
-      <el-table-column property="money" label="金额">
-        <template slot-scope="scope">
-          <span v-if="scope.row.moneyState == 1" class="money-state-in"
-            >+{{ scope.row.money }}</span
-          >
-          <span v-else class="money-state-out">-{{ scope.row.money }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column property="typeOneName" label="类型"> </el-table-column>
-      <el-table-column property="comment" label="备注"> </el-table-column>
-      <el-table-column label="操作" width="130" align="center">
-        <template slot-scope="scope">
-          <el-button
-            circle
-            icon="el-icon-edit-outline"
-            type="primary"
-            title="编辑"
-            size="small"
-            @click="rowEdit(scope.$index, scope.row)"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--分页-->
-    <el-pagination
-      :page-sizes="[100, 200, 300, 500]"
-      :total="pagination.total"
-      :current-page.sync="pagination.currentPage"
-      @current-change="handleCurrentChange"
-      @size-change="handleSizeChange"
-      layout="total, sizes, prev, pager, next, jumper"
-    >
-    </el-pagination>
+          <!-- <el-table-column type="index" label="序号" width="50"> </el-table-column> -->
+          <el-table-column property="date" label="日期" width="180" sortable>
+            <template slot-scope="scope">
+              <i class="el-icon-time"></i>
+              <span style="margin-left: 5px">{{ scope.row.date }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column property="itemName" label="名称" width="180">
+          </el-table-column>
+          <el-table-column property="money" label="金额">
+            <template slot-scope="scope">
+              <span v-if="scope.row.moneyState == 1" class="money-state-in"
+                >+{{ scope.row.money }}</span
+              >
+              <span v-else class="money-state-out">-{{ scope.row.money }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column property="typeOneName" label="类型">
+          </el-table-column>
+          <el-table-column property="comment" label="备注"> </el-table-column>
+          <el-table-column label="操作" width="130" align="center">
+            <template slot-scope="scope">
+              <el-button
+                circle
+                icon="el-icon-edit-outline"
+                type="primary"
+                title="编辑"
+                size="small"
+                @click="rowEdit(scope.$index, scope.row)"
+              ></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+          :page-sizes="[100, 200, 300, 500]"
+          :total="pagination.total"
+          :current-page.sync="pagination.currentPage"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          layout="total, sizes, prev, pager, next, jumper"
+        >
+        </el-pagination>
+      </el-col>
+      <el-col :span="4">
+        <div
+          id="calendarHeatmap"
+          class="chart"
+          :style="{ height: rightChartHeigh }"
+        ></div>
+      </el-col>
+    </el-row>
+
     <!--编辑-弹出层-->
     <el-dialog
       title="编辑"
@@ -345,15 +358,15 @@
     >
       <div class="stic-box">
         <el-tabs v-model="sticActiveName" @tab-click="handleClick">
-          <el-tab-pane label="热力图" name="first">
-            <div id="calendarHeatmap" class="chart"></div>
+          <el-tab-pane label="柱状图" name="first">
+            <div id="bar" class="chart"></div>
           </el-tab-pane>
-          <el-tab-pane label="柱状图" name="second"
-            ><div id="bar" class="chart"></div
-          ></el-tab-pane>
-          <el-tab-pane label="雷达图" name="third"
-            ><div id="radarChart" class="chart"></div
-          ></el-tab-pane>
+          <el-tab-pane label="热力图" name="second">
+            <!-- <div id="calendarHeatmap" class="chart"></div> -->
+          </el-tab-pane>
+          <el-tab-pane label="雷达图" name="third">
+            <div id="radarChart" class="chart"></div>
+          </el-tab-pane>
           <el-tab-pane label="giao" name="fourth">雷达图</el-tab-pane>
         </el-tabs>
       </div>
@@ -468,6 +481,7 @@ export default {
     this.getOneType();
     this.getTypeData();
     // this.drawBar();
+    this.initChart();
   },
   methods: {
     getTableData() {
@@ -856,15 +870,17 @@ export default {
         this.drawBar();
       });
     },
+    initChart() {
+      this.$nextTick(() => {
+        this.drawCalendarHeatmap();
+      });
+    },
     handleClick({ paneName }) {
       if (paneName === "first") {
         this.$nextTick(() => {
           this.drawBar();
         });
       } else if (paneName === "second") {
-        this.$nextTick(() => {
-          this.drawCalendarHeatmap();
-        });
       } else if (paneName === "third") {
       } else {
       }
@@ -967,7 +983,7 @@ export default {
           const cdata = data.data.map(({ date, money }) => [date, money]);
           this.chartCalendarHeatmap.setOption({
             title: {
-              top: 30,
+              top: 5,
               left: "center",
               text: "aaaaaaa"
             },
@@ -975,37 +991,41 @@ export default {
             visualMap: {
               min: 0,
               max: 200,
-              type: "piecewise",
+              // type: "piecewise",
+              calculable: true,
               orient: "horizontal",
               left: "center",
-              top: 65,
-              splitNumber: 8,
-              inRange: {
-                color: [
-                  "#313695",
-                  "#4575b4",
-                  "#74add1",
-                  "#abd9e9",
-                  "#e0f3f8",
-                  "#ffffbf",
-                  "#fee090",
-                  "#fdae61",
-                  "#f46d43",
-                  "#d73027",
-                  "#a50026"
-                ]
-              }
+              top: "bottom",
+              itemWidth: 10
+              // splitNumber: 8,
+              // inRange: {
+              //   color: [
+              //     "#313695",
+              //     "#4575b4",
+              //     "#74add1",
+              //     "#abd9e9",
+              //     "#e0f3f8",
+              //     "#ffffbf",
+              //     "#fee090",
+              //     "#fdae61",
+              //     "#f46d43",
+              //     "#d73027",
+              //     "#a50026"
+              //   ]
+              // }
             },
             calendar: {
-              top: 120,
+              top: 90,
               left: 30,
               right: 30,
-              cellSize: ["auto", 13],
+              bottom: 40,
+              cellSize: ["auto", 5],
               range: new Date().getFullYear(),
               itemStyle: {
                 borderWidth: 0.5
               },
-              yearLabel: { show: true }
+              yearLabel: { show: true },
+              orient: "vertical"
             },
             series: {
               type: "heatmap",
@@ -1018,13 +1038,14 @@ export default {
           console.log(err);
         });
     },
-    drawRadarChart() {
-
-    }
+    drawRadarChart() {}
   },
   computed: {
     tableHeight() {
-      return this.screenHeight - 200 + "px";
+      return this.screenHeight - 210 + "px";
+    },
+    rightChartHeigh() {
+      return this.screenHeight - 180 + "px";
     },
     chartBar() {
       return this.$echarts.init(Util.getDom("bar"));
@@ -1033,7 +1054,7 @@ export default {
       return this.$echarts.init(Util.getDom("calendarHeatmap"));
     },
     chrtRadar() {
-      return this.$echarts.init(Util.getDom("radarChart"))
+      return this.$echarts.init(Util.getDom("radarChart"));
     }
   },
   updated() {
@@ -1068,11 +1089,11 @@ export default {
   color: #606266;
 }
 .money-state-out {
-  font-size: 12px;
+  font-size: 14px;
   color: #67c23a;
 }
 .money-state-in {
-  font-size: 12px;
+  font-size: 14px;
   color: #f56c6c;
 }
 .my-msg {
@@ -1108,10 +1129,15 @@ export default {
   width: 100%;
   height: 330px;
   .border-radius(8px);
-  background-color: @boxBgColor;
+  background-color: #fff;
   box-shadow: 0 0 5px transparent;
   &:hover {
     box-shadow: 0 0 5px @mainColor;
   }
+}
+</style>
+<style>
+.main {
+  padding-bottom: 0px !important;
 }
 </style>
