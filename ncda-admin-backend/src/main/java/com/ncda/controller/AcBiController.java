@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/acbi")
@@ -119,5 +117,19 @@ public class AcBiController {
     public ResultData selectCalendarHeatmapChartData(@RequestBody ExtAccountBill accountBill) {
         List<ExtAccountBill> accountBills = acBiService.selectCalendarHeatmapChartData(accountBill);
         return ResultData.createSuccessResult("日历热力图信息查询成功", accountBills);
+    }
+
+    @PostMapping("/saveAdvancedSetting")
+    public ResultData saveAdvancedSetting(@RequestBody ExtAccountBill accountBill) {
+        if (acBiService.saveAdvancedSetting(accountBill)) {
+            return ResultData.createSuccessResult("高级设置保存成功", true);
+        }
+        return ResultData.createFailResultData("高级设置保存失败");
+    }
+
+    @GetMapping("/getAdvancedSetting")
+    public ResultData getAdvancedSetting() {
+        ExtAccountBill advancedSetting = acBiService.getAdvancedSetting();
+        return ResultData.createSuccessResult("高级设置获取成功", advancedSetting);
     }
 }

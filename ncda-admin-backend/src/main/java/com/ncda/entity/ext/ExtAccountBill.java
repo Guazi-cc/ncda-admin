@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ncda.entity.AccountBill;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Date;
  * @description: 账单
  * @date 2021/8/13 9:18
  */
-public class ExtAccountBill extends AccountBill {
+public class ExtAccountBill extends AccountBill implements Serializable {
 
     //分页
     private Integer pageSize;
@@ -26,13 +27,15 @@ public class ExtAccountBill extends AccountBill {
 
     private String typeOneName;
 
-    private Double moneyMax;
+    private Double heatmapMax;      // 高级设置热力图最大值
 
-    private Double moneyMin;
+    private Double moneyMax;       // 高级设置最大值
 
-    private String filterKeyword;
+    private Double moneyMin;        // 高级设置最小值
 
-    private String year;
+    private String filterKeyword;   // 高级设置过滤关键词
+
+    private String year;        // 日历热力图查询，年份
 
     public Integer getPageSize() {
         return pageSize;
@@ -106,5 +109,13 @@ public class ExtAccountBill extends AccountBill {
 
     public void setYear(String year) {
         this.year = year;
+    }
+
+    public Double getHeatmapMax() {
+        return heatmapMax;
+    }
+
+    public void setHeatmapMax(Double heatmapMax) {
+        this.heatmapMax = heatmapMax;
     }
 }

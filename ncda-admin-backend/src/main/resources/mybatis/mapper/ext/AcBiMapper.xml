@@ -49,6 +49,9 @@
           <if test="moneyMin != null and moneyMin != 0">
               AND a.MONEY &gt;= #{ moneyMin }
           </if>
+          <if test="filterKeyword !=null and filterKeyword != ''">
+              AND a.ITEM_NAME NOT REGEXP #{ filterKeyword }
+          </if>
       </where>
   </select>
 
@@ -138,6 +141,9 @@
                   </if>
                   <if test="moneyMin != null and moneyMin != 0">
                       AND MONEY &gt;= #{ moneyMin }
+                  </if>
+                  <if test="filterKeyword !=null and filterKeyword != ''">
+                      AND ITEM_NAME NOT REGEXP #{ filterKeyword }
                   </if>
               </where>
             ) a

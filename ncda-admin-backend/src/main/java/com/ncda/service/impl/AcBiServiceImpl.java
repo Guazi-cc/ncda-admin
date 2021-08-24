@@ -10,6 +10,7 @@ import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import com.ncda.util.AcBiReadUtil;
 import com.ncda.util.AcBiUtil;
+import com.ncda.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +28,21 @@ public class AcBiServiceImpl implements AcBiService {
 
     private final AcBiTypeMapper acBiTypeMapper;
 
+    private final RedisUtil redisUtil;
+
     @Autowired
-    public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper, AcBiTypeMapper acBiTypeMapper) {
+    public AcBiServiceImpl(AcBiMapper acBiMapper, AcBilUploadRecordMapper acBilUploadRecordMapper, AcBiTypeMapper acBiTypeMapper, RedisUtil redisUtil) {
         this.acBiMapper = acBiMapper;
         this.acBilUploadRecordMapper = acBilUploadRecordMapper;
         this.acBiTypeMapper = acBiTypeMapper;
+        this.redisUtil = redisUtil;
     }
 
     @Override
     public List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill) {
+        if (accountBill.getFilterKeyword() != null  && !"".equals(accountBill.getFilterKeyword())) {
+            accountBill.setFilterKeyword(accountBill.getFilterKeyword().replace(' ', '|'));
+        }
         return acBiMapper.getAccountBill(accountBill);
     }
 
@@ -57,7 +64,7 @@ public class AcBiServiceImpl implements AcBiService {
     @Override
     public ResultData saveUploadData(List<ExtAccountBill> accountBillList) {
         Date date = accountBillList.get(0).getDate();
-        Calendar calendar = dateToCalendar(date);   // 获取数据的时间，主要是年月，所以可以选择集合中的任意数据
+        Calendar calendar = AcBiUtil.dateToCalendar(date);   // 获取数据的时间，主要是年月，所以可以选择集合中的任意数据
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;       // 获取的月份要 +1 才是真实的月份
         Integer count = acBilUploadRecordMapper.selectCountByYearMonth(year, month);
@@ -81,7 +88,7 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public ResultData saveNewData(List<ExtAccountBill> accountBillList) {
-        Calendar calendar = dateToCalendar(accountBillList.get(0).getDate());
+        Calendar calendar = AcBiUtil.dateToCalendar(accountBillList.get(0).getDate());
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
         Integer count = acBiMapper.deleteDataByYearMonth(year, month);  // 删除旧数据（真删除）
@@ -117,17 +124,6 @@ public class AcBiServiceImpl implements AcBiService {
 
 
 
-    /**
-     * date 转 Calendar
-     * @param date 时间对象
-     * @return calendar对象
-     */
-    private Calendar dateToCalendar(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-    }
-
     @Override
     public List<ExtAccountBillType> selectLevelOneType() {
         return acBiTypeMapper.selectLevelOneType();
@@ -154,9 +150,29 @@ public class AcBiServiceImpl implements AcBiService {
         return acBiMapper.selectBarChartData(accountBill);
     }
 
-
     @Override
     public List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill) {
+        if (accountBill.getFilterKeyword() != null  && !"".equals(accountBill.getFilterKeyword())) {
+            accountBill.setFilterKeyword(accountBill.getFilterKeyword().replace(' ', '|'));
+        }
         return acBiMapper.selectCalendarHeatmapChartData(accountBill);
+    }
+
+    @Override
+    public Boolean saveAdvancedSetting(ExtAccountBill accountBill) {
+        return (redisUtil.set("heatmapMax", accountBill.getHeatmapMax()) &&
+                redisUtil.set("moneyMax", accountBill.getMoneyMax()) &&
+                redisUtil.set("moneyMin", accountBill.getMoneyMin()) &&
+                redisUtil.set("filterKeyword", accountBill.getFilterKeyword()));
+    }
+
+    @Override
+    public ExtAccountBill getAdvancedSetting() {
+        ExtAccountBill accountBill = new ExtAccountBill();
+        accountBill.setHeatmapMax((Double) redisUtil.get("heatmapMax"));
+        accountBill.setMoneyMax((Double) redisUtil.get("moneyMax"));
+        accountBill.setMoneyMin((Double) redisUtil.get("moneyMin"));
+        accountBill.setFilterKeyword((String) redisUtil.get("filterKeyword"));
+        return accountBill;
     }
 }

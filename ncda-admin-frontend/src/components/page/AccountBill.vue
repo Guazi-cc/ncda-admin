@@ -2,8 +2,8 @@
   <div>
     <div class="search-box">
       <el-row>
-        <el-col :span="1"><span class="search-label">名称：</span></el-col>
-        <el-col :span="3">
+        <el-col :span="4">
+          <span class="search-label">名称：</span>
           <el-input
             v-model="searchForm.itemName"
             placeholder="请输入内容"
@@ -12,8 +12,8 @@
             clearable
           ></el-input>
         </el-col>
-        <el-col :span="1"><span class="search-label">月份：</span></el-col>
-        <el-col :span="3">
+        <el-col :span="4">
+          <span class="search-label">月份：</span>
           <el-date-picker
             v-model="searchForm.month"
             type="month"
@@ -26,8 +26,8 @@
           >
           </el-date-picker
         ></el-col>
-        <el-col :span="1"><span class="search-label">类型：</span></el-col>
-        <el-col :span="3">
+        <el-col :span="4">
+          <span class="search-label">类型：</span>
           <el-select
             v-model="searchForm.type"
             placeholder="请选择"
@@ -44,8 +44,8 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col :span="1"><span class="search-label">出/入：</span></el-col>
-        <el-col :span="3">
+        <el-col :span="4">
+          <span class="search-label">出/入：</span>
           <el-select
             v-model="searchForm.moneyState"
             placeholder="请选择"
@@ -61,26 +61,20 @@
             >
             </el-option> </el-select
         ></el-col>
-        <el-col :span="2">
+        <el-col :span="8">
           <el-button type="primary" size="mini" @click="searchClick"
             >搜索</el-button
-          ></el-col
-        >
-        <el-col :span="2">
+          >
           <el-button type="primary" size="mini" @click="statistic"
             >统计分析</el-button
-          ></el-col
-        >
-        <el-col :span="1">
-          <el-button type="primary" size="mini" @click="typeManagement"
-            >分类管理</el-button
-          ></el-col
-        >
-        <el-col :span="1" :offset="1">
+          >
           <el-button @click="openUploadDialog" type="primary" size="mini"
             >上传Bill</el-button
-          ></el-col
-        >
+          >
+          <!-- <el-button type="primary" size="mini" @click="typeManagement"
+            >分类管理</el-button
+          > -->
+        </el-col>
       </el-row>
     </div>
     <el-row :gutter="10">
@@ -380,17 +374,6 @@
       </div>
     </el-dialog>
 
-    <!-- 分类管理 -->
-    <el-dialog title="分类管理" width="30%" :visible.sync="typeDialogVisible">
-      <div class="type-box">
-        <el-tree
-          :data="typeData"
-          :props="defaultProps"
-          @node-click="handleNodeClick"
-        ></el-tree>
-      </div>
-    </el-dialog>
-
     <!-- 高级设置 -->
     <el-dialog
       title="高级设置"
@@ -431,7 +414,13 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item label="过滤关键词" prop="filterKeyword">
-          <el-input v-model="advancedSettingForm.filterKeyword"></el-input>
+          <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容，关键词之间用空格分隔"
+            v-model="advancedSettingForm.filterKeyword"
+          >
+          </el-input>
         </el-form-item>
         <!-- <el-form-item label="类型" prop="type">
           <el-select
@@ -483,7 +472,6 @@ export default {
       tableData: [], // 表格数据
       previewTableData: [], // 预览表格数据
       typeOptions: [],
-      typeData: [], // 树形展示分类
       // 编辑弹窗表单
       formFileds: {
         id: null,
@@ -527,14 +515,15 @@ export default {
         type: "",
         moneyState: "",
         moneyMax: null,
-        moneyMin: null
+        moneyMin: null,
+        filterKeyword: ""
       },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
       previewDialogVisible: false, // 预览弹窗
       compareDialogVisible: false, // 对比弹窗
       sticDialogVisible: false, // 统计弹窗
-      typeDialogVisible: false, // 类型弹窗
+      // typeDialogVisible: false, // 类型弹窗
       advancedSettingShow: false, // 高级设置弹窗
       activeName: "first", // 上传弹窗的 tab
       sticActiveName: "first", // 统计图表弹窗的tab
@@ -562,10 +551,10 @@ export default {
   },
   mounted() {
     this.getScreenHeight();
-    this.getTableData();
     this.getOneType();
-    this.getTypeData();
-    this.loadChart();
+    this.getAdvancedSetting();
+    // this.getTableData();
+    // this.loadChart();
   },
   methods: {
     getTableData() {
@@ -579,7 +568,8 @@ export default {
           type: this.searchForm.type,
           moneyState: this.searchForm.moneyState,
           moneyMax: this.searchForm.moneyMax,
-          moneyMin: this.searchForm.moneyMin
+          moneyMin: this.searchForm.moneyMin,
+          filterKeyword: this.searchForm.filterKeyword
         })
         .then(res => {
           const { data } = res;
@@ -607,22 +597,6 @@ export default {
         .catch(err => {
           console.log(err);
           this.$message.error("分类加载失败");
-        });
-    },
-    getTypeData() {
-      this.$axios
-        .get("/api/acbi/selectTypeOfTree")
-        .then(res => {
-          const { data } = res;
-          if (data.success) {
-            this.typeData = data.data;
-          } else {
-            this.$message.warning("分类数据获取失败");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message.error("分类数据获取失败!");
         });
     },
     handleRowClick(row, event, column) {
@@ -952,9 +926,9 @@ export default {
       this.sticDialogVisible = true;
       this.sticActiveName = "first";
     },
-    typeManagement() {
-      this.typeDialogVisible = true;
-    },
+    // typeManagement() {
+    //   this.typeDialogVisible = true;
+    // },
     handleNodeClick(data) {
       console.log(data);
     },
@@ -1080,7 +1054,8 @@ export default {
               ? 0
               : this.searchForm.moneyState,
           moneyMax: this.searchForm.moneyMax,
-          moneyMin: this.searchForm.moneyMin
+          moneyMin: this.searchForm.moneyMin,
+          filterKeyword: this.searchForm.filterKeyword
         })
         .then(res => {
           const { data } = res;
@@ -1151,12 +1126,55 @@ export default {
     },
     advancedSettingClose() {},
     advancedSettingSubmit() {
+      this.setSearchForm();
+      this.saveAdvancedSetting();
+      this.advancedSettingShow = false;
+    },
+    setSearchForm() {
       this.heatmapMax = this.advancedSettingForm.heatmapMax;
       this.searchForm.moneyMax = this.advancedSettingForm.moneyMax;
       this.searchForm.moneyMin = this.advancedSettingForm.moneyMin;
-      this.advancedSettingShow = false;
+      this.searchForm.filterKeyword = this.advancedSettingForm.filterKeyword;
       this.loadChart();
       this.getTableData();
+    },
+    saveAdvancedSetting() {
+      this.$axios
+        .post("/api/acbi/saveAdvancedSetting", this.advancedSettingForm)
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.$message.success("设置成功");
+          } else {
+            this.$message.warning("设置失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("高级设置保存失败");
+        });
+    },
+    getAdvancedSetting() {
+      this.$axios
+        .get("/api/acbi/getAdvancedSetting")
+        .then(res => {
+          const { data } = res;
+          if (data.success) {
+            this.advancedSettingForm.heatmapMax = data.data.heatmapMax;
+            this.advancedSettingForm.moneyMax = data.data.moneyMax;
+            this.advancedSettingForm.moneyMin = data.data.moneyMin;
+            // this.advancedSettingForm.filterKeyword = data.data.filterKeyword;
+            // 上面的方式赋值会导致输入框没法输入数据，故采用下面的方式
+            this.$set(this.advancedSettingForm, "filterKeyword", data.data.filterKeyword);
+            this.setSearchForm();
+          } else {
+            this.$message.warning("高级设置获取失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("高级设置获取失败");
+        });
     }
   },
   computed: {

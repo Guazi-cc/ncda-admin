@@ -2,6 +2,8 @@ package com.ncda.util;
 
 import com.ncda.entity.ext.ExtAccountBill;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AcBiUtil {
@@ -39,5 +41,16 @@ public class AcBiUtil {
             }
         }
         return accountBillList;
+    }
+
+    /**
+     * date 转 Calendar
+     * @param date 时间对象
+     * @return calendar对象
+     */
+    public static Calendar dateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 }
