@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev01
+    active: dev02
 mybatis:
   mapper-locations: classpath*:mybatis/**/*Mapper.xml
   type-aliases-package: com.ncda.entity

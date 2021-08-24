@@ -987,7 +987,9 @@ export default {
             //   left: "center",
             //   text: "aaaaaaa"
             // },
-            tooltip: {},
+            tooltip: {
+              formatter: "{c}"
+            },
             visualMap: {
               min: 0,
               max: 200,
@@ -996,23 +998,21 @@ export default {
               orient: "horizontal",
               left: "center",
               top: "bottom",
-              itemWidth: 10
+              itemWidth: 10,
               // splitNumber: 8,
-              // inRange: {
-              //   color: [
-              //     "#313695",
-              //     "#4575b4",
-              //     "#74add1",
-              //     "#abd9e9",
-              //     "#e0f3f8",
-              //     "#ffffbf",
-              //     "#fee090",
-              //     "#fdae61",
-              //     "#f46d43",
-              //     "#d73027",
-              //     "#a50026"
-              //   ]
-              // }
+              inRange: {
+                color: [
+                  "#ffecb3",
+                  "#ffe082",
+                  "#ffd54f",
+                  "#ffca28",
+                  "#ffc107",
+                  "#ffb300",
+                  "#ffa000",
+                  "#ff8f00",
+                  "#ff6f00"
+                ]
+              }
             },
             calendar: {
               top: 60,
