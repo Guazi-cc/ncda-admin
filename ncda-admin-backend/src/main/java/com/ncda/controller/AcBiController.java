@@ -89,18 +89,21 @@ public class AcBiController {
         return ResultData.createSuccessResult("一级分类查询成功", accountBillTypes);
     }
 
+    // 暂未用到
     @GetMapping("/getTwoType")
     public ResultData getTwoType(String oneTypeID) {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelTwoType(Integer.parseInt(oneTypeID));
         return ResultData.createSuccessResult("二级分类查询成功", accountBillTypes);
     }
 
+    // 暂未用到
     @GetMapping("/getAllYearAndMonth")
     public ResultData getAllYearAndMonth() {
         List<ExtAccountBillUploadRecord> allYearAndMonth = acBiService.getAllYearAndMonth();
         return ResultData.createSuccessResult("查询成功", allYearAndMonth);
     }
 
+    // 暂未用到
     @GetMapping("/selectTypeOfTree")
     public ResultData selectTypeOfTree() {
         List<ExtAccountBillType> accountBillTypes = acBiService.selectTypeOfTree();

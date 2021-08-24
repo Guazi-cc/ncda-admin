@@ -132,13 +132,18 @@
           </el-table-column>
         </el-table>
         <el-row class="margin-t-5">
-          <el-col :span="2">
+          <el-col :span="1">
             <el-button
               icon="el-icon-bell"
               circle
               size="mini"
               @click="openAdvancedSetting"
+              v-if="advancedShow"
             ></el-button>
+          </el-col>
+          <el-col :span="1">
+            <div class="hidden-div" @click="hiddenClick">
+            </div>
           </el-col>
           <el-col :span="22">
             <!--分页-->
@@ -364,7 +369,41 @@
       <div class="stic-box">
         <el-tabs v-model="sticActiveName" @tab-click="handleClick">
           <el-tab-pane label="柱状图" name="first">
-            <div id="bar" class="chart"></div>
+            <div style="padding: 10px;">
+              <el-row class="margin-b-20">
+                <el-col :span="14">
+                  <span class="search-label">选择时间段：</span>
+                  <el-date-picker
+                    v-model="sticSearchForm.monthStart"
+                    type="month"
+                    placeholder="选择月"
+                    size="mini"
+                    value-format="yyyy-MM-dd"
+                    format="yyyy年MM月"
+                    style="width: 140px !important;"
+                    clearable
+                  >
+                  </el-date-picker>
+                  -
+                  <el-date-picker
+                    v-model="sticSearchForm.monthEnd"
+                    type="month"
+                    placeholder="选择月"
+                    size="mini"
+                    value-format="yyyy-MM-dd"
+                    format="yyyy年MM月"
+                    style="width: 140px !important;"
+                    clearable
+                  >
+                  </el-date-picker>
+                </el-col>
+              </el-row>
+              <el-row class="margin-b-20">
+                <el-col :span="24">
+                  <div id="bar" class="bar-chart"></div>
+                </el-col>
+              </el-row>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="雷达图" name="second">
             <div id="radarChart" class="chart"></div>
@@ -422,24 +461,6 @@
           >
           </el-input>
         </el-form-item>
-        <!-- <el-form-item label="类型" prop="type">
-          <el-select
-            v-model="formFileds.type"
-            placeholder="请选择"
-            style="width: 100% !important;"
-          >
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.typeId"
-              :label="item.typeOneName"
-              :value="item.typeId"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="comment">
-          <el-input v-model="formFileds.comment"></el-input>
-        </el-form-item> -->
         <el-form-item>
           <el-button
             type="primary"
@@ -518,6 +539,10 @@ export default {
         moneyMin: null,
         filterKeyword: ""
       },
+      sticSearchForm: {
+        monthStart: "",
+        monthEnd: ""
+      },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
       previewDialogVisible: false, // 预览弹窗
@@ -546,7 +571,8 @@ export default {
         label: "label"
       },
       currentYear: new Date().getFullYear(),
-      heatmapMax: 200
+      heatmapMax: 200,
+      hiddenNum: 1
     };
   },
   mounted() {
@@ -1165,7 +1191,11 @@ export default {
             this.advancedSettingForm.moneyMin = data.data.moneyMin;
             // this.advancedSettingForm.filterKeyword = data.data.filterKeyword;
             // 上面的方式赋值会导致输入框没法输入数据，故采用下面的方式
-            this.$set(this.advancedSettingForm, "filterKeyword", data.data.filterKeyword);
+            this.$set(
+              this.advancedSettingForm,
+              "filterKeyword",
+              data.data.filterKeyword
+            );
             this.setSearchForm();
           } else {
             this.$message.warning("高级设置获取失败");
@@ -1175,6 +1205,10 @@ export default {
           console.log(err);
           this.$message.error("高级设置获取失败");
         });
+    },
+    hiddenClick() {
+      this.hiddenNum += 1;
+      // this.$message.success(this.hiddenNum)
     }
   },
   computed: {
@@ -1192,6 +1226,9 @@ export default {
     },
     chrtRadar() {
       return this.$echarts.init(Util.getDom("radarChart"));
+    },
+    advancedShow() {
+      return this.hiddenNum % 14 === 0;
     }
   },
   updated() {
@@ -1254,7 +1291,7 @@ export default {
 }
 .stic-box {
   position: relative;
-  height: 500px;
+  height: 450px;
   overflow: auto;
 }
 .type-box {
@@ -1264,13 +1301,28 @@ export default {
 }
 .chart {
   width: 100%;
-  height: 330px;
+  height: 300px;
   .border-radius(8px);
   background-color: #fff;
   box-shadow: 0 0 5px transparent;
   &:hover {
     box-shadow: 0 0 5px @mainColor;
   }
+}
+.bar-chart {
+  margin: 0 auto;
+  width: 95%;
+  height: 300px;
+  .border-radius(8px);
+  background-color: @boxBgColor;
+  box-shadow: 0 0 5px transparent;
+  &:hover {
+    box-shadow: 0 0 5px @mainColor;
+  }
+}
+.hidden-div {
+  width: 20px;
+  height: 40px;
 }
 </style>
 <style>

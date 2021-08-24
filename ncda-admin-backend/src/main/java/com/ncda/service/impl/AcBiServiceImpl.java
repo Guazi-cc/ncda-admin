@@ -122,8 +122,6 @@ public class AcBiServiceImpl implements AcBiService {
         return 0;
     }
 
-
-
     @Override
     public List<ExtAccountBillType> selectLevelOneType() {
         return acBiTypeMapper.selectLevelOneType();
