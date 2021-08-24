@@ -26,6 +26,14 @@ public class ExtAccountBill extends AccountBill {
 
     private String typeOneName;
 
+    private Double moneyMax;
+
+    private Double moneyMin;
+
+    private String filterKeyword;
+
+    private String year;
+
     public Integer getPageSize() {
         return pageSize;
     }
@@ -66,5 +74,37 @@ public class ExtAccountBill extends AccountBill {
 
     public void setTypeOneName(String typeOneName) {
         this.typeOneName = typeOneName;
+    }
+
+    public Double getMoneyMax() {
+        return moneyMax;
+    }
+
+    public void setMoneyMax(Double moneyMax) {
+        this.moneyMax = moneyMax;
+    }
+
+    public Double getMoneyMin() {
+        return moneyMin;
+    }
+
+    public void setMoneyMin(Double moneyMin) {
+        this.moneyMin = moneyMin;
+    }
+
+    public String getFilterKeyword() {
+        return filterKeyword;
+    }
+
+    public void setFilterKeyword(String filterKeyword) {
+        this.filterKeyword = filterKeyword;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

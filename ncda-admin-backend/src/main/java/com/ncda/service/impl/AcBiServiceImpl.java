@@ -154,8 +154,9 @@ public class AcBiServiceImpl implements AcBiService {
         return acBiMapper.selectBarChartData(accountBill);
     }
 
+
     @Override
-    public List<ExtAccountBill> selectCalendarHeatmapChartData(String year) {
-        return acBiMapper.selectCalendarHeatmapChartData(year);
+    public List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill) {
+        return acBiMapper.selectCalendarHeatmapChartData(accountBill);
     }
 }

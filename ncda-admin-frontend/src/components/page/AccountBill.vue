@@ -137,16 +137,28 @@
             </template>
           </el-table-column>
         </el-table>
-        <!--分页-->
-        <el-pagination
-          :page-sizes="[100, 200, 300, 500]"
-          :total="pagination.total"
-          :current-page.sync="pagination.currentPage"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-          layout="total, sizes, prev, pager, next, jumper"
-        >
-        </el-pagination>
+        <el-row class="margin-t-5">
+          <el-col :span="2">
+            <el-button
+              icon="el-icon-bell"
+              circle
+              size="mini"
+              @click="openAdvancedSetting"
+            ></el-button>
+          </el-col>
+          <el-col :span="22">
+            <!--分页-->
+            <el-pagination
+              :page-sizes="[100, 200, 300, 500]"
+              :total="pagination.total"
+              :current-page.sync="pagination.currentPage"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+              layout="total, sizes, prev, pager, next, jumper"
+            >
+            </el-pagination>
+          </el-col>
+        </el-row>
       </el-col>
       <el-col :span="4">
         <div
@@ -360,10 +372,7 @@
           <el-tab-pane label="柱状图" name="first">
             <div id="bar" class="chart"></div>
           </el-tab-pane>
-          <el-tab-pane label="热力图" name="second">
-            <!-- <div id="calendarHeatmap" class="chart"></div> -->
-          </el-tab-pane>
-          <el-tab-pane label="雷达图" name="third">
+          <el-tab-pane label="雷达图" name="second">
             <div id="radarChart" class="chart"></div>
           </el-tab-pane>
           <el-tab-pane label="giao" name="fourth">雷达图</el-tab-pane>
@@ -381,6 +390,80 @@
         ></el-tree>
       </div>
     </el-dialog>
+
+    <!-- 高级设置 -->
+    <el-dialog
+      title="高级设置"
+      :visible.sync="advancedSettingShow"
+      width="550px"
+      @open="advancedSettingOpen"
+      @close="advancedSettingClose"
+    >
+      <el-form
+        ref="advancedSettingForm"
+        :model="advancedSettingForm"
+        label-width="100px"
+        :rules="advancedSettingRules"
+      >
+        <el-form-item label="热力图最大值" prop="heatmapMax">
+          <el-input-number
+            v-model="advancedSettingForm.heatmapMax"
+            controls-position="right"
+            :min="10"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="金额最大值" prop="moneyMax">
+          <el-input-number
+            v-model="advancedSettingForm.moneyMax"
+            controls-position="right"
+            :precision="2"
+            :step="0.1"
+            :min="0.0"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="金额最小值" prop="moneyMin">
+          <el-input-number
+            v-model="advancedSettingForm.moneyMin"
+            controls-position="right"
+            :precision="2"
+            :step="0.1"
+            :min="0.0"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="过滤关键词" prop="filterKeyword">
+          <el-input v-model="advancedSettingForm.filterKeyword"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="类型" prop="type">
+          <el-select
+            v-model="formFileds.type"
+            placeholder="请选择"
+            style="width: 100% !important;"
+          >
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.typeId"
+              :label="item.typeOneName"
+              :value="item.typeId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="comment">
+          <el-input v-model="formFileds.comment"></el-input>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button
+            type="primary"
+            @click="advancedSettingSubmit"
+            class="pull-right margin-l-25"
+            >确定</el-button
+          >
+          <el-button @click="advancedSettingShow = false" class="pull-right"
+            >取消</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -397,6 +480,11 @@ export default {
     return {
       screenHeight: 0, // 屏幕高度
       loading: false,
+      tableData: [], // 表格数据
+      previewTableData: [], // 预览表格数据
+      typeOptions: [],
+      typeData: [], // 树形展示分类
+      // 编辑弹窗表单
       formFileds: {
         id: null,
         date: "",
@@ -406,6 +494,7 @@ export default {
         comment: null,
         type: null
       },
+      // 编辑弹窗校验
       rules: {
         date: [
           { required: true, message: "日期不能为空", trigger: "blur, change" }
@@ -417,9 +506,7 @@ export default {
           { required: true, message: "金额不能为空", trigger: "blur, change" }
         ]
       },
-      tableData: [],
-      previewTableData: [],
-      isShowEditDialog: false,
+      advancedSettingRules: {},
       moneyStateOptions: [
         {
           value: "1",
@@ -430,7 +517,6 @@ export default {
           label: "支出"
         }
       ],
-      typeOptions: [],
       pagination: {
         pageSize: 100,
         currentPage: 1,
@@ -439,13 +525,17 @@ export default {
       searchForm: {
         month: "",
         type: "",
-        moneyState: ""
+        moneyState: "",
+        moneyMax: null,
+        moneyMin: null
       },
-      uploadDialogVisible: false,
-      previewDialogVisible: false,
-      compareDialogVisible: false,
-      sticDialogVisible: false,
-      typeDialogVisible: false,
+      isShowEditDialog: false, // 编辑弹窗
+      uploadDialogVisible: false, // 上传弹窗
+      previewDialogVisible: false, // 预览弹窗
+      compareDialogVisible: false, // 对比弹窗
+      sticDialogVisible: false, // 统计弹窗
+      typeDialogVisible: false, // 类型弹窗
+      advancedSettingShow: false, // 高级设置弹窗
       activeName: "first", // 上传弹窗的 tab
       sticActiveName: "first", // 统计图表弹窗的tab
       uploadForm: {
@@ -457,12 +547,17 @@ export default {
         newStr: "",
         newData: null
       },
-      typeData: [],
+      advancedSettingForm: {
+        heatmapMax: 0,
+        moneyMax: 0,
+        moneyMin: 0
+      },
       defaultProps: {
         children: "twoTypeList",
         label: "label"
       },
-      currentYear: new Date().getFullYear()
+      currentYear: new Date().getFullYear(),
+      heatmapMax: 200
     };
   },
   mounted() {
@@ -470,7 +565,6 @@ export default {
     this.getTableData();
     this.getOneType();
     this.getTypeData();
-    // this.drawBar();
     this.loadChart();
   },
   methods: {
@@ -483,7 +577,9 @@ export default {
           pageSize: this.pagination.pageSize,
           currentPage: this.pagination.currentPage,
           type: this.searchForm.type,
-          moneyState: this.searchForm.moneyState
+          moneyState: this.searchForm.moneyState,
+          moneyMax: this.searchForm.moneyMax,
+          moneyMin: this.searchForm.moneyMin
         })
         .then(res => {
           const { data } = res;
@@ -854,6 +950,7 @@ export default {
     },
     statistic() {
       this.sticDialogVisible = true;
+      this.sticActiveName = "first";
     },
     typeManagement() {
       this.typeDialogVisible = true;
@@ -973,10 +1070,17 @@ export default {
     },
     drawCalendarHeatmap() {
       this.$axios
-        .get("/api/acbi/selectCalendarHeatmapChartData", {
-          params: {
-            year: this.searchForm.month.substring(0, 4)
-          }
+        .post("/api/acbi/selectCalendarHeatmapChartData", {
+          itemName: this.searchForm.itemName,
+          year: this.searchForm.month.substring(0, 4),
+          type: this.searchForm.type,
+          moneyState:
+            this.searchForm.moneyState == "" ||
+            this.searchForm.moneyState == null
+              ? 0
+              : this.searchForm.moneyState,
+          moneyMax: this.searchForm.moneyMax,
+          moneyMin: this.searchForm.moneyMin
         })
         .then(res => {
           const { data } = res;
@@ -992,7 +1096,7 @@ export default {
             },
             visualMap: {
               min: 0,
-              max: 200,
+              max: this.heatmapMax,
               // type: "piecewise",
               calculable: true,
               orient: "horizontal",
@@ -1038,11 +1142,26 @@ export default {
           console.log(err);
         });
     },
-    drawRadarChart() {}
+    drawRadarChart() {},
+    openAdvancedSetting() {
+      this.advancedSettingShow = true;
+    },
+    advancedSettingOpen() {
+      this.advancedSettingForm.heatmapMax = this.heatmapMax;
+    },
+    advancedSettingClose() {},
+    advancedSettingSubmit() {
+      this.heatmapMax = this.advancedSettingForm.heatmapMax;
+      this.searchForm.moneyMax = this.advancedSettingForm.moneyMax;
+      this.searchForm.moneyMin = this.advancedSettingForm.moneyMin;
+      this.advancedSettingShow = false;
+      this.loadChart();
+      this.getTableData();
+    }
   },
   computed: {
     tableHeight() {
-      return this.screenHeight - 210 + "px";
+      return this.screenHeight - 220 + "px";
     },
     rightChartHeigh() {
       return this.screenHeight - 180 + "px";

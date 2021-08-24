@@ -8,6 +8,7 @@ import com.ncda.entity.result.ResultData;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface AcBiService {
 
@@ -68,6 +69,6 @@ public interface AcBiService {
 
     List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData(String year);
+    List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
 
 }

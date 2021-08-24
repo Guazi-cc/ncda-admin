@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public interface AcBiMapper {
@@ -45,5 +46,5 @@ public interface AcBiMapper {
      */
     List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData(@Param("year") String year);
+    List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
 }

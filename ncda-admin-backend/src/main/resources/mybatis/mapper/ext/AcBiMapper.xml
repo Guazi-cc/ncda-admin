@@ -43,6 +43,12 @@
           <if test="moneyState != null and moneyState != ''">
               AND a.MONEY_STATE = #{ moneyState }
           </if>
+          <if test="moneyMax != null and moneyMax != 0">
+              AND a.MONEY &lt;= #{ moneyMax }
+          </if>
+          <if test="moneyMin != null and moneyMin != 0">
+              AND a.MONEY &gt;= #{ moneyMin }
+          </if>
       </where>
   </select>
 
@@ -108,18 +114,35 @@
 
     <select  id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
         SELECT
-            DATE,
-            SUM( MONEY ) MONEY
+            a.DATE,
+            SUM( a.MONEY ) MONEY
         FROM
-            account_bill
-        <where>
-            MONEY_STATE = 0
-            <if test="year != null and year != ''">
-                AND YEAR(DATE) = #{ year }
-            </if>
-        </where>
+            (
+              SELECT DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME, USER_ID FROM account_bill
+              <where>
+                  DEL_STATE = '1'
+                  <if test="itemName != null and itemName != ''">
+                      AND ITEM_NAME LIKE concat('%', #{ itemName }, '%')
+                  </if>
+                  <if test="year != null and year != ''">
+                      AND YEAR(DATE) = #{ year }
+                  </if>
+                  <if test="type != null and type != ''">
+                      AND TYPE = #{ type }
+                  </if>
+                  <if test="moneyState != null and moneyState != ''">
+                      AND MONEY_STATE = #{ moneyState }
+                  </if>
+                  <if test="moneyMax != null and moneyMax != 0">
+                      AND MONEY &lt;= #{ moneyMax }
+                  </if>
+                  <if test="moneyMin != null and moneyMin != 0">
+                      AND MONEY &gt;= #{ moneyMin }
+                  </if>
+              </where>
+            ) a
         GROUP BY
-            DATE
+            a.DATE
     </select>
 
 </mapper>
