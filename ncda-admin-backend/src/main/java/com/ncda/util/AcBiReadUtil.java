@@ -60,7 +60,7 @@ public class AcBiReadUtil {
         BufferedReader bufferedReader = new BufferedReader(read);
         String lineTxt;         // 每行数据
         while ((lineTxt = bufferedReader.readLine()) != null) {
-            if (strIsNull(content)) {
+            if (CommonUtil.strIsNull(content)) {
                 content = content + lineTxt;
             } else  {
                 content = content + "\n" + lineTxt;
@@ -107,7 +107,7 @@ public class AcBiReadUtil {
                     String billItem = billItems[i].trim();
                     ExtAccountBill accountBill = new ExtAccountBill();
                     accountBill.setDate(date);     // 第一项为时间
-                    if(!strIsNull(billItem)) {
+                    if(!CommonUtil.strIsNull(billItem)) {
                         for (int j = billItem.length()-1; j >= 0; j--) {
                             if(!isNumber(billItem.charAt(j))) {
                                 String substr = billItem.substring(j+1, billItem.length());
@@ -152,14 +152,7 @@ public class AcBiReadUtil {
         return c >= 48 && c <= 57 || c == 46;
     }
 
-    /**
-     * 判断字符串是否为空
-     * @param str 字符串本串
-     * @return 为空 true
-     */
-    private static boolean strIsNull(String str) {
-        return str == null || "".equals(str);
-    }
+
 
     /**
      * 从字符串中解析出年份，但也仅限于2000~2099的年份，可以暂时坚持八十多年

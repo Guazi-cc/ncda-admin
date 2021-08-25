@@ -40,9 +40,7 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill) {
-        if (accountBill.getFilterKeyword() != null  && !"".equals(accountBill.getFilterKeyword())) {
-            accountBill.setFilterKeyword(accountBill.getFilterKeyword().replace(' ', '|'));
-        }
+        accountBill.setFilterKeyword(AcBiUtil.strReplace(accountBill.getFilterKeyword(), ' ', '|'));
         return acBiMapper.getAccountBill(accountBill);
     }
 
@@ -150,9 +148,7 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill) {
-        if (accountBill.getFilterKeyword() != null  && !"".equals(accountBill.getFilterKeyword())) {
-            accountBill.setFilterKeyword(accountBill.getFilterKeyword().replace(' ', '|'));
-        }
+        accountBill.setFilterKeyword(AcBiUtil.strReplace(accountBill.getFilterKeyword(), ' ', '|'));
         return acBiMapper.selectCalendarHeatmapChartData(accountBill);
     }
 

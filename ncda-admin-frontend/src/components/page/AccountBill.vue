@@ -349,13 +349,13 @@
           diffStyle="word"
           output-format="side-by-side"
         />
-        <span slot="footer" class="dialog-footer btn-bottom">
-          <el-button size="mini" @click="compareDataNoSave">取 消</el-button>
-          <el-button type="primary" size="mini" @click="compareDataSave"
-            >保 存</el-button
-          >
-        </span>
       </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="compareDataNoSave">取 消</el-button>
+        <el-button type="primary" size="mini" @click="compareDataSave"
+          >保 存</el-button
+        >
+      </span>
     </el-dialog>
 
     <!-- 统计  -->
@@ -563,7 +563,8 @@ export default {
       advancedSettingForm: {
         heatmapMax: 0,
         moneyMax: 0,
-        moneyMin: 0
+        moneyMin: 0,
+        filterKeyword: ""
       },
       defaultProps: {
         children: "twoTypeList",
@@ -1188,13 +1189,13 @@ export default {
             this.advancedSettingForm.heatmapMax = data.data.heatmapMax;
             this.advancedSettingForm.moneyMax = data.data.moneyMax;
             this.advancedSettingForm.moneyMin = data.data.moneyMin;
-            // this.advancedSettingForm.filterKeyword = data.data.filterKeyword;
+            this.advancedSettingForm.filterKeyword = data.data.filterKeyword;
             // 上面的方式赋值会导致输入框没法输入数据，故采用下面的方式
-            this.$set(
-              this.advancedSettingForm,
-              "filterKeyword",
-              data.data.filterKeyword
-            );
+            // this.$set(
+            //   this.advancedSettingForm,
+            //   "filterKeyword",
+            //   data.data.filterKeyword
+            // );
             this.setSearchForm();
           } else {
             this.$message.warning("高级设置获取失败");
@@ -1274,7 +1275,7 @@ export default {
 }
 .compare-box {
   position: relative;
-  height: 500px;
+  height: 450px;
   overflow: auto;
 }
 .compare-title {
@@ -1283,11 +1284,11 @@ export default {
   font-size: 14px;
   color: #606266;
 }
-.btn-bottom {
-  position: absolute;
-  bottom: 2%;
-  right: 2%;
-}
+// .btn-bottom {
+//   position: absolute;
+//   bottom: 2%;
+//   right: 2%;
+// }
 .stic-box {
   position: relative;
   height: 450px;
@@ -1320,8 +1321,11 @@ export default {
   }
 }
 .hidden-div {
-  width: 20px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
+  &:hover {
+    box-shadow: 0 0 2px rgb(145, 138, 138);
+  }
 }
 </style>
 <style>
