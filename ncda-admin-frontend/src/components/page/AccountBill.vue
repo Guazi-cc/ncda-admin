@@ -142,8 +142,7 @@
             ></el-button>
           </el-col>
           <el-col :span="1">
-            <div class="hidden-div" @click="hiddenClick">
-            </div>
+            <div class="hidden-div" @click="hiddenClick"></div>
           </el-col>
           <el-col :span="22">
             <!--分页-->
@@ -1121,8 +1120,8 @@ export default {
             },
             calendar: {
               top: 60,
-              left: 30,
-              right: 30,
+              left: "center",
+              right: 5,
               bottom: 40,
               cellSize: ["auto", 5],
               range: this.currentYear,
