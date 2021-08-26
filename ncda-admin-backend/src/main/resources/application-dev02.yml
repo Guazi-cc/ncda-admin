@@ -3,6 +3,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://192.168.224.131:3306/testdb01
+    url: jdbc:mysql://192.168.224.131:3306/testdb01?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 server:
   port: 4536
