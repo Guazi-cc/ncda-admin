@@ -576,8 +576,8 @@ export default {
       sticSearchForm: {
         monthStart: "",
         monthEnd: "",
-        xdataType: "0",
-        moneyState: "0"
+        xdataType: "0",   // 横坐标，0是时间，1是类型
+        moneyState: "0"   // 0是支出，1是收入
       },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
