@@ -23,6 +23,13 @@ public class ExtAccountBill extends AccountBill implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")     // 前后到后台的时间格式的转换
     private Date date;
 
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startTime;
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endTime;
+
     private String text;    //接收字符串用的
 
     private String typeOneName;
@@ -36,6 +43,18 @@ public class ExtAccountBill extends AccountBill implements Serializable {
     private String filterKeyword;   // 高级设置过滤关键词
 
     private String year;        // 日历热力图查询，年份
+
+    private String xdataType;       // 柱状图搜索，横轴（0以时间为横轴，1以类型为横轴）
+
+    private String typeName;
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
     public Integer getPageSize() {
         return pageSize;
@@ -117,5 +136,29 @@ public class ExtAccountBill extends AccountBill implements Serializable {
 
     public void setHeatmapMax(Double heatmapMax) {
         this.heatmapMax = heatmapMax;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getXdataType() {
+        return xdataType;
+    }
+
+    public void setXdataType(String xdataType) {
+        this.xdataType = xdataType;
     }
 }

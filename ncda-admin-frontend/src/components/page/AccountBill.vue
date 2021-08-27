@@ -370,7 +370,17 @@
           <el-tab-pane label="柱状图" name="first">
             <div style="padding: 10px;">
               <el-row class="margin-b-20">
-                <el-col :span="14">
+                <el-col :span="7">
+                  <span class="search-label">横坐标：</span>
+                  <el-radio-group
+                    v-model="sticSearchForm.xdataType"
+                    size="mini"
+                  >
+                    <el-radio label="0" border>时间</el-radio>
+                    <el-radio label="1" border>类型</el-radio>
+                  </el-radio-group>
+                </el-col>
+                <el-col :span="10">
                   <span class="search-label">选择时间段：</span>
                   <el-date-picker
                     v-model="sticSearchForm.monthStart"
@@ -378,8 +388,8 @@
                     placeholder="选择月"
                     size="mini"
                     value-format="yyyy-MM-dd"
-                    format="yyyy年MM月"
-                    style="width: 140px !important;"
+                    format="yyyy-MM"
+                    style="width: 110px !important;"
                     clearable
                   >
                   </el-date-picker>
@@ -390,11 +400,36 @@
                     placeholder="选择月"
                     size="mini"
                     value-format="yyyy-MM-dd"
-                    format="yyyy年MM月"
-                    style="width: 140px !important;"
+                    format="yyyy-MM"
+                    style="width: 110px !important;"
                     clearable
                   >
                   </el-date-picker>
+                </el-col>
+                <el-col :span="6">
+                  <span class="search-label">出/入：</span>
+                  <el-select
+                    v-model="sticSearchForm.moneyState"
+                    placeholder="请选择"
+                    size="mini"
+                    style="width: 120px !important;"
+                  >
+                    <el-option
+                      v-for="item in moneyStateOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="1">
+                  <el-button
+                    icon="el-icon-search"
+                    circle
+                    size="mini"
+                    @click="barChartSearchClick"
+                  ></el-button>
                 </el-col>
               </el-row>
               <el-row class="margin-b-20">
@@ -533,14 +568,16 @@ export default {
       searchForm: {
         month: "",
         type: "",
-        moneyState: "",
-        moneyMax: null,
-        moneyMin: null,
-        filterKeyword: ""
+        moneyState: ""
+        // moneyMax: null, 全局配置
+        // moneyMin: null,
+        // filterKeyword: ""
       },
       sticSearchForm: {
         monthStart: "",
-        monthEnd: ""
+        monthEnd: "",
+        xdataType: "0",
+        moneyState: "0"
       },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
@@ -566,6 +603,7 @@ export default {
         moneyMin: 0,
         filterKeyword: ""
       },
+      advanceSetting: {},
       defaultProps: {
         children: "twoTypeList",
         label: "label"
@@ -593,9 +631,9 @@ export default {
           currentPage: this.pagination.currentPage,
           type: this.searchForm.type,
           moneyState: this.searchForm.moneyState,
-          moneyMax: this.searchForm.moneyMax,
-          moneyMin: this.searchForm.moneyMin,
-          filterKeyword: this.searchForm.filterKeyword
+          moneyMax: this.advanceSetting.moneyMax,
+          moneyMin: this.advanceSetting.moneyMin,
+          filterKeyword: this.advanceSetting.filterKeyword
         })
         .then(res => {
           const { data } = res;
@@ -699,11 +737,12 @@ export default {
       this.activeName = "first";
     },
     searchClick() {
-      this.getTableData();
+      // this.getTableData();
+      // this.loadChart();
+      this.loadData();
       if (this.searchForm.month != null && this.searchForm.month != "") {
         this.currentYear = this.searchForm.month.substring(0, 4);
       }
-      this.loadChart();
     },
     submitUpload() {
       if (this.activeName === "first") {
@@ -819,8 +858,7 @@ export default {
           const { data } = res;
           if (data.success) {
             this.previewDialogVisible = false;
-            this.getTableData();
-            this.loadChart();
+            this.loadData();
             this.$message({
               message: "数据保存成功！",
               type: "success",
@@ -979,94 +1017,109 @@ export default {
       }
     },
     drawBar() {
-      this.$axios.post("/api/acbi/selectBarChartData", {}).then(res => {
-        const { data } = res;
-        const xData = data.data.map(({ date }) => date.substring(0, 7));
-        const yData = data.data.map(({ money }) => money);
-        const title = "数据のdiao";
-        this.chartBar.setOption({
-          title: Object.assign({}, Util.defaultEchartsOpt.title, {
-            text: title
-          }),
-          tooltip: {
-            trigger: "item",
-            formatter: "{a} <br/>{b} : {c}"
-          },
-          xAxis: {
-            type: "category",
-            data: xData,
-            axisLine: {
-              lineStyle: {
-                color: "#999"
-              }
+      this.$axios
+        .post("/api/acbi/selectBarChartData", {
+          startTime: this.startTimeFormatter(this.sticSearchForm.monthStart),
+          endTime: this.EndTimeFormatter(this.sticSearchForm.monthEnd),
+          moneyState: this.sticSearchForm.moneyState,
+          xdataType: this.sticSearchForm.xdataType,
+          moneyMax: this.advanceSetting.moneyMax, // 全局配置
+          moneyMin: this.advanceSetting.moneyMin, // 全局配置
+          filterKeyword: this.advanceSetting.filterKeyword // 全局配置
+        })
+        .then(res => {
+          const { data } = res;
+          let xData;
+          if (this.sticSearchForm.xdataType === "0") {
+            xData = data.data.map(({ date }) => date.substring(0, 7));
+          } else {
+            xData = data.data.map(({ typeName }) => typeName);
+          }
+          const yData = data.data.map(({ money }) => money);
+          const title = "数据のdiao";
+          this.chartBar.setOption({
+            title: Object.assign({}, Util.defaultEchartsOpt.title, {
+              text: title
+            }),
+            tooltip: {
+              trigger: "item",
+              formatter: "{a} <br/>{b} : {c}"
             },
-            axisLabel: {
-              margin: 10,
-              textStyle: {
-                fontSize: 12
-              }
-            }
-          },
-          yAxis: {
-            type: "value",
-            splitLine: {
-              lineStyle: {
-                color: ["#D4DFF5"]
-              }
-            },
-            axisTick: {
-              show: false
-            },
-            axisLine: {
-              lineStyle: {
-                color: "#999"
-              }
-            },
-            axisLabel: {
-              margin: 10,
-              textStyle: {
-                fontSize: 12
-              }
-            }
-          },
-          series: [
-            {
-              name: title,
-              data: yData,
-              type: "bar",
-              symbol: "triangle",
-              symbolSize: 20,
-              lineStyle: {
-                normal: {
-                  color: "green",
-                  width: 4,
-                  type: "dashed"
+            xAxis: {
+              type: "category",
+              data: xData,
+              axisLine: {
+                lineStyle: {
+                  color: "#999"
                 }
               },
-              barWidth: 25,
-              itemStyle: {
-                normal: {
-                  // barBorderRadius: 30,
-                  // color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  //   {
-                  //     offset: 0,
-                  //     color: "#00feff"
-                  //   },
-                  //   {
-                  //     offset: 0.5,
-                  //     color: "#027eff"
-                  //   },
-                  //   {
-                  //     offset: 1,
-                  //     color: "#0286ff"
-                  //   }
-                  // ])
+              axisLabel: {
+                margin: 10,
+                textStyle: {
+                  fontSize: 12
                 }
               }
-            }
-          ]
+            },
+            yAxis: {
+              type: "value",
+              splitLine: {
+                lineStyle: {
+                  color: ["#D4DFF5"]
+                }
+              },
+              axisTick: {
+                show: false
+              },
+              axisLine: {
+                lineStyle: {
+                  color: "#999"
+                }
+              },
+              axisLabel: {
+                margin: 10,
+                textStyle: {
+                  fontSize: 12
+                }
+              }
+            },
+            series: [
+              {
+                name: title,
+                data: yData,
+                type: "bar",
+                symbol: "triangle",
+                symbolSize: 20,
+                lineStyle: {
+                  normal: {
+                    color: "green",
+                    width: 4,
+                    type: "dashed"
+                  }
+                },
+                barWidth: 25,
+                itemStyle: {
+                  normal: {
+                    // barBorderRadius: 30,
+                    // color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    //   {
+                    //     offset: 0,
+                    //     color: "#00feff"
+                    //   },
+                    //   {
+                    //     offset: 0.5,
+                    //     color: "#027eff"
+                    //   },
+                    //   {
+                    //     offset: 1,
+                    //     color: "#0286ff"
+                    //   }
+                    // ])
+                  }
+                }
+              }
+            ]
+          });
         });
-      });
     },
     drawCalendarHeatmap() {
       this.$axios
@@ -1079,9 +1132,9 @@ export default {
             this.searchForm.moneyState == null
               ? 0
               : this.searchForm.moneyState,
-          moneyMax: this.searchForm.moneyMax,
-          moneyMin: this.searchForm.moneyMin,
-          filterKeyword: this.searchForm.filterKeyword
+          moneyMax: this.advanceSetting.moneyMax,
+          moneyMin: this.advanceSetting.moneyMin,
+          filterKeyword: this.advanceSetting.filterKeyword
         })
         .then(res => {
           const { data } = res;
@@ -1097,7 +1150,7 @@ export default {
             },
             visualMap: {
               min: 0,
-              max: this.heatmapMax,
+              max: this.advanceSetting.heatmapMax,
               // type: "piecewise",
               calculable: true,
               orient: "horizontal",
@@ -1148,19 +1201,20 @@ export default {
       this.advancedSettingShow = true;
     },
     advancedSettingOpen() {
-      this.advancedSettingForm.heatmapMax = this.heatmapMax;
+      this.advancedSettingForm.heatmapMax = this.advanceSetting.heatmapMax;
+      this.advancedSettingForm.moneyMax = this.advanceSetting.moneyMax;
+      this.advancedSettingForm.moneyMin = this.advanceSetting.moneyMin;
+      this.advancedSettingForm.filterKeyword = this.advanceSetting.filterKeyword;
     },
-    advancedSettingClose() {},
+    advancedSettingClose() {
+      //TODO
+    },
     advancedSettingSubmit() {
-      this.setSearchForm();
       this.saveAdvancedSetting();
+      this.getAdvancedSetting();
       this.advancedSettingShow = false;
     },
-    setSearchForm() {
-      this.heatmapMax = this.advancedSettingForm.heatmapMax;
-      this.searchForm.moneyMax = this.advancedSettingForm.moneyMax;
-      this.searchForm.moneyMin = this.advancedSettingForm.moneyMin;
-      this.searchForm.filterKeyword = this.advancedSettingForm.filterKeyword;
+    loadData() {
       this.loadChart();
       this.getTableData();
     },
@@ -1186,17 +1240,8 @@ export default {
         .then(res => {
           const { data } = res;
           if (data.success) {
-            this.advancedSettingForm.heatmapMax = data.data.heatmapMax;
-            this.advancedSettingForm.moneyMax = data.data.moneyMax;
-            this.advancedSettingForm.moneyMin = data.data.moneyMin;
-            this.advancedSettingForm.filterKeyword = data.data.filterKeyword;
-            // 上面的方式赋值会导致输入框没法输入数据，故采用下面的方式
-            // this.$set(
-            //   this.advancedSettingForm,
-            //   "filterKeyword",
-            //   data.data.filterKeyword
-            // );
-            this.setSearchForm();
+            this.advanceSetting = data.data;
+            this.loadData();
           } else {
             this.$message.warning("高级设置获取失败");
           }
@@ -1209,6 +1254,27 @@ export default {
     hiddenClick() {
       this.hiddenNum += 1;
       // this.$message.success(this.hiddenNum)
+    },
+    barChartSearchClick() {
+      this.drawBar();
+    },
+    startTimeFormatter(param) {
+      if (param == null || param == "") {
+        let date = new Date();
+        date.setFullYear(new Date().getFullYear());
+        date.setMonth(0);
+        date.setDate(1);
+        // 今年1月1日
+        return new Date(date).Format("yyyy-MM-dd");
+      }
+      return param;
+    },
+    EndTimeFormatter(param) {
+      if (param == null || param == "") {
+        return new Date().Format("yyyy-MM-dd");
+      }
+      let monthLast = Util.monthLastDate(new Date(param))   // 当月最后一天
+      return Util.dateToString(new Date(monthLast), "yyyy-MM-dd");
     }
   },
   computed: {
@@ -1284,11 +1350,6 @@ export default {
   font-size: 14px;
   color: #606266;
 }
-// .btn-bottom {
-//   position: absolute;
-//   bottom: 2%;
-//   right: 2%;
-// }
 .stic-box {
   position: relative;
   height: 450px;

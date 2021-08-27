@@ -118,7 +118,9 @@ public class AcBiReadUtil {
                                     accountBill.setMoneyState("0");     // 状态0 支出
                                     accountBill.setItemName(billItem.substring(0, j+1));
                                 }
-                                accountBill.setMoney(new BigDecimal(substr));  // 设置金额
+                                if(!CommonUtil.strIsNull(substr)) {
+                                    accountBill.setMoney(new BigDecimal(substr));  // 设置金额
+                                }
                                 break;
                             }
                         }

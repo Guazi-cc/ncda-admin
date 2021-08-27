@@ -105,14 +105,51 @@
 
     <select id="selectBarChartData" parameterType="com.ncda.entity.ext.ExtAccountBill" resultMap="ChartResultMap">
         SELECT
-            DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
+            <choose>
+                <when test="xdataType == '1'.toString()">
+                    b.TYPE_ONE_NAME typeName,
+                </when>
+                <otherwise>
+                    DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
+                </otherwise>
+            </choose>
             SUM( MONEY ) money
         FROM
-            account_bill
-        WHERE
-            MONEY_STATE = 0
+            account_bill a
+            <if test="xdataType == '1'.toString()">
+                LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
+            </if>
+        <where>
+            DEL_STATE = '1'
+            <if test="moneyState != null and moneyState != ''">
+                AND MONEY_STATE = #{ moneyState }
+            </if>
+            <if test="moneyMax != null and moneyMax != 0">
+                AND MONEY &lt;= #{ moneyMax }
+            </if>
+            <if test="moneyMin != null and moneyMin != 0">
+                AND MONEY &gt;= #{ moneyMin }
+            </if>
+            <if test="startTime != null">
+                AND DATE &gt;= #{ startTime }
+            </if>
+            <if test="endTime != null">
+                AND DATE &lt;= #{ endTime }
+            </if>
+            <if test="endTime != null">
+                AND DATE &lt;= #{ endTime }
+            </if>
+            <if test="filterKeyword !=null and filterKeyword != ''">
+                AND ITEM_NAME NOT REGEXP #{ filterKeyword }
+            </if>
+        </where>
         GROUP BY
-            fdate
+            <if test="xdataType == '0'.toString()">
+                fdate
+            </if>
+            <if test="xdataType == '1'.toString()">
+                TYPE
+            </if>
     </select>
 
     <select  id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
