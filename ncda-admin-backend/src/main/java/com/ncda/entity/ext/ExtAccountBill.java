@@ -2,6 +2,7 @@ package com.ncda.entity.ext;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ncda.entity.AccountBill;
+import com.ncda.util.AcBiUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -115,7 +116,7 @@ public class ExtAccountBill extends AccountBill implements Serializable {
     }
 
     public String getFilterKeyword() {
-        return filterKeyword;
+        return AcBiUtil.strReplace(filterKeyword, ' ', '|');
     }
 
     public void setFilterKeyword(String filterKeyword) {

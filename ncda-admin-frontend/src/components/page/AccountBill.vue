@@ -107,7 +107,7 @@
           </el-table-column>
           <el-table-column property="itemName" label="名称" width="180">
           </el-table-column>
-          <el-table-column property="money" label="金额">
+          <el-table-column property="money" label="金额" sortable>
             <template slot-scope="scope">
               <span v-if="scope.row.moneyState == 1" class="money-state-in"
                 >+{{ scope.row.money }}</span
@@ -1036,7 +1036,7 @@ export default {
             xData = data.data.map(({ typeName }) => typeName);
           }
           const yData = data.data.map(({ money }) => money);
-          const title = "数据のdiao";
+          const title = "数据の统计";
           this.chartBar.setOption({
             title: Object.assign({}, Util.defaultEchartsOpt.title, {
               text: title

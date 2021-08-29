@@ -55,7 +55,7 @@ const routes = [
         path: '/accountBill',
         component: () => import('@/components/page/AccountBill'),
         meta: {
-          title: '表格1'
+          title: '我的账本'
         }
       },
       {

@@ -121,6 +121,9 @@
             </if>
         <where>
             DEL_STATE = '1'
+            <if test="xdataType == '1'.toString()">
+                AND b.TYPE_ONE_NAME IS NOT NULL
+            </if>
             <if test="moneyState != null and moneyState != ''">
                 AND MONEY_STATE = #{ moneyState }
             </if>
@@ -132,9 +135,6 @@
             </if>
             <if test="startTime != null">
                 AND DATE &gt;= #{ startTime }
-            </if>
-            <if test="endTime != null">
-                AND DATE &lt;= #{ endTime }
             </if>
             <if test="endTime != null">
                 AND DATE &lt;= #{ endTime }
