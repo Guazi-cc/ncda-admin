@@ -155,7 +155,7 @@
             </if>
     </select>
 
-    <select  id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
+    <select id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
         SELECT
             a.DATE,
             SUM( a.MONEY ) MONEY

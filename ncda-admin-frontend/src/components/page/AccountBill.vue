@@ -68,15 +68,15 @@
           <el-button type="primary" size="mini" @click="statistic"
             >统计分析</el-button
           >
+          <el-button type="primary" size="mini" @click="typeManagement"
+            >分类管理</el-button
+          >
           <el-button @click="openUploadDialog" type="primary" size="mini"
-            >数据上传</el-button
+            >上传</el-button
           >
           <el-button @click="exportData" type="primary" size="mini"
-            >数据导出</el-button
+            >导出</el-button
           >
-          <!-- <el-button type="primary" size="mini" @click="typeManagement"
-            >分类管理</el-button
-          > -->
         </el-col>
       </el-row>
     </div>
@@ -513,6 +513,10 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 分类管理 -->
+    <el-dialog title="分类管理" :visible.sync="typeDialogVisible" width="550px">
+    </el-dialog>
   </div>
 </template>
 
@@ -593,7 +597,7 @@ export default {
       previewDialogVisible: false, // 预览弹窗
       compareDialogVisible: false, // 对比弹窗
       sticDialogVisible: false, // 统计弹窗
-      // typeDialogVisible: false, // 类型弹窗
+      typeDialogVisible: false, // 类型弹窗
       advancedSettingShow: false, // 高级设置弹窗
       activeName: "first", // 上传弹窗的 tab
       sticActiveName: "first", // 统计图表弹窗的tab
@@ -880,28 +884,44 @@ export default {
             });
           } else {
             if (
-              data.data.oldContent !== null &&
-              data.data.oldContent !== "" &&
-              data.data.newContent !== null &&
-              data.data.newContent !== ""
+              this.$util.isEmpty(data.data.oldContent) &&
+              this.$util.isEmpty(data.data.newContent)
             ) {
-              this.$message({
-                message: `数据保存失败，${data.message}`,
-                type: "warning",
-                customClass: "my-msg"
-              });
-              this.previewDialogVisible = false;
-              this.compareForm.oldStr = data.data.oldContent;
-              this.compareForm.newStr = data.data.newContent;
-              this.compareForm.newData = data.data.newData;
-              this.compareDialogVisible = true;
-            } else {
               this.$message({
                 message: `数据保存失败，${data.message}`,
                 type: "error",
                 customClass: "my-msg"
               });
+              return;
             }
+            this.$message({
+              message: `数据保存失败，${data.message}`,
+              type: "warning",
+              customClass: "my-msg"
+            });
+            this.previewDialogVisible = false;
+            this.compareForm.oldStr = data.data.oldContent;
+            this.compareForm.newStr = data.data.newContent;
+            this.compareForm.newData = data.data.newData;
+            this.compareDialogVisible = true;
+
+            // if (
+            //   data.data.oldContent !== null &&
+            //   data.data.oldContent !== "" &&
+            //   data.data.newContent !== null &&
+            //   data.data.newContent !== ""
+            // ) {
+            //   this.$message({
+            //     message: `数据保存失败，${data.message}`,
+            //     type: "warning",
+            //     customClass: "my-msg"
+            //   });
+            //   this.previewDialogVisible = false;
+            //   this.compareForm.oldStr = data.data.oldContent;
+            //   this.compareForm.newStr = data.data.newContent;
+            //   this.compareForm.newData = data.data.newData;
+            //   this.compareDialogVisible = true;
+            // }
           }
         })
         .catch(err => {
@@ -1004,9 +1024,9 @@ export default {
       this.sticDialogVisible = true;
       this.sticActiveName = "first";
     },
-    // typeManagement() {
-    //   this.typeDialogVisible = true;
-    // },
+    typeManagement() {
+      this.typeDialogVisible = true;
+    },
     handleNodeClick(data) {
       console.log(data);
     },
@@ -1199,7 +1219,7 @@ export default {
       this.drawBar();
     },
     startTimeFormatter(param) {
-      if (param == null || param == "") {
+      if (this.$util.isEmpty(param)) {
         let date = new Date();
         date.setFullYear(new Date().getFullYear());
         date.setMonth(0);
