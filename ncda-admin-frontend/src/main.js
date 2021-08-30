@@ -7,6 +7,7 @@ import '@/assets/css/common.less'
 import '@/assets/css/variable.less'
 import '@/assets/css/theme/459f75/index.css'
 // import 'element-ui/lib/theme-chalk/index.css';
+import util from "@/assets/js/util";
 
 
 import axios from 'axios'
@@ -17,6 +18,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI, { size: 'medium' })
 Vue.prototype.$axios = axios // axios不能使用use
 Vue.prototype.$echarts = echarts
+Vue.prototype.$util = util
 
 // 使用router.beforeEach注册一个全局前置守卫，对路由进行权限跳转
 router.beforeEach((to, from, next) => {

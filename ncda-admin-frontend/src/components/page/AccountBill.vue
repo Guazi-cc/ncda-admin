@@ -69,7 +69,7 @@
             >统计分析</el-button
           >
           <el-button @click="openUploadDialog" type="primary" size="mini"
-            >上传Bill</el-button
+            >数据上传</el-button
           >
           <el-button @click="exportData" type="primary" size="mini"
             >数据导出</el-button
@@ -99,8 +99,7 @@
           show-summary
           :summary-method="getSummaries"
         >
-          <!-- <el-table-column type="selection" width="45" align="center">
-      </el-table-column> -->
+          <!-- <el-table-column type="selection" width="45" align="center"></el-table-column> -->
           <!-- <el-table-column type="index" label="序号" width="50"> </el-table-column> -->
           <el-table-column property="date" label="日期" width="180" sortable>
             <template slot-scope="scope">
@@ -162,11 +161,14 @@
         </el-row>
       </el-col>
       <el-col :span="4">
-        <div
-          id="calendarHeatmap"
-          class="chart"
+        <CalendarHeatmap
+          ref="calendarHeatmap"
+          @getTableData="getTableData"
+          :searchForm="searchForm"
+          :advanceSetting="advanceSetting"
+          :currentYear="currentYear"
           :style="{ height: rightChartHeigh }"
-        ></div>
+        ></CalendarHeatmap>
       </el-col>
     </el-row>
 
@@ -517,11 +519,13 @@
 <script>
 import { CodeDiff } from "v-code-diff";
 import Util from "@/assets/js/util";
+import CalendarHeatmap from "@/components/page/accountBillChart/CalendarHeatmap";
 
 export default {
   name: "Table",
   components: {
-    CodeDiff
+    CodeDiff,
+    CalendarHeatmap
   },
   data() {
     return {
@@ -1013,7 +1017,7 @@ export default {
     },
     loadChart() {
       this.$nextTick(() => {
-        this.drawCalendarHeatmap();
+        this.$refs.calendarHeatmap.drawCalendarHeatmap();
       });
     },
     handleClick({ paneName }) {
@@ -1131,86 +1135,6 @@ export default {
           });
         });
     },
-    drawCalendarHeatmap() {
-      this.$axios
-        .post("/api/acbi/selectCalendarHeatmapChartData", {
-          itemName: this.searchForm.itemName,
-          year: this.searchForm.yearMonth.substring(0, 4),
-          type: this.searchForm.type,
-          moneyState:
-            this.searchForm.moneyState == "" ||
-            this.searchForm.moneyState == null
-              ? 0
-              : this.searchForm.moneyState,
-          moneyMax: this.advanceSetting.moneyMax,
-          moneyMin: this.advanceSetting.moneyMin,
-          filterKeyword: this.advanceSetting.filterKeyword
-        })
-        .then(res => {
-          const { data } = res;
-          const cdata = data.data.map(({ date, money }) => [date, money]);
-          let _this = this;
-          this.chartCalendarHeatmap.on("click", params => {
-            _this.searchForm.date = params.data[0];
-            _this.getTableData();
-          });
-          this.chartCalendarHeatmap.setOption({
-            // title: {
-            //   top: 5,
-            //   left: "center",
-            //   text: "aaaaaaa"
-            // },
-            tooltip: {
-              formatter: "{c}"
-            },
-            visualMap: {
-              min: 0,
-              max: this.advanceSetting.heatmapMax,
-              // type: "piecewise",
-              calculable: true,
-              orient: "horizontal",
-              left: "center",
-              top: "bottom",
-              itemWidth: 10,
-              // splitNumber: 8,
-              inRange: {
-                color: [
-                  "#ffecb3",
-                  "#ffe082",
-                  "#ffd54f",
-                  "#ffca28",
-                  "#ffc107",
-                  "#ffb300",
-                  "#ffa000",
-                  "#ff8f00",
-                  "#ff6f00"
-                ]
-              }
-            },
-            calendar: {
-              top: 60,
-              left: "center",
-              right: 5,
-              bottom: 40,
-              cellSize: ["auto", 5],
-              range: this.currentYear,
-              // itemStyle: {
-              //   borderWidth: 0.5
-              // },
-              yearLabel: { show: true },
-              orient: "vertical"
-            },
-            series: {
-              type: "heatmap",
-              coordinateSystem: "calendar",
-              data: cdata
-            }
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
     drawRadarChart() {},
     openAdvancedSetting() {
       this.advancedSettingShow = true;
@@ -1289,8 +1213,8 @@ export default {
       if (param == null || param == "") {
         return new Date().Format("yyyy-MM-dd");
       }
-      let monthLast = Util.monthLastDate(new Date(param)); // 当月最后一天
-      return Util.dateToString(new Date(monthLast), "yyyy-MM-dd");
+      let monthLast = this.$util.monthLastDate(new Date(param)); // 当月最后一天
+      return this.$util.dateToString(new Date(monthLast), "yyyy-MM-dd");
     },
     exportData() {
       this.$confirm("将当前页面数据导出为Excel？", "提示", {
@@ -1340,9 +1264,7 @@ export default {
     chartBar() {
       return this.$echarts.init(Util.getDom("bar"));
     },
-    chartCalendarHeatmap() {
-      return this.$echarts.init(Util.getDom("calendarHeatmap"));
-    },
+
     chrtRadar() {
       return this.$echarts.init(Util.getDom("radarChart"));
     },
