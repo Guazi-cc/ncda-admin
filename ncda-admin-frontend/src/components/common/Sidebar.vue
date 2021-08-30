@@ -90,7 +90,7 @@ export default {
           icon: "el-icon-tickets"
         },
         {
-          title: "测试",
+          title: "数字货币",
           path: "/test",
           icon: "el-icon-tickets"
         }

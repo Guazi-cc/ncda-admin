@@ -5,7 +5,11 @@
 
 <script>
 export default {
-  props: ["searchForm", "advanceSetting", "currentYear"],
+  props: {
+    searchForm: Object,
+    advanceSetting: Object,
+    currentYear: { type: Number, default: new Date().getFullYear() }
+  },
   data() {
     return {};
   },

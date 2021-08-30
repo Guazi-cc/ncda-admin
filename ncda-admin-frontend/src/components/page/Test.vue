@@ -1,14 +1,19 @@
 <template>
   <div>
-    测试页面
+    <iframe
+      :src="reportUrl"
+      frameborder="0"
+      style="width:100%; height: 700px;"
+      id="iframeBox"
+    ></iframe>
   </div>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
+      reportUrl: "/sosobMarket.html",
     };
   },
   created() {},

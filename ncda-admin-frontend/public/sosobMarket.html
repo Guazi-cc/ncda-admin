@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- sosobMarket BEGIN -->
+    <div>
+      <div id="sosobMarket"></div>
+      <script
+        type="text/javascript"
+        src="https://www.sosob.io/static/js/sosobMarket.min.js"
+      ></script>
+      <script type="text/javascript">
+        new sosobMarket("#sosobMarket", {
+          w: "1184px",
+          h: "612px",
+          size: 10,
+          totolLimit: "all",
+          rate: "CNY",
+          showRank: true,
+          showVolume: true,
+          showCirculationRate: true,
+          show24HTrend: true,
+          showGlobalPrice: true,
+          showActualMoneyIn: true,
+          showMarketCap: true,
+          showChangePercent: true,
+          showHandRate: true,
+          showCirculatingSupply: true,
+          click: true,
+        });
+      </script>
+    </div>
+    <!-- sosobMarket END -->
+  </body>
+</html>

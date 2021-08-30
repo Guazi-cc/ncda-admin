@@ -62,7 +62,7 @@ const routes = [
         path: '/test',
         component: () => import('@/components/page/Test'),
         meta: {
-          title: '测试'
+          title: '数字货币'
         }
       }
     ]
