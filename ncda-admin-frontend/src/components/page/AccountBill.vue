@@ -71,6 +71,9 @@
           <el-button @click="openUploadDialog" type="primary" size="mini"
             >上传Bill</el-button
           >
+          <el-button @click="exportData" type="primary" size="mini"
+            >数据导出</el-button
+          >
           <!-- <el-button type="primary" size="mini" @click="typeManagement"
             >分类管理</el-button
           > -->
@@ -566,11 +569,11 @@ export default {
         total: 0
       },
       searchForm: {
-        yearMonth: "",    // 年月
-        type: "",         // 类型
-        moneyState: "",   // 收入支出状态
-        date: ""          // 年月日，点击热力图按年月日搜索中会用到
-        // moneyMax: null, 
+        yearMonth: "", // 年月
+        type: "", // 类型
+        moneyState: "", // 收入支出状态
+        date: "" // 年月日，点击热力图按年月日搜索中会用到
+        // moneyMax: null,
         // moneyMin: null,
         // filterKeyword: ""
       },
@@ -742,10 +745,13 @@ export default {
     searchClick() {
       // this.getTableData();
       // this.loadChart();
-      this.searchForm.date = ""     // 搜索条件中没有date 项，给空值
+      this.searchForm.date = ""; // 搜索条件中没有date 项，给空值
       this.loadData();
-      if (this.searchForm.yearMonth != null && this.searchForm.yearMonth != "") {
-        this.currentYear = this.searchForm.yearMonth.substring(0, 4);   // 为日历热力图的当前年份赋值
+      if (
+        this.searchForm.yearMonth != null &&
+        this.searchForm.yearMonth != ""
+      ) {
+        this.currentYear = this.searchForm.yearMonth.substring(0, 4); // 为日历热力图的当前年份赋值
       }
     },
     submitUpload() {
@@ -1145,7 +1151,7 @@ export default {
           const cdata = data.data.map(({ date, money }) => [date, money]);
           let _this = this;
           this.chartCalendarHeatmap.on("click", params => {
-            _this.searchForm.date = params.data[0]
+            _this.searchForm.date = params.data[0];
             _this.getTableData();
           });
           this.chartCalendarHeatmap.setOption({
@@ -1285,6 +1291,43 @@ export default {
       }
       let monthLast = Util.monthLastDate(new Date(param)); // 当月最后一天
       return Util.dateToString(new Date(monthLast), "yyyy-MM-dd");
+    },
+    exportData() {
+      this.$confirm("将当前页面数据导出为Excel？", "提示", {
+        comfirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(() => {
+          require.ensure([], () => {
+            const {
+              export_json_to_excel
+            } = require("@/assets/js/Export2Excel");
+            const exportData = JSON.parse(JSON.stringify(this.tableData));
+            debugger;
+            let num = 0;
+            for (let item of exportData) {
+              item.num = ++num;
+              item.moneyState = item.moneyState == 0 ? "支出" : "收入";
+            }
+            const tHeader = ["日期", "名称", "出/入", "金额", "类型", "备注"];
+            const filterVal = [
+              "date",
+              "itemName",
+              "moneyState",
+              "money",
+              "typeOneName",
+              "comment"
+            ];
+            const formatData = this.formatJson(filterVal, exportData);
+            export_json_to_excel(tHeader, formatData, "我的账本");
+          });
+        })
+        .catch(() => {
+          this.$message("不需要就拉倒");
+        });
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
   computed: {
