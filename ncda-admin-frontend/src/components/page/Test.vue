@@ -13,7 +13,7 @@
 export default {
   data() {
     return {
-      reportUrl: "/sosobMarket.html",
+      reportUrl: "/sosob/sosobMarket.html",
     };
   },
   created() {},
