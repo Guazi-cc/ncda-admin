@@ -15,7 +15,7 @@
         <el-col :span="4">
           <span class="search-label">月份：</span>
           <el-date-picker
-            v-model="searchForm.month"
+            v-model="searchForm.yearMonth"
             type="month"
             placeholder="选择月"
             size="mini"
@@ -566,18 +566,20 @@ export default {
         total: 0
       },
       searchForm: {
-        month: "",
-        type: "",
-        moneyState: ""
-        // moneyMax: null, 全局配置
+        yearMonth: "",    // 年月
+        type: "",         // 类型
+        moneyState: "",   // 收入支出状态
+        date: ""          // 年月日，点击热力图按年月日搜索中会用到
+        // moneyMax: null, 
         // moneyMin: null,
         // filterKeyword: ""
       },
+      // 高级设置（TODO 可继续优化）
       sticSearchForm: {
         monthStart: "",
         monthEnd: "",
-        xdataType: "0",   // 横坐标，0是时间，1是类型
-        moneyState: "0"   // 0是支出，1是收入
+        xdataType: "0", // 横坐标，0是时间，1是类型
+        moneyState: "0" // 0是支出，1是收入
       },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
@@ -626,7 +628,8 @@ export default {
       this.$axios
         .post("/api/acbi/getAccountBill", {
           itemName: this.searchForm.itemName,
-          date: this.searchForm.month,
+          date: this.searchForm.date,
+          yearMonth: this.searchForm.yearMonth,
           pageSize: this.pagination.pageSize,
           currentPage: this.pagination.currentPage,
           type: this.searchForm.type,
@@ -739,9 +742,10 @@ export default {
     searchClick() {
       // this.getTableData();
       // this.loadChart();
+      this.searchForm.date = ""     // 搜索条件中没有date 项，给空值
       this.loadData();
-      if (this.searchForm.month != null && this.searchForm.month != "") {
-        this.currentYear = this.searchForm.month.substring(0, 4);
+      if (this.searchForm.yearMonth != null && this.searchForm.yearMonth != "") {
+        this.currentYear = this.searchForm.yearMonth.substring(0, 4);   // 为日历热力图的当前年份赋值
       }
     },
     submitUpload() {
@@ -1033,7 +1037,7 @@ export default {
           if (this.sticSearchForm.xdataType === "0") {
             xData = data.data.map(({ date }) => date.substring(0, 7));
           } else {
-            xData = data.data.map(({ typeName }) => typeName);
+            xData = data.data.map(({ typeOneName }) => typeOneName);
           }
           const yData = data.data.map(({ money }) => money);
           const title = "数据の统计";
@@ -1125,7 +1129,7 @@ export default {
       this.$axios
         .post("/api/acbi/selectCalendarHeatmapChartData", {
           itemName: this.searchForm.itemName,
-          year: this.searchForm.month.substring(0, 4),
+          year: this.searchForm.yearMonth.substring(0, 4),
           type: this.searchForm.type,
           moneyState:
             this.searchForm.moneyState == "" ||
@@ -1139,6 +1143,11 @@ export default {
         .then(res => {
           const { data } = res;
           const cdata = data.data.map(({ date, money }) => [date, money]);
+          let _this = this;
+          this.chartCalendarHeatmap.on("click", params => {
+            _this.searchForm.date = params.data[0]
+            _this.getTableData();
+          });
           this.chartCalendarHeatmap.setOption({
             // title: {
             //   top: 5,
@@ -1214,6 +1223,7 @@ export default {
       this.getAdvancedSetting();
       this.advancedSettingShow = false;
     },
+    // 加载图数据和表数据
     loadData() {
       this.loadChart();
       this.getTableData();
@@ -1273,7 +1283,7 @@ export default {
       if (param == null || param == "") {
         return new Date().Format("yyyy-MM-dd");
       }
-      let monthLast = Util.monthLastDate(new Date(param))   // 当月最后一天
+      let monthLast = Util.monthLastDate(new Date(param)); // 当月最后一天
       return Util.dateToString(new Date(monthLast), "yyyy-MM-dd");
     }
   },

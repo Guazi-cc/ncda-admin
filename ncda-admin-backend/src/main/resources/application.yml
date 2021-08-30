@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev02
+    active: dev01
   redis:
     host: localhost
     port: 6379

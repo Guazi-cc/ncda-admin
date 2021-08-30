@@ -34,8 +34,11 @@
           <if test="itemName != null and itemName != ''">
              AND a.ITEM_NAME LIKE concat('%', #{ itemName }, '%')
           </if>
+          <if test="yearMonth != null">
+             AND date_format(a.DATE, '%Y-%m') = date_format(#{ yearMonth }, '%Y-%m')
+          </if>
           <if test="date != null">
-             AND date_format(a.DATE, '%Y-%m') = date_format(#{ date }, '%Y-%m')
+              AND a.DATE = #{ date }
           </if>
           <if test="type != null and type != ''">
               AND a.TYPE = #{ type }
@@ -107,7 +110,7 @@
         SELECT
             <choose>
                 <when test="xdataType == '1'.toString()">
-                    b.TYPE_ONE_NAME typeName,
+                    b.TYPE_ONE_NAME typeOneName,
                 </when>
                 <otherwise>
                     DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
