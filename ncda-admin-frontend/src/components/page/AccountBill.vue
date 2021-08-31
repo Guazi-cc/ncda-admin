@@ -443,7 +443,7 @@
             </div>
           </el-tab-pane>
           <el-tab-pane label="雷达图" name="second">
-            <div id="radarChart" class="chart"></div>
+            <div id="radarChart" class="bar-chart"></div>
           </el-tab-pane>
           <el-tab-pane label="giao" name="fourth">雷达图</el-tab-pane>
         </el-tabs>
@@ -548,7 +548,7 @@
             <template slot-scope="scope">
               <el-button
                 circle
-                icon="el-icon-edit-outline"
+                icon="el-icon-edit"
                 type="primary"
                 title="编辑"
                 size="small"
@@ -611,7 +611,7 @@
 import { CodeDiff } from "v-code-diff";
 import Util from "@/assets/js/util";
 import acBiUtil from "@/assets/js/acBiUtil";
-import CalendarHeatmap from "@/components/page/accountBillChart/CalendarHeatmap";
+import CalendarHeatmap from "@/components/page/accountBill/chart/CalendarHeatmap";
 
 export default {
   name: "Table",
@@ -1009,24 +1009,6 @@ export default {
             this.compareForm.newStr = data.data.newContent;
             this.compareForm.newData = data.data.newData;
             this.compareDialogVisible = true;
-
-            // if (
-            //   data.data.oldContent !== null &&
-            //   data.data.oldContent !== "" &&
-            //   data.data.newContent !== null &&
-            //   data.data.newContent !== ""
-            // ) {
-            //   this.$message({
-            //     message: `数据保存失败，${data.message}`,
-            //     type: "warning",
-            //     customClass: "my-msg"
-            //   });
-            //   this.previewDialogVisible = false;
-            //   this.compareForm.oldStr = data.data.oldContent;
-            //   this.compareForm.newStr = data.data.newContent;
-            //   this.compareForm.newData = data.data.newData;
-            //   this.compareDialogVisible = true;
-            // }
           }
         })
         .catch(err => {
@@ -1151,6 +1133,9 @@ export default {
           this.drawBar();
         });
       } else if (paneName === "second") {
+        this.$nextTick(() => {
+          this.drawRadarChart();
+        });
       } else if (paneName === "third") {
       } else {
       }
@@ -1434,12 +1419,11 @@ export default {
           const { data } = res;
           if (data.success) {
             this.$message.success("分类保存成功");
-            this.typeInnerVisible = false;
             this.getOneType();
           } else {
             this.$message.warning("分类保存失败");
-            this.typeInnerVisible = false;
           }
+          this.typeInnerVisible = false;
         })
         .catch(err => {
           console.log(err);
@@ -1454,12 +1438,11 @@ export default {
           const { data } = res;
           if (data.success) {
             this.$message.success("分类更新成功");
-            this.typeInnerVisible = false;
             this.getOneType();
           } else {
             this.$message.warning("分类更新失败");
-            this.typeInnerVisible = false;
           }
+          this.typeInnerVisible = false;
         })
         .catch(err => {
           console.log(err);
@@ -1480,7 +1463,6 @@ export default {
     chartBar() {
       return this.$echarts.init(Util.getDom("bar"));
     },
-
     chrtRadar() {
       return this.$echarts.init(Util.getDom("radarChart"));
     },
