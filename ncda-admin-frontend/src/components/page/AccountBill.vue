@@ -537,7 +537,12 @@
           </el-table-column>
           <el-table-column property="typeOneName" label="名称" width="70">
           </el-table-column>
-          <el-table-column property="typeKeyword" label="关键词" width="145">
+          <el-table-column
+            property="typeKeyword"
+            label="关键词"
+            show-overflow-tooltip
+            width="145"
+          >
           </el-table-column>
           <el-table-column label="操作" width="140" align="center">
             <template slot-scope="scope">
@@ -574,10 +579,18 @@
             :rules="typeManageRules"
           >
             <el-form-item label="分类名" prop="typeOneName">
-              <el-input v-model="typeManageForm.typeOneName"></el-input>
+              <el-input
+                placeholder="请输入分类名"
+                v-model="typeManageForm.typeOneName"
+              ></el-input>
             </el-form-item>
             <el-form-item label="关键词" prop="typeKeyword">
-              <el-input v-model="typeManageForm.typeKeyword"></el-input>
+              <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="请输入本类关键词，词与词之间用空格分隔"
+                v-model="typeManageForm.typeKeyword"
+              ></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -597,6 +610,7 @@
 <script>
 import { CodeDiff } from "v-code-diff";
 import Util from "@/assets/js/util";
+import acBiUtil from "@/assets/js/acBiUtil";
 import CalendarHeatmap from "@/components/page/accountBillChart/CalendarHeatmap";
 
 export default {
@@ -955,8 +969,14 @@ export default {
     },
     /************************************************/
     savePreviewData() {
+      const data = acBiUtil.analysisType(
+        this.previewTableData,
+        this.typeOptions
+      );
+      console.log(data);
+      debugger;
       this.$axios
-        .post("/api/acbi/saveUploadData", this.previewTableData)
+        .post("/api/acbi/saveUploadData", data)
         .then(res => {
           const { data } = res;
           if (data.success) {

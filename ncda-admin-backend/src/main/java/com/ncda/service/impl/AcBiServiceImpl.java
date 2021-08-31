@@ -107,7 +107,7 @@ public class AcBiServiceImpl implements AcBiService {
      * @return 1 成功，0 失败
      */
     public Integer saveData(List<ExtAccountBill> accountBillList) {
-        Integer state = acBiMapper.batchSaveUploadData(AcBiUtil.analysisType(accountBillList));    // 没有数据才可以保存
+        Integer state = acBiMapper.batchSaveUploadData(accountBillList);    // 没有数据才可以保存
         if (state == accountBillList.size()) {
             ExtAccountBillUploadRecord uploadRecord = new ExtAccountBillUploadRecord();
             uploadRecord.setDate(accountBillList.get(0).getDate());
