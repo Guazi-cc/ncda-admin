@@ -125,19 +125,10 @@ public class AcBiServiceImpl implements AcBiService {
         return acBiTypeMapper.selectLevelOneType();
     }
 
-    @Override
-    public List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId) {
-        return acBiTypeMapper.selectLevelTwoType(oneTypeId);
-    }
 
     @Override
     public List<ExtAccountBillUploadRecord> getAllYearAndMonth() {
         return acBilUploadRecordMapper.getAllYearAndMonth();
-    }
-
-    @Override
-    public List<ExtAccountBillType> selectTypeOfTree() {
-        return acBiTypeMapper.selectTypeOfTree();
     }
 
 
@@ -168,5 +159,25 @@ public class AcBiServiceImpl implements AcBiService {
         accountBill.setMoneyMin((Double) redisUtil.get("moneyMin"));
         accountBill.setFilterKeyword((String) redisUtil.get("filterKeyword"));
         return accountBill;
+    }
+
+    @Override
+    public Integer saveType(ExtAccountBillType accountBillType) {
+        return acBiTypeMapper.saveType(accountBillType);
+    }
+
+    @Override
+    public Integer deleteType(String typeId) {
+        Integer delState = acBiTypeMapper.deleteType(typeId);
+        if (delState > 0) {
+            acBiMapper.deleteAcBiTypeByTypeId(typeId);
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer updateType(ExtAccountBillType accountBillType) {
+        return acBiTypeMapper.updateType(accountBillType);
     }
 }

@@ -47,4 +47,6 @@ public interface AcBiMapper {
     List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
 
     List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
+
+    Integer deleteAcBiTypeByTypeId(String typeId);
 }

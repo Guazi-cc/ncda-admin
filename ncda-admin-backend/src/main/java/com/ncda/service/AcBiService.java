@@ -7,9 +7,7 @@ import com.ncda.entity.result.ResultData;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface AcBiService {
 
@@ -59,12 +57,25 @@ public interface AcBiService {
     List<ExtAccountBillType> selectLevelOneType();
 
     /**
-     * 获取二级分类
+     * 保存一级分类
+     * @param accountBillType
      * @return
      */
-    List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId);
+    Integer saveType(ExtAccountBillType accountBillType);
 
-    List<ExtAccountBillType> selectTypeOfTree();
+    /**
+     * 更新一级分类
+     * @param accountBillType
+     * @return
+     */
+    Integer updateType(ExtAccountBillType accountBillType);
+
+    /**
+     * 删除一级分类
+     * @param typeId
+     * @return
+     */
+    Integer deleteType(String typeId);
 
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
 

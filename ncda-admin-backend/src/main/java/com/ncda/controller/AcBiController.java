@@ -89,11 +89,29 @@ public class AcBiController {
         return ResultData.createSuccessResult("一级分类查询成功", accountBillTypes);
     }
 
-    // 暂未用到
-    @GetMapping("/getTwoType")
-    public ResultData getTwoType(String oneTypeID) {
-        List<ExtAccountBillType> accountBillTypes = acBiService.selectLevelTwoType(Integer.parseInt(oneTypeID));
-        return ResultData.createSuccessResult("二级分类查询成功", accountBillTypes);
+    @PostMapping("/saveType")
+    public ResultData saveType(@RequestBody ExtAccountBillType accountBillType) {
+        if (acBiService.saveType(accountBillType) > 0) {
+            return ResultData.createSuccessResult("分类保存成功", true);
+        }
+        return ResultData.createFailResultData("分类保存失败");
+    }
+
+    @PostMapping("/updateType")
+    public ResultData updateType(@RequestBody ExtAccountBillType accountBillType) {
+        if (acBiService.updateType(accountBillType) > 0) {
+            return ResultData.createSuccessResult("分类更新成功", true);
+        }
+        return ResultData.createFailResultData("分类更新失败");
+    }
+
+    @GetMapping("/deleteType")
+    public ResultData deleteType(String typeId) {
+        Integer integer = acBiService.deleteType(typeId);
+        if (integer > 0) {
+            return ResultData.createSuccessResult("分类删除成功", true);
+        }
+        return ResultData.createFailResultData("分类删除失败");
     }
 
     // 暂未用到
@@ -101,13 +119,6 @@ public class AcBiController {
     public ResultData getAllYearAndMonth() {
         List<ExtAccountBillUploadRecord> allYearAndMonth = acBiService.getAllYearAndMonth();
         return ResultData.createSuccessResult("查询成功", allYearAndMonth);
-    }
-
-    // 暂未用到
-    @GetMapping("/selectTypeOfTree")
-    public ResultData selectTypeOfTree() {
-        List<ExtAccountBillType> accountBillTypes = acBiService.selectTypeOfTree();
-        return ResultData.createSuccessResult("树形分类查询成功", accountBillTypes);
     }
 
     @PostMapping("/selectBarChartData")

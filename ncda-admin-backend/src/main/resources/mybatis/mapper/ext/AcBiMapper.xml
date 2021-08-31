@@ -191,4 +191,10 @@
             a.DATE
     </select>
 
+    <update id="deleteAcBiTypeByTypeId" parameterType="string">
+        update account_bill
+        SET TYPE = NULL
+        where TYPE = #{ 0 }
+    </update>
+
 </mapper>

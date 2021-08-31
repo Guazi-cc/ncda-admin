@@ -10,7 +10,9 @@ public interface AcBiTypeMapper {
 
     List<ExtAccountBillType> selectLevelOneType();
 
-    List<ExtAccountBillType> selectLevelTwoType(Integer oneTypeId);
+    Integer saveType(ExtAccountBillType accountBillType);
 
-    List<ExtAccountBillType> selectTypeOfTree();
+    Integer updateType(ExtAccountBillType accountBillType);
+
+    Integer deleteType(String typeId);
 }

@@ -10,14 +10,28 @@
     <!-- sosobMarket BEGIN -->
     <div>
       <div id="sosobMarket"></div>
-      <script
-        type="text/javascript"
-        src="./sosobMarket.min.js"
-      ></script>
+      <script type="text/javascript" src="./sosobMarket.min.js"></script>
       <script type="text/javascript">
+        let screenWidth;
+        let screenHeight = 500;
+        window.addEventListener("load", () => {
+          screenWidth = document.documentElement.clientWidth;
+          screenHeight = document.documentElement.clientHeight;
+          window.addEventListener("resize", () => {
+            screenWidth = document.documentElement.clientWidth;
+            screenHeight = document.documentElement.clientHeight;
+            console.log("height|||" + screenHeight);
+            console.log("width---" + screenWidth);
+          });
+        });
+
+        let getScreenHeight = () => {
+          return screenHeight + "px";
+        };
+
         new sosobMarket("#sosobMarket", {
-          w: "1184px",
-          h: "612px",
+          w: screenWidth + "px",
+          h: screenHeight + "px",
           size: 10,
           totolLimit: "all",
           rate: "USD",
