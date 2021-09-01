@@ -172,71 +172,14 @@
     </el-row>
 
     <!--编辑-弹出层-->
-    <el-dialog
-      title="编辑"
-      :visible.sync="isShowEditDialog"
-      width="430px"
-      @close="dialogClose"
-    >
-      <el-form
-        ref="editForm"
-        :model="formFileds"
-        label-width="55px"
-        :rules="rules"
-      >
-        <el-form-item label="日期">
-          <el-date-picker
-            v-model="formFileds.date"
-            disabled
-            value-format="yyyy-MM-dd"
-            :editable="false"
-            :clearable="false"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="名称" prop="itemName">
-          <el-input v-model="formFileds.itemName" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="金额" prop="money">
-          <el-input v-model="formFileds.money" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="money">
-          <el-radio-group v-model="formFileds.moneyState" disabled>
-            <el-radio-button :label="0">支出</el-radio-button>
-            <el-radio-button :label="1">收入</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="类型" prop="type">
-          <el-select
-            v-model="formFileds.type"
-            placeholder="请选择"
-            style="width: 100% !important;"
-          >
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.typeId"
-              :label="item.typeOneName"
-              :value="item.typeId"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="comment">
-          <el-input v-model="formFileds.comment"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            @click="handleEdit()"
-            class="pull-right margin-l-25"
-            >确定</el-button
-          >
-          <el-button @click="isShowEditDialog = false" class="pull-right"
-            >取消</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <EditDialog
+      ref="eidtDialog"
+      :isShowEditDialog="isShowEditDialog"
+      :formFileds="formFileds"
+      :typeOptions="typeOptions"
+      @closeEditDialog="closeEditDialog"
+      @getTableData="getTableData"
+    ></EditDialog>
 
     <!-- 上传Dialog -->
     <el-dialog
@@ -285,7 +228,87 @@
             </div>
           </el-tab-pane>
           <el-tab-pane label="上传记录" name="third">
-            <div class="upload-box"></div>
+            <div class="upload-box" style="display: block;">
+              <el-collapse v-model="uploadRecordActive" accordion>
+                <el-collapse-item name="1">
+                  <template slot="title">
+                    <i class="header-icon el-icon-document"></i
+                    >&nbsp;&nbsp;账单时间：2021.8&nbsp;&nbsp;&nbsp;&nbsp;
+                    <i class="header-icon el-icon-date"></i
+                    >&nbsp;&nbsp;上传日期：2021.8.31
+                    15：00&nbsp;&nbsp;&nbsp;&nbsp;
+                    <el-button type="text" @click.stop="clickTest"
+                      >查看</el-button
+                    >
+                  </template>
+                  <template>
+                    <div>
+                      历史上传记录：
+                    </div>
+                    <el-button type="text" @click.stop="clickTest"
+                      >查看</el-button
+                    >
+                    <div>
+                      <el-timeline>
+                        <el-timeline-item
+                          v-for="(activity, index) in activities"
+                          :key="index"
+                          :icon="activity.icon"
+                          :type="activity.type"
+                          :color="activity.color"
+                          :size="activity.size"
+                          :timestamp="activity.timestamp"
+                        >
+                          {{ activity.content }}
+                        </el-timeline-item>
+                      </el-timeline>
+                    </div>
+                  </template>
+                </el-collapse-item>
+                <el-collapse-item title="反馈 Feedback" name="2">
+                  <div>
+                    控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；
+                  </div>
+                  <div>
+                    页面反馈：操作后，通过页面元素的变化清晰地展现当前状态。
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="效率 Efficiency" name="3">
+                  <div>简化流程：设计简洁直观的操作流程；</div>
+                  <div>
+                    清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；
+                  </div>
+                  <div>
+                    帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="可控 Controllability" name="4">
+                  <div>
+                    用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；
+                  </div>
+                  <div>
+                    结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="test" name="ff">
+            <div class="upload-box">
+              <el-timeline>
+                <el-timeline-item
+                  v-for="(activity, index) in activities"
+                  :key="index"
+                  :icon="activity.icon"
+                  :type="activity.type"
+                  :color="activity.color"
+                  :size="activity.size"
+                  :timestamp="activity.timestamp"
+                >
+                  {{ activity.content }}
+                </el-timeline-item>
+              </el-timeline>
+            </div>
           </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
@@ -612,12 +635,14 @@ import { CodeDiff } from "v-code-diff";
 import Util from "@/assets/js/util";
 import acBiUtil from "@/assets/js/acBiUtil";
 import CalendarHeatmap from "@/components/page/accountBill/chart/CalendarHeatmap";
+import EditDialog from "@/components/page/accountBill/dialog/EditDialog";
 
 export default {
   name: "Table",
   components: {
     CodeDiff,
-    CalendarHeatmap
+    CalendarHeatmap,
+    EditDialog
   },
   data() {
     return {
@@ -722,7 +747,31 @@ export default {
       currentYear: new Date().getFullYear(),
       heatmapMax: 200,
       hiddenNum: 1,
-      innerDialogTitle: ""
+      innerDialogTitle: "",
+      uploadRecordActive: "1",
+      activities: [
+        {
+          content: "支持使用图标",
+          timestamp: "2018-04-12 20:46",
+          size: "large",
+          type: "primary",
+          icon: "el-icon-more"
+        },
+        {
+          content: "支持自定义颜色",
+          timestamp: "2018-04-03 20:46",
+          color: "#0bbd87"
+        },
+        {
+          content: "支持自定义尺寸",
+          timestamp: "2018-04-03 20:46",
+          size: "large"
+        },
+        {
+          content: "默认样式的节点",
+          timestamp: "2018-04-03 20:46"
+        }
+      ]
     };
   },
   mounted() {
@@ -781,13 +830,8 @@ export default {
       // 当前选中仅一行时操作-（当前表格行高亮）
       selection.length !== 1 && this.$refs.list.setCurrentRow();
     },
-    dialogClose() {
-      // 清空编辑表单
-      this.$refs.editForm.resetFields();
-    },
     rowEdit(index, row) {
       this.setCurRowChecked(row);
-
       // 给编辑弹出层赋值
       // ***这里需要注意的是：因为加了排序 所以tableData的顺序和实际显示的行顺序不一样
       for (const key in this.formFileds) {
@@ -795,27 +839,8 @@ export default {
       }
       this.isShowEditDialog = true;
     },
-    handleEdit() {
-      this.$refs.editForm.validate(isValid => {
-        if (!isValid) return;
-        console.log(this.formFileds);
-        this.$axios
-          .post("/api/acbi/updateAcBiData", this.formFileds)
-          .then(res => {
-            const { data } = res;
-            if (data.success) {
-              this.$message.success("数据更新成功");
-              this.getTableData();
-              this.isShowEditDialog = false;
-            } else {
-              this.$message.warning("数据更新失败");
-            }
-          })
-          .catch(err => {
-            console.log(err);
-            this.$message.error("数据更新失败，发生了一些错误哈哈");
-          });
-      });
+    closeEditDialog() {
+      this.isShowEditDialog = false;
     },
     setCurRowChecked(row) {
       this.$refs.tableRef.clearSelection();
@@ -847,8 +872,6 @@ export default {
       this.activeName = "first";
     },
     searchClick() {
-      // this.getTableData();
-      // this.loadChart();
       this.searchForm.date = ""; // 搜索条件中没有date 项，给空值
       this.loadData();
       if (
@@ -1435,6 +1458,9 @@ export default {
     },
     typeInnerDialogClose() {
       this.$refs["typeManageForm"].resetFields();
+    },
+    clickTest() {
+      this.$message("test");
     }
   },
   computed: {
