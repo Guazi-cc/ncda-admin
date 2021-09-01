@@ -10,6 +10,7 @@
             style="width: 140px !important;"
             size="mini"
             clearable
+            @keyup.enter.native="searchClick"
           ></el-input>
         </el-col>
         <el-col :span="4">
