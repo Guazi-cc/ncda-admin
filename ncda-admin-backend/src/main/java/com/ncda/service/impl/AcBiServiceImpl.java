@@ -111,6 +111,7 @@ public class AcBiServiceImpl implements AcBiService {
             uploadRecord.setDate(accountBillList.get(0).getDate());
             uploadRecord.setFileContent(AcBiReadUtil.getContent());
             uploadRecord.setUploadTime(new Date());
+            uploadRecord.setDelState("0");
             // 每一次保存成功后都会在记录表中加入一条信息
             acBilUploadRecordMapper.saveUploadRecordData(uploadRecord);
             return 1;

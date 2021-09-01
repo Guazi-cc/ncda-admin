@@ -4,7 +4,7 @@
 
   <insert id="saveUploadRecordData" parameterType="com.ncda.entity.ext.ExtAccountBillUploadRecord" >
     insert into account_bill_upload_record (DATE, FILE_CONTENT, DEL_STATE, UPLOAD_TIME)
-    values (#{date,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR}, '1', #{uploadTime,jdbcType=TIMESTAMP})
+    values (#{date,jdbcType=DATE}, #{fileContent,jdbcType=LONGVARCHAR}, #{delState,jdbcType=CHAR},, #{uploadTime,jdbcType=TIMESTAMP})
   </insert>
 
   <select id="selectCountByYearMonth" parameterType="java.lang.Integer" resultType="java.lang.Integer">

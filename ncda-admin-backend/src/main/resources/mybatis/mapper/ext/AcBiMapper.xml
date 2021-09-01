@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ncda.dao.ext.AcBiMapper">
+<mapper namespace="com.ncda.dao.ext.AcBiMapper" >
     <resultMap id="BaseResultMap" type="com.ncda.entity.ext.ExtAccountBill">
         <id column="ID" property="id" jdbcType="INTEGER"/>
         <result column="DATE" property="date" jdbcType="DATE"/>
@@ -19,48 +19,48 @@
         <result column="MONEY" property="money" jdbcType="DECIMAL"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List" >
     ID, DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME
   </sql>
 
-    <select id="getAccountBill" resultMap="BaseResultMap">
-        SELECT
+  <select id="getAccountBill" resultMap="BaseResultMap">
+    SELECT
         a.ID, a.DATE, a.MONEY, a.MONEY_STATE, a.TYPE, a.COMMENT, a.DEL_STATE, a.ITEM_NAME, b.TYPE_ONE_NAME
-        FROM
+    FROM
         account_bill a
-        LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
-        <where>
-            DEL_STATE = '0'
-            <if test="itemName != null and itemName != ''">
-                AND a.ITEM_NAME LIKE concat('%', #{ itemName }, '%')
-            </if>
-            <if test="yearMonth != null">
-                AND date_format(a.DATE, '%Y-%m') = date_format(#{ yearMonth }, '%Y-%m')
-            </if>
-            <if test="date != null">
-                AND a.DATE = #{ date }
-            </if>
-            <if test="type != null and type != ''">
-                AND a.TYPE = #{ type }
-            </if>
-            <if test="moneyState != null and moneyState != ''">
-                AND a.MONEY_STATE = #{ moneyState }
-            </if>
-        </where>
-    </select>
+      LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
+      <where>
+          DEL_STATE = '0'
+          <if test="itemName != null and itemName != ''">
+             AND a.ITEM_NAME LIKE concat('%', #{ itemName }, '%')
+          </if>
+          <if test="yearMonth != null">
+             AND date_format(a.DATE, '%Y-%m') = date_format(#{ yearMonth }, '%Y-%m')
+          </if>
+          <if test="date != null">
+              AND a.DATE = #{ date }
+          </if>
+          <if test="type != null and type != ''">
+              AND a.TYPE = #{ type }
+          </if>
+          <if test="moneyState != null and moneyState != ''">
+              AND a.MONEY_STATE = #{ moneyState }
+          </if>
+      </where>
+  </select>
 
-    <insert id="batchSaveUploadData" parameterType="java.util.List">
-        insert into account_bill (DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME) values
-        <foreach collection="acBiList" item="acBi" separator=",">
-            (#{ acBi.date },
-            #{ acBi.money },
-            #{ acBi.moneyState },
-            #{ acBi.type },
-            #{ acBi.comment },
-            '0',
-            #{ acBi.itemName })
-        </foreach>
-    </insert>
+  <insert id="batchSaveUploadData" parameterType="java.util.List">
+    insert into account_bill (DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME) values
+      <foreach collection="acBiList" item="acBi" separator=",">
+        (#{ acBi.date },
+         #{ acBi.money },
+         #{ acBi.moneyState },
+         #{ acBi.type },
+         #{ acBi.comment },
+        '0',
+         #{ acBi.itemName })
+      </foreach>
+  </insert>
 
     <delete id="deleteDataByYearMonth" parameterType="java.lang.Integer">
         DELETE FROM account_bill
@@ -99,20 +99,20 @@
 
     <select id="selectBarChartData" parameterType="com.ncda.entity.ext.ExtAccountBill" resultMap="ChartResultMap">
         SELECT
-        <choose>
-            <when test="xdataType == '1'.toString()">
-                b.TYPE_ONE_NAME typeOneName,
-            </when>
-            <otherwise>
-                DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
-            </otherwise>
-        </choose>
-        SUM( MONEY ) money
+            <choose>
+                <when test="xdataType == '1'.toString()">
+                    b.TYPE_ONE_NAME typeOneName,
+                </when>
+                <otherwise>
+                    DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
+                </otherwise>
+            </choose>
+            SUM( MONEY ) money
         FROM
-        account_bill a
-        <if test="xdataType == '1'.toString()">
-            LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
-        </if>
+            account_bill a
+            <if test="xdataType == '1'.toString()">
+                LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
+            </if>
         <where>
             DEL_STATE = '0'
             <if test="xdataType == '1'.toString()">
@@ -129,39 +129,39 @@
             </if>
         </where>
         GROUP BY
-        <if test="xdataType == '0'.toString()">
-            fdate
-        </if>
-        <if test="xdataType == '1'.toString()">
-            TYPE
-        </if>
+            <if test="xdataType == '0'.toString()">
+                fdate
+            </if>
+            <if test="xdataType == '1'.toString()">
+                TYPE
+            </if>
     </select>
 
     <select id="selectCalendarHeatmapChartData" resultMap="ChartResultMap">
         SELECT
-        a.DATE,
-        SUM( a.MONEY ) MONEY
+            a.DATE,
+            SUM( a.MONEY ) MONEY
         FROM
-        (
-        SELECT DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME, USER_ID FROM account_bill
-        <where>
-            DEL_STATE = '0'
-            <if test="itemName != null and itemName != ''">
-                AND ITEM_NAME LIKE concat('%', #{ itemName }, '%')
-            </if>
-            <if test="year != null and year != ''">
-                AND YEAR(DATE) = #{ year }
-            </if>
-            <if test="type != null and type != ''">
-                AND TYPE = #{ type }
-            </if>
-            <if test="moneyState != null and moneyState != ''">
-                AND MONEY_STATE = #{ moneyState }
-            </if>
-        </where>
-        ) a
+            (
+              SELECT DATE, MONEY, MONEY_STATE, TYPE, COMMENT, DEL_STATE, ITEM_NAME, USER_ID FROM account_bill
+              <where>
+                  DEL_STATE = '0'
+                  <if test="itemName != null and itemName != ''">
+                      AND ITEM_NAME LIKE concat('%', #{ itemName }, '%')
+                  </if>
+                  <if test="year != null and year != ''">
+                      AND YEAR(DATE) = #{ year }
+                  </if>
+                  <if test="type != null and type != ''">
+                      AND TYPE = #{ type }
+                  </if>
+                  <if test="moneyState != null and moneyState != ''">
+                      AND MONEY_STATE = #{ moneyState }
+                  </if>
+              </where>
+            ) a
         GROUP BY
-        a.DATE
+            a.DATE
     </select>
 
     <update id="deleteAcBiTypeByTypeId" parameterType="string">
