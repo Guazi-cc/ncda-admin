@@ -3,7 +3,7 @@ export default {
    * 根据关键词分类
    * @param {*} data 数据集合
    * @param {*} typeList 分类集合
-   * @returns 
+   * @returns
    */
   analysisType(data, typeList) {
     for (let e of typeList) {
@@ -11,8 +11,10 @@ export default {
         let keywordList = e.typeKeyword.split(" ");
         for (let d of data) {
           for (let keyword of keywordList) {
-            if (d.itemName.includes(keyword)) {
-              d.type = e.typeId;
+            if (keyword !== "") {
+              if (d.itemName.includes(keyword.trim())) {
+                d.type = e.typeId;
+              }
             }
           }
         }

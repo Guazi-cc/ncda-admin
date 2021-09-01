@@ -16,9 +16,9 @@ public class AcBiUtil {
         return calendar;
     }
 
-    public static String strReplace(String str, char oldChar, char newChar) {
+    public static String strReplace(String str, String delimiter) {
         if (!CommonUtil.strIsNull(str)) {
-            return str.replace(oldChar, newChar);
+            return String.join("|", str.split("\\s+"));
         }
         return str;
     }

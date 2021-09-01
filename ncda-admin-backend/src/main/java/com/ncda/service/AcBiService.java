@@ -1,10 +1,7 @@
 package com.ncda.service;
 
-import com.ncda.entity.ext.ExtAccountBill;
-import com.ncda.entity.ext.ExtAccountBillType;
-import com.ncda.entity.ext.ExtAccountBillUploadRecord;
+import com.ncda.entity.ext.*;
 import com.ncda.entity.result.ResultData;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.InputStream;
 import java.util.List;
@@ -79,12 +76,12 @@ public interface AcBiService {
 
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
 
-    List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
+    List<ChartEntiey> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
+    List<ChartEntiey> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
 
-    Boolean saveAdvancedSetting(@RequestBody ExtAccountBill accountBill);
+    Boolean saveAdvancedSetting(AdvancedSetting advancedSetting);
 
-    ExtAccountBill getAdvancedSetting();
+    AdvancedSetting getAdvancedSetting();
 
 }

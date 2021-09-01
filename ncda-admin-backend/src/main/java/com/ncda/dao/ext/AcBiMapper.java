@@ -1,11 +1,12 @@
 package com.ncda.dao.ext;
 
+import com.ncda.entity.ext.AdvancedSetting;
+import com.ncda.entity.ext.ChartEntiey;
 import com.ncda.entity.ext.ExtAccountBill;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 public interface AcBiMapper {
@@ -44,9 +45,31 @@ public interface AcBiMapper {
      * @param accountBill 查询条件
      * @return 图表数据
      */
-    List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill);
+    List<ChartEntiey> selectBarChartData(ExtAccountBill accountBill);
 
-    List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
+    /**
+     * 查询日历日历热力图的数据
+     * @param accountBill
+     * @return
+     */
+    List<ChartEntiey> selectCalendarHeatmapChartData(ExtAccountBill accountBill);
 
+    /**
+     * 根据类型id 删除账单的类型
+     * @param typeId
+     * @return
+     */
     Integer deleteAcBiTypeByTypeId(String typeId);
+
+    /**
+     * 根据高级设置将数据过滤（逻辑删除）
+     * @param advancedSetting
+     * @return
+     */
+    Integer filterDataByAdvanceSetting(AdvancedSetting advancedSetting);
+
+    /**
+     * 恢复所有被删除的数据
+     */
+    void recoverData();
 }

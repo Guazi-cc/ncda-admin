@@ -15,7 +15,7 @@
     WHERE
         YEAR ( DATE ) = #{year}
         AND MONTH ( DATE ) = #{month}
-        AND DEL_STATE = '1'
+        AND DEL_STATE = '0'
   </select>
 
   <select id="selectDataByYearMonth" parameterType="java.lang.Integer" resultType="com.ncda.entity.ext.ExtAccountBillUploadRecord">
@@ -26,22 +26,22 @@
     WHERE
       YEAR ( DATE ) = #{year}
       AND MONTH ( DATE ) = #{month}
-      AND DEL_STATE = '1'
+      AND DEL_STATE = '0'
   </select>
 
   <update id="deleteOldDataByYearMonth" parameterType="java.lang.Integer">
     update account_bill_upload_record
     <set>
-      DEL_STATE = '0',
+      DEL_STATE = '1',
     </set>
     where
       YEAR ( DATE ) = #{year}
       AND MONTH ( DATE ) = #{month}
-      AND DEL_STATE = '1'
+      AND DEL_STATE = '0'
   </update>
 
   <select id="getAllYearAndMonth" resultType="com.ncda.entity.ext.ExtAccountBillUploadRecord">
-    SELECT DATE FROM account_bill_upload_record WHERE DEL_STATE = 1
+    SELECT DATE FROM account_bill_upload_record WHERE DEL_STATE = '0'
   </select>
 
 </mapper>

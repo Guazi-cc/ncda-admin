@@ -2,9 +2,7 @@ package com.ncda.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.ncda.entity.ext.ExtAccountBill;
-import com.ncda.entity.ext.ExtAccountBillType;
-import com.ncda.entity.ext.ExtAccountBillUploadRecord;
+import com.ncda.entity.ext.*;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,19 +121,19 @@ public class AcBiController {
 
     @PostMapping("/selectBarChartData")
     public ResultData selectBarChartData(@RequestBody ExtAccountBill accountBill) {
-        List<ExtAccountBill> accountBills = acBiService.selectBarChartData(accountBill);
-        return ResultData.createSuccessResult("柱状图信息查询成功", accountBills);
+        List<ChartEntiey> chartEntieyList = acBiService.selectBarChartData(accountBill);
+        return ResultData.createSuccessResult("柱状图信息查询成功", chartEntieyList);
     }
 
     @PostMapping("/selectCalendarHeatmapChartData")
     public ResultData selectCalendarHeatmapChartData(@RequestBody ExtAccountBill accountBill) {
-        List<ExtAccountBill> accountBills = acBiService.selectCalendarHeatmapChartData(accountBill);
-        return ResultData.createSuccessResult("日历热力图信息查询成功", accountBills);
+        List<ChartEntiey> chartEntieyList = acBiService.selectCalendarHeatmapChartData(accountBill);
+        return ResultData.createSuccessResult("日历热力图信息查询成功", chartEntieyList);
     }
 
     @PostMapping("/saveAdvancedSetting")
-    public ResultData saveAdvancedSetting(@RequestBody ExtAccountBill accountBill) {
-        if (acBiService.saveAdvancedSetting(accountBill)) {
+    public ResultData saveAdvancedSetting(@RequestBody AdvancedSetting advancedSetting) {
+        if (acBiService.saveAdvancedSetting(advancedSetting)) {
             return ResultData.createSuccessResult("高级设置保存成功", true);
         }
         return ResultData.createFailResultData("高级设置保存失败");
@@ -143,7 +141,7 @@ public class AcBiController {
 
     @GetMapping("/getAdvancedSetting")
     public ResultData getAdvancedSetting() {
-        ExtAccountBill advancedSetting = acBiService.getAdvancedSetting();
+        AdvancedSetting advancedSetting = acBiService.getAdvancedSetting();
         return ResultData.createSuccessResult("高级设置获取成功", advancedSetting);
     }
 }

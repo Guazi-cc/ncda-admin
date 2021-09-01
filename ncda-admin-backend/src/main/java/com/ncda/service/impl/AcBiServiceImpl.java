@@ -3,9 +3,7 @@ package com.ncda.service.impl;
 import com.ncda.dao.ext.AcBiMapper;
 import com.ncda.dao.ext.AcBiTypeMapper;
 import com.ncda.dao.ext.AcBilUploadRecordMapper;
-import com.ncda.entity.ext.ExtAccountBill;
-import com.ncda.entity.ext.ExtAccountBillType;
-import com.ncda.entity.ext.ExtAccountBillUploadRecord;
+import com.ncda.entity.ext.*;
 import com.ncda.entity.result.ResultData;
 import com.ncda.service.AcBiService;
 import com.ncda.util.AcBiReadUtil;
@@ -133,32 +131,39 @@ public class AcBiServiceImpl implements AcBiService {
 
 
     @Override
-    public List<ExtAccountBill> selectBarChartData(ExtAccountBill accountBill) {
+    public List<ChartEntiey> selectBarChartData(ExtAccountBill accountBill) {
         return acBiMapper.selectBarChartData(accountBill);
     }
 
     @Override
-    public List<ExtAccountBill> selectCalendarHeatmapChartData(ExtAccountBill accountBill) {
-//        accountBill.setFilterKeyword(AcBiUtil.strReplace(accountBill.getFilterKeyword(), ' ', '|'));
+    public List<ChartEntiey> selectCalendarHeatmapChartData(ExtAccountBill accountBill) {
         return acBiMapper.selectCalendarHeatmapChartData(accountBill);
     }
 
     @Override
-    public Boolean saveAdvancedSetting(ExtAccountBill accountBill) {
-        return (redisUtil.set("heatmapMax", accountBill.getHeatmapMax()) &&
-                redisUtil.set("moneyMax", accountBill.getMoneyMax()) &&
-                redisUtil.set("moneyMin", accountBill.getMoneyMin()) &&
-                redisUtil.set("filterKeyword", accountBill.getFilterKeyword()));
+    public Boolean saveAdvancedSetting(AdvancedSetting advancedSetting) {
+        boolean flag = redisUtil.set("heatmapMax", advancedSetting.getHeatmapMax()) &&
+                redisUtil.set("moneyMax", advancedSetting.getMoneyMax()) &&
+                redisUtil.set("moneyMin", advancedSetting.getMoneyMin()) &&
+                redisUtil.set("filterKeyword", advancedSetting.getFilterKeyword());
+        if (flag) {
+            acBiMapper.recoverData();       /* 将所有数据恢复 */
+            // 将空格分隔转换为|分隔，用于mysql 正则表达式匹配
+            advancedSetting.setFilterKeyword(AcBiUtil.strReplace(advancedSetting.getFilterKeyword().trim(), "|"));
+            acBiMapper.filterDataByAdvanceSetting(advancedSetting);  /* 过滤数据（逻辑删除） */
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public ExtAccountBill getAdvancedSetting() {
-        ExtAccountBill accountBill = new ExtAccountBill();
-        accountBill.setHeatmapMax((Double) redisUtil.get("heatmapMax"));
-        accountBill.setMoneyMax((Double) redisUtil.get("moneyMax"));
-        accountBill.setMoneyMin((Double) redisUtil.get("moneyMin"));
-        accountBill.setFilterKeyword((String) redisUtil.get("filterKeyword"));
-        return accountBill;
+    public AdvancedSetting getAdvancedSetting() {
+        AdvancedSetting advancedSetting = new AdvancedSetting();
+        advancedSetting.setHeatmapMax((Double) redisUtil.get("heatmapMax"));
+        advancedSetting.setMoneyMax((Double) redisUtil.get("moneyMax"));
+        advancedSetting.setMoneyMin((Double) redisUtil.get("moneyMin"));
+        advancedSetting.setFilterKeyword((String) redisUtil.get("filterKeyword"));
+        return advancedSetting;
     }
 
     @Override

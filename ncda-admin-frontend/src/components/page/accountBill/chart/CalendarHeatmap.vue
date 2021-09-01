@@ -7,7 +7,7 @@
 export default {
   props: {
     searchForm: Object,
-    advanceSetting: Object,
+    heatmapMax: { type: Number, default: 800 },
     currentYear: { type: Number, default: new Date().getFullYear() }
   },
   data() {
@@ -22,10 +22,7 @@ export default {
           type: this.searchForm.type,
           moneyState: this.$util.isEmpty(this.searchForm.moneyState)
             ? 0
-            : this.searchForm.moneyState,
-          moneyMax: this.searchForm.moneyMax,
-          moneyMin: this.advanceSetting.moneyMin,
-          filterKeyword: this.advanceSetting.filterKeyword
+            : this.searchForm.moneyState
         })
         .then(res => {
           const { data } = res;
@@ -35,6 +32,8 @@ export default {
             _this.searchForm.date = params.data[0];
             _this.$emit("getTableData");
           });
+          // console.log(this.heatmapMax);
+          // debugger
           this.chartCalendarHeatmap.setOption({
             // title: {
             //   top: 5,
@@ -46,7 +45,7 @@ export default {
             },
             visualMap: {
               min: 0,
-              max: this.advanceSetting.heatmapMax,
+              max: this.heatmapMax,
               // type: "piecewise",
               calculable: true,
               orient: "horizontal",

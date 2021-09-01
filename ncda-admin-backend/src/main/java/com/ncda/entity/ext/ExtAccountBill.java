@@ -40,28 +40,9 @@ public class ExtAccountBill extends AccountBill implements Serializable {
 
     private String typeOneName;     // 一级类型的名字 关联查询字段
 
-    private Double heatmapMax;      // 高级设置热力图最大值
-
-    private Double moneyMax;       // 高级设置最大值
-
-    private Double moneyMin;        // 高级设置最小值
-
-    private String filterKeyword;   // 高级设置过滤关键词
-
     private String year;        // 日历热力图查询，年份
 
     private String xdataType;       // 柱状图搜索，横轴（0以时间为横轴，1以类型为横轴）
-
-//    private String typeName;
-
-
-//    public String getTypeName() {
-//        return typeName;
-//    }
-//
-//    public void setTypeName(String typeName) {
-//        this.typeName = typeName;
-//    }
 
     public Integer getPageSize() {
         return pageSize;
@@ -89,62 +70,6 @@ public class ExtAccountBill extends AccountBill implements Serializable {
         this.date = date;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getTypeOneName() {
-        return typeOneName;
-    }
-
-    public void setTypeOneName(String typeOneName) {
-        this.typeOneName = typeOneName;
-    }
-
-    public Double getMoneyMax() {
-        return moneyMax;
-    }
-
-    public void setMoneyMax(Double moneyMax) {
-        this.moneyMax = moneyMax;
-    }
-
-    public Double getMoneyMin() {
-        return moneyMin;
-    }
-
-    public void setMoneyMin(Double moneyMin) {
-        this.moneyMin = moneyMin;
-    }
-
-    public String getFilterKeyword() {
-        return AcBiUtil.strReplace(filterKeyword, ' ', '|');
-    }
-
-    public void setFilterKeyword(String filterKeyword) {
-        this.filterKeyword = filterKeyword;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public Double getHeatmapMax() {
-        return heatmapMax;
-    }
-
-    public void setHeatmapMax(Double heatmapMax) {
-        this.heatmapMax = heatmapMax;
-    }
-
     public Date getStartTime() {
         return startTime;
     }
@@ -161,19 +86,43 @@ public class ExtAccountBill extends AccountBill implements Serializable {
         this.endTime = endTime;
     }
 
-    public String getXdataType() {
-        return xdataType;
-    }
-
-    public void setXdataType(String xdataType) {
-        this.xdataType = xdataType;
-    }
-
     public Date getYearMonth() {
         return yearMonth;
     }
 
     public void setYearMonth(Date yearMonth) {
         this.yearMonth = yearMonth;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getTypeOneName() {
+        return typeOneName;
+    }
+
+    public void setTypeOneName(String typeOneName) {
+        this.typeOneName = typeOneName;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getXdataType() {
+        return xdataType;
+    }
+
+    public void setXdataType(String xdataType) {
+        this.xdataType = xdataType;
     }
 }

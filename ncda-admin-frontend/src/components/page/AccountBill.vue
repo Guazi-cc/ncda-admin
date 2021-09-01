@@ -164,9 +164,9 @@
           ref="calendarHeatmap"
           @getTableData="getTableData"
           :searchForm="searchForm"
-          :advanceSetting="advanceSetting"
           :currentYear="currentYear"
           :style="{ height: rightChartHeigh }"
+          :heatmapMax="advancedSettingForm.heatmapMax"
         ></CalendarHeatmap>
       </el-col>
     </el-row>
@@ -457,7 +457,6 @@
       :visible.sync="advancedSettingShow"
       width="550px"
       @open="advancedSettingOpen"
-      @close="advancedSettingClose"
     >
       <el-form
         ref="advancedSettingForm"
@@ -502,7 +501,7 @@
         <el-form-item>
           <el-button
             type="primary"
-            @click="advancedSettingSubmit"
+            @click="saveAdvancedSetting"
             class="pull-right margin-l-25"
             >确定</el-button
           >
@@ -716,7 +715,6 @@ export default {
         moneyMin: 0,
         filterKeyword: ""
       },
-      advanceSetting: {},
       defaultProps: {
         children: "twoTypeList",
         label: "label"
@@ -730,8 +728,9 @@ export default {
   mounted() {
     this.getScreenHeight();
     this.getOneType();
-    this.getAdvancedSetting();
-    // this.getTableData();
+    this.getAdvancedSetting().then(() => {
+      this.loadData();
+    });
   },
   methods: {
     getTableData() {
@@ -744,10 +743,7 @@ export default {
           pageSize: this.pagination.pageSize,
           currentPage: this.pagination.currentPage,
           type: this.searchForm.type,
-          moneyState: this.searchForm.moneyState,
-          moneyMax: this.advanceSetting.moneyMax,
-          moneyMin: this.advanceSetting.moneyMin,
-          filterKeyword: this.advanceSetting.filterKeyword
+          moneyState: this.searchForm.moneyState
         })
         .then(res => {
           const { data } = res;
@@ -1147,10 +1143,7 @@ export default {
           startTime: this.startTimeFormatter(this.sticSearchForm.monthStart),
           endTime: this.EndTimeFormatter(this.sticSearchForm.monthEnd),
           moneyState: this.sticSearchForm.moneyState,
-          xdataType: this.sticSearchForm.xdataType,
-          moneyMax: this.advanceSetting.moneyMax, // 全局配置
-          moneyMin: this.advanceSetting.moneyMin, // 全局配置
-          filterKeyword: this.advanceSetting.filterKeyword // 全局配置
+          xdataType: this.sticSearchForm.xdataType
         })
         .then(res => {
           const { data } = res;
@@ -1251,18 +1244,7 @@ export default {
       this.advancedSettingShow = true;
     },
     advancedSettingOpen() {
-      this.advancedSettingForm.heatmapMax = this.advanceSetting.heatmapMax;
-      this.advancedSettingForm.moneyMax = this.advanceSetting.moneyMax;
-      this.advancedSettingForm.moneyMin = this.advanceSetting.moneyMin;
-      this.advancedSettingForm.filterKeyword = this.advanceSetting.filterKeyword;
-    },
-    advancedSettingClose() {
-      //TODO
-    },
-    advancedSettingSubmit() {
-      this.saveAdvancedSetting();
       this.getAdvancedSetting();
-      this.advancedSettingShow = false;
     },
     // 加载图数据和表数据
     loadData() {
@@ -1276,6 +1258,8 @@ export default {
           const { data } = res;
           if (data.success) {
             this.$message.success("设置成功");
+            this.advancedSettingShow = false;
+            this.loadData();
           } else {
             this.$message.warning("设置失败");
           }
@@ -1285,14 +1269,13 @@ export default {
           this.$message.error("高级设置保存失败");
         });
     },
-    getAdvancedSetting() {
+    async getAdvancedSetting() {
       this.$axios
         .get("/api/acbi/getAdvancedSetting")
         .then(res => {
           const { data } = res;
           if (data.success) {
-            this.advanceSetting = data.data;
-            this.loadData();
+            this.advancedSettingForm = data.data;
           } else {
             this.$message.warning("高级设置获取失败");
           }
