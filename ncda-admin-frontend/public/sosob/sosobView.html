@@ -7,28 +7,19 @@
     <title>Document</title>
   </head>
   <body>
-    <!-- SosobView BEGIN -->
-    <div>
+
+<!-- SosobView BEGIN -->            
+<div>
       <div id="SosobView"></div>
-      <script
-        type="text/javascript"
-        src="./SosobView.min.js"
-      ></script>
+      <script type="text/javascript" src="https://www.sosob.io/static/js/SosobView.min.js"></script>
       <script type="text/javascript">
-        new SosobView("#SosobView", {
-          id: "Binance_BTC_USDT",
-          w: "1184px",
-          h: "610px",
-          theme: "light",
-          lang: "cn",
-          cycle: "1d",
-          showSearch: false,
-          switchTool: true,
-          showThemeSwitch: true,
-          autoSize: false,
-        });
+      new SosobView(
+          '#SosobView',
+          {"id":"Binance_BTC_USDT","w":"1184px","h":"610px","theme":"light","lang":"cn","cycle":"1d","showSearch":false,"switchTool":true,"showThemeSwitch":true,"autoSize":false}
+      );
       </script>
-    </div>
-    <!-- SosobView END -->
+</div>
+<!-- SosobView END -->
+
   </body>
 </html>

@@ -46,40 +46,26 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="上传记录" name="third">
-          <div class="upload-box" style="display: block;">
-            <el-collapse v-model="uploadRecordActive" accordion>
+          <div class="upload-box" style="display: block; overflow-y:auto">
+            <el-collapse
+              v-model="uploadRecordActive"
+              accordion
+              style="width: 95%; margin:0 auto;"
+            >
               <el-collapse-item name="1">
                 <template slot="title">
                   <i class="header-icon el-icon-document"></i
                   >&nbsp;&nbsp;账单时间：2021.8&nbsp;&nbsp;&nbsp;&nbsp;
                   <i class="header-icon el-icon-date"></i
-                  >&nbsp;&nbsp;上传日期：2021.8.31
-                  15：00&nbsp;&nbsp;&nbsp;&nbsp;
+                  >&nbsp;&nbsp;上传日期：2021.8.31 15:00&nbsp;&nbsp;&nbsp;&nbsp;
                   <el-button type="text" @click.stop="clickTest"
                     >查看</el-button
                   >
                 </template>
                 <template>
-                  <div>
+                  <div style="margin: 0px 5px 5px 5px;">
                     历史上传记录：
-                  </div>
-                  <el-button type="text" @click.stop="clickTest"
-                    >查看</el-button
-                  >
-                  <div>
-                    <el-timeline>
-                      <el-timeline-item
-                        v-for="(activity, index) in activities"
-                        :key="index"
-                        :icon="activity.icon"
-                        :type="activity.type"
-                        :color="activity.color"
-                        :size="activity.size"
-                        :timestamp="activity.timestamp"
-                      >
-                        {{ activity.content }}
-                      </el-timeline-item>
-                    </el-timeline>
+                    <TimeLine style="padding: 5px;"></TimeLine>
                   </div>
                 </template>
               </el-collapse-item>
@@ -150,7 +136,12 @@
 </template>
 
 <script>
+import TimeLine from "@/components/page/accountBill/dialog/UploadRecordTimeLine";
+
 export default {
+  components: {
+    TimeLine
+  },
   props: { uploadDialogVisible: Boolean },
   data() {
     return {
@@ -158,37 +149,13 @@ export default {
       uploadForm: {
         accBillText: "👉这里是可以输入内容的✨",
         fileList: []
-      },
-      uploadRecordActive: "1",
-      activities: [
-        {
-          content: "支持使用图标",
-          timestamp: "2018-04-12 20:46",
-          size: "large",
-          type: "primary",
-          icon: "el-icon-more"
-        },
-        {
-          content: "支持自定义颜色",
-          timestamp: "2018-04-03 20:46",
-          color: "#0bbd87"
-        },
-        {
-          content: "支持自定义尺寸",
-          timestamp: "2018-04-03 20:46",
-          size: "large"
-        },
-        {
-          content: "默认样式的节点",
-          timestamp: "2018-04-03 20:46"
-        }
-      ]
+      }
     };
   },
   mounted() {},
   methods: {
     closeUploadDialog() {
-      this.$emit("closeEditDialog");
+      this.$emit("closeUploadDialog");
     },
     accBillTextSelect() {
       if (this.uploadForm.accBillText.substring(0, 1) === "\ud83d") {

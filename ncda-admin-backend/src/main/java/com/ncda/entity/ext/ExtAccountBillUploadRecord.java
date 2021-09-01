@@ -18,8 +18,8 @@ public class ExtAccountBillUploadRecord extends AccountBillUploadRecord {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
-    @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private Date uploadTime;
 
     @Override

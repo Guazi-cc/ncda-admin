@@ -4,7 +4,7 @@
     title="编辑"
     :visible.sync="isShowEditDialog"
     width="430px"
-		:before-close="closeEditDialog"
+    :before-close="closeEditDialog"
     @close="dialogClose"
   >
     <el-form
@@ -109,7 +109,7 @@ export default {
               this.$emit("getTableData");
               // this.getTableData();
               // this.isShowEditDialog = false;
-              this.$emit("closeEditDialog");
+              this.closeEditDialog();
             } else {
               this.$message.warning("数据更新失败");
             }

@@ -1,5 +1,8 @@
 package com.ncda.entity.ext;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -8,6 +11,8 @@ import java.util.Date;
  */
 public class ChartEntiey {
 
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     private BigDecimal money;

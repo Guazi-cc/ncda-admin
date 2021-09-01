@@ -1,19 +1,19 @@
 <template>
   <div>
     <div class="search-box">
-      <el-row>
-        <el-col :span="4">
+      <el-row type="flex">
+        <el-col :span="5">
           <span class="search-label">名称：</span>
           <el-input
             v-model="searchForm.itemName"
             placeholder="请输入内容"
-            style="width: 140px !important;"
+            style="width: 160px !important;"
             size="mini"
             clearable
             @keyup.enter.native="searchClick"
           ></el-input>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="5">
           <span class="search-label">月份：</span>
           <el-date-picker
             v-model="searchForm.yearMonth"
@@ -22,7 +22,7 @@
             size="mini"
             value-format="yyyy-MM-dd"
             format="yyyy年MM月"
-            style="width: 140px !important;"
+            style="width: 160px !important;"
             clearable
           >
           </el-date-picker
@@ -33,7 +33,7 @@
             v-model="searchForm.type"
             placeholder="请选择"
             size="mini"
-            style="width: 140px !important;"
+            style="width: 160px !important;"
             clearable
           >
             <el-option
@@ -51,7 +51,7 @@
             v-model="searchForm.moneyState"
             placeholder="请选择"
             size="mini"
-            style="width: 140px !important;"
+            style="width: 160px !important;"
             clearable
           >
             <el-option
@@ -62,7 +62,7 @@
             >
             </el-option> </el-select
         ></el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-button type="primary" size="mini" @click="searchClick"
             >搜索</el-button
           >
@@ -106,7 +106,12 @@
               <span style="margin-left: 5px">{{ scope.row.date }}</span>
             </template>
           </el-table-column>
-          <el-table-column property="itemName" label="名称" width="180">
+          <el-table-column
+            property="itemName"
+            label="名称"
+            width="180"
+            show-overflow-tooltip
+          >
           </el-table-column>
           <el-table-column property="money" label="金额" sortable>
             <template slot-scope="scope">
@@ -118,7 +123,12 @@
           </el-table-column>
           <el-table-column property="typeOneName" label="类型">
           </el-table-column>
-          <el-table-column property="comment" label="备注"> </el-table-column>
+          <el-table-column
+            property="comment"
+            label="备注"
+            show-overflow-tooltip
+          >
+          </el-table-column>
           <el-table-column label="操作" width="130" align="center">
             <template slot-scope="scope">
               <el-button
@@ -184,7 +194,7 @@
     <!-- 上传Dialog -->
     <UploadDialog
       :uploadDialogVisible="uploadDialogVisible"
-      @closeEditDialog="closeEditDialog"
+      @closeUploadDialog="closeUploadDialog"
       @setPreviewTableData="setPreviewTableData"
       @openPreviewDialog="openPreviewDialog"
     ></UploadDialog>
@@ -687,7 +697,7 @@ export default {
     openUploadDialog() {
       this.uploadDialogVisible = true;
     },
-    closeEditDialog() {
+    closeUploadDialog() {
       this.uploadDialogVisible = false;
     },
     searchClick() {
@@ -697,7 +707,7 @@ export default {
         this.searchForm.yearMonth != null &&
         this.searchForm.yearMonth != ""
       ) {
-        this.currentYear = this.searchForm.yearMonth.substring(0, 4); // 为日历热力图的当前年份赋值
+        this.currentYear = Number(this.searchForm.yearMonth.substring(0, 4)); // 为日历热力图的当前年份赋值
       }
     },
     setPreviewTableData(data) {

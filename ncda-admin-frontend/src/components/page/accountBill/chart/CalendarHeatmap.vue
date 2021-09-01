@@ -73,7 +73,7 @@ export default {
               right: 5,
               bottom: 40,
               cellSize: ["auto", 5],
-              range: this.currentYear,
+              range: Number(this.currentYear),
               // itemStyle: {
               //   borderWidth: 0.5
               // },
