@@ -73,7 +73,7 @@ export default {
       let msg = "";
       if (index == 0) {
         msg =
-          "本条主数据被为主数据，删除后将同时删除历史关联数据和当前表中数据!!";
+          "本条主数据为主要数据，删除后将同时删除历史关联数据以及表中当前年月的数据！！";
       } else {
         msg = `确认删除你在${activity.uploadTime}上传的这条历史数据吗？`;
       }
@@ -141,12 +141,4 @@ export default {
 <style scoped>
 @import "../../../../assets/css/mycss/timeline-item.css";
 @import "../../../../assets/css/mycss/timeline.css";
-</style>
-<style lang="less">
-.resizeNone {
-  .el-textarea__inner {
-    //el_input中的隐藏属性
-    resize: none; //主要是这个样式
-  }
-}
 </style>

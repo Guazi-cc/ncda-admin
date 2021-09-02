@@ -16,6 +16,7 @@
               :autosize="{ minRows: 14, maxRows: 14 }"
               v-model="uploadForm.accBillText"
               @focus="accBillTextSelect"
+              class="resizeNone"
             ></el-input>
           </div>
         </el-tab-pane>
@@ -84,17 +85,32 @@
             </el-collapse>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="test" name="ff">
-          <div class="upload-box">
-            test
-          </div>
-        </el-tab-pane>
       </el-tabs>
       <span
         slot="footer"
         class="dialog-footer"
         v-if="activeName === 'second' || activeName === 'first'"
       >
+        <el-popover placement="left" width="400" trigger="click">
+          <h4>填写说明：</h4>
+          <div class="t-i-1">本系统操作逻辑仅符合个人习惯，</div>
+          <div class="t-i-1">
+            若想使用账本功能，请按正确的格式填写或上传文件。
+          </div>
+          <div class="t-i-1">①第一行为标题,切记一定要包含年份</div>
+          <div class="t-i-1">②正文部分,开头第一项是日期，格式: 月.日 每一项用 <strong>/</strong> 分隔。默认为支出，若为收入则数字前应有<strong>+</strong></div>
+          <div class="t-i-1">③每日结束后应用回车作为结尾</div>
+          <div class="t-i-1">④多余的东西都别加</div>
+          <h4>填写示例：</h4>
+          <el-input
+            type="textarea"
+            :rows="5"
+            v-model="example"
+            class="resizeNone"
+            readonly
+          ></el-input>
+          <el-button type="text" size="mini" slot="reference">说明书</el-button>
+        </el-popover>
         <el-button
           type="primary"
           @click="submitUpload"
@@ -126,7 +142,8 @@ export default {
         accBillText: "👉这里是可以输入内容的✨",
         fileList: []
       },
-      currentFileUploadTimeLine: []
+      currentFileUploadTimeLine: [],
+      example: "2021.5\n5.1/消费丙15/消费乙88/收入甲+40\n5.2/工资+1888\n5.3/捐款500/晚饭1.5\n5.4/捡钱+0.1"
     };
   },
   mounted() {},
@@ -164,6 +181,7 @@ export default {
       this.uploadForm.accBillText = "👉这里是可以输入内容的✨";
       this.uploadForm.fileList = [];
       this.activeName = "first";
+      this.uploadRecordActive = "";
     },
     /***************文件上传相关方法*******************/
     handleUploadChange(file, fileList) {
@@ -279,12 +297,6 @@ export default {
     getTableData() {
       this.$emit("getTableData");
     }
-    // handleChange(activeNames) {
-    //   let e = this.currentFileUploadTimeLine[activeNames];
-    //   let d = this.$refs["uploadRecordTL"];
-    //   debugger;
-    //   this.$refs["uploadRecordTL"].getHistoryFileUploadTimeLine();
-    // }
   },
   filters: {
     dateFormat(dateStr) {
@@ -304,5 +316,16 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: #fff;
+}
+.t-i-1 {
+  text-indent: 1em;
+}
+</style>
+<style lang="less">
+.resizeNone {
+  .el-textarea__inner {
+    //el_input中的隐藏属性
+    resize: none; //主要是这个样式
+  }
 }
 </style>

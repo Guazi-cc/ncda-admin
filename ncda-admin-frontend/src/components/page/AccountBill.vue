@@ -193,6 +193,7 @@
 
     <!-- 上传Dialog -->
     <UploadDialog
+      ref="uploadDialog"
       :uploadDialogVisible="uploadDialogVisible"
       @closeUploadDialog="closeUploadDialog"
       @setPreviewTableData="setPreviewTableData"
@@ -728,12 +729,13 @@ export default {
           const { data } = res;
           if (data.success) {
             this.previewDialogVisible = false;
-            this.loadData();
             this.$message({
               message: "数据保存成功！",
               type: "success",
               customClass: "my-msg"
             });
+            this.loadData();
+            this.$refs['uploadDialog'].getCurrentFileUploadTimeLine();
           } else {
             if (
               this.$util.isEmpty(data.data.oldContent) &&
@@ -775,7 +777,9 @@ export default {
         .then(() => {
           this.compareDialogVisible = false;
         })
-        .catch(() => {});
+        .catch(() => {
+          this.$message("达咩~")
+        });
     },
     compareDataSave() {
       this.$confirm("新数据将覆盖原始数据", "提示", {
@@ -794,8 +798,8 @@ export default {
                   type: "success",
                   customClass: "my-msg"
                 });
-                this.getTableData();
-                this.loadChart();
+                this.loadData();
+                this.$refs['uploadDialog'].getCurrentFileUploadTimeLine();
               } else {
                 this.$message({
                   message: "数据更新失败",

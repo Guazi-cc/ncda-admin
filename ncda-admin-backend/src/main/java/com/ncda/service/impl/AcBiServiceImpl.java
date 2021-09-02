@@ -148,13 +148,22 @@ public class AcBiServiceImpl implements AcBiService {
                 redisUtil.set("moneyMin", advancedSetting.getMoneyMin()) &&
                 redisUtil.set("filterKeyword", advancedSetting.getFilterKeyword());
         if (flag) {
-            acBiMapper.recoverData();       /* 将所有数据恢复 */
-            // 将空格分隔转换为|分隔，用于mysql 正则表达式匹配
-            advancedSetting.setFilterKeyword(AcBiUtil.strReplace(advancedSetting.getFilterKeyword().trim(), "|"));
-            acBiMapper.filterDataByAdvanceSetting(advancedSetting);  /* 过滤数据（逻辑删除） */
-            return true;
+            try {
+                filterData(advancedSetting);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
         return false;
+    }
+
+    private void filterData(AdvancedSetting advancedSetting) {
+        acBiMapper.recoverData();       /* 将所有数据恢复 */
+        // 将空格分隔转换为|分隔，用于mysql 正则表达式匹配
+        advancedSetting.setFilterKeyword(AcBiUtil.strReplace(advancedSetting.getFilterKeyword().trim(), "|"));
+        acBiMapper.filterDataByAdvanceSetting(advancedSetting);  /* 过滤数据（逻辑删除） */
     }
 
     @Override
@@ -181,10 +190,10 @@ public class AcBiServiceImpl implements AcBiService {
     public Integer deletePrimaryData(ExtAccountBillUploadRecord accountBillUploadRecord) {
         try {
             // 文件记录表主数据删除（删除同年月的所有数据）
-            Integer integer = acBilUploadRecordMapper.deletePrimaryData(accountBillUploadRecord);
+            acBilUploadRecordMapper.deletePrimaryData(accountBillUploadRecord);
             Calendar calendar = AcBiUtil.dateToCalendar(accountBillUploadRecord.getDate());
             // 删除账单表中同年月的数据
-            Integer count = acBiMapper.deleteDataByYearMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+            acBiMapper.deleteDataByYearMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
             return 1;
         } catch (Exception e) {
             e.printStackTrace();
