@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -143,5 +144,35 @@ public class AcBiController {
     public ResultData getAdvancedSetting() {
         AdvancedSetting advancedSetting = acBiService.getAdvancedSetting();
         return ResultData.createSuccessResult("高级设置获取成功", advancedSetting);
+    }
+
+    @GetMapping("/getCurrentFileUploadTimeLine")
+    public ResultData getCurrentFileUploadTimeLine() {
+        List<ExtAccountBillUploadRecord> currentFileUploadTimeLine = acBiService.getCurrentFileUploadTimeLine();
+        return ResultData.createSuccessResult("获取当前上传文件时间线成功", currentFileUploadTimeLine);
+    }
+
+    @PostMapping("/getHistoryFileUploadTimeLine")
+    public ResultData getHistoryFileUploadTimeLine(@RequestBody ExtAccountBillUploadRecord accountBillUploadRecord) {
+        List<ExtAccountBillUploadRecord> historyFileUploadTimeLine = acBiService.getHistoryFileUploadTimeLine(accountBillUploadRecord);
+        return ResultData.createSuccessResult("历史上传文件时间线查询成功", historyFileUploadTimeLine);
+    }
+
+    @PostMapping("/deletePrimaryData")
+    public ResultData deletePrimaryData(@RequestBody ExtAccountBillUploadRecord accountBillUploadRecord) {
+        Integer integer = acBiService.deletePrimaryData(accountBillUploadRecord);
+        if (integer > 0) {
+            return ResultData.createSuccessResult("主要数据及其关联数据删除成功", true);
+        }
+        return ResultData.createFailResultData("主要数据及其关联数据删除失败");
+    }
+
+    @GetMapping("/deleteHistoryData")
+    public ResultData deleteHistoryData(String id) {
+        Integer integer = acBiService.deleteHistoryData(id);
+        if (integer > 0) {
+            return ResultData.createSuccessResult("历史上传数据删除成功", integer);
+        }
+        return ResultData.createFailResultData("历史上传数据删除失败");
     }
 }

@@ -84,4 +84,11 @@ public interface AcBiService {
 
     AdvancedSetting getAdvancedSetting();
 
+    List<ExtAccountBillUploadRecord> getHistoryFileUploadTimeLine(ExtAccountBillUploadRecord accountBillUploadRecord);
+
+    List<ExtAccountBillUploadRecord> getCurrentFileUploadTimeLine();
+
+    Integer deletePrimaryData(ExtAccountBillUploadRecord accountBillUploadRecord);
+
+    Integer deleteHistoryData(String id);
 }

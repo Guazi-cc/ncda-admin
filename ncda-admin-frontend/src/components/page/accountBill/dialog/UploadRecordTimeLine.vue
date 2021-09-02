@@ -4,52 +4,149 @@
       v-for="(activity, index) in activities"
       :key="index"
       :icon="activity.icon"
-      :type="activity.type"
       :color="activity.color"
-      :size="activity.size"
-      :timestamp="activity.timestamp"
+      :type="activity.type"
+      :timestamp="activity.uploadTime"
+      placement="top"
     >
-      {{ activity.content }}
+      <el-card shadow="hover">
+        <span>{{ activity.fileContent | contentFormat }}</span>
+        <el-popover placement="right" width="300" trigger="hover">
+          <el-input
+            type="textarea"
+            :rows="10"
+            v-model="activity.fileContent"
+            class="resizeNone"
+            readonly
+          >
+          </el-input>
+          <el-button type="text" slot="reference"
+            ><i class="el-icon-more"></i
+          ></el-button>
+        </el-popover>
+        <el-button
+          type="text"
+          style="float: right;"
+          @click="deleteData(activity, index)"
+          ><i class="el-icon-delete"></i
+        ></el-button>
+      </el-card>
     </el-timeline-item>
   </el-timeline>
 </template>
 
 <script>
 export default {
+  props: ["date"],
   data() {
     return {
-      uploadRecordActive: "1",
-      activities: [
-        {
-          content: "支持使用图标",
-          timestamp: "2018-04-12 20:46",
-          size: "large",
-          type: "primary",
-          icon: "el-icon-more"
-        },
-        {
-          content: "支持自定义颜色",
-          timestamp: "2018-04-03 20:46",
-          color: "#0bbd87"
-        },
-        {
-          content: "支持自定义尺寸",
-          timestamp: "2018-04-03 20:46",
-          size: "large"
-        },
-        {
-          content: "默认样式的节点",
-          timestamp: "2018-04-03 20:46"
-        }
-      ]
+      activities: [],
+      visible: false
     };
   },
-  mounted() {},
-  methods: {}
+  mounted() {
+    this.getHistoryFileUploadTimeLine();
+  },
+  methods: {
+    getHistoryFileUploadTimeLine() {
+      this.$axios
+        .post("/api/acbi/getHistoryFileUploadTimeLine", {
+          date: this.date
+        })
+        .then(({ data }) => {
+          this.activities = data.data;
+          for (let item of this.activities) {
+            item.color = "#0bbd87";
+            item.icon = "el-icon-more";
+            if (item.delState == 0) {
+              item.type = "primary";
+              item.color = "#FF8C00";
+              item.icon = "el-icon-check";
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    deleteData(activity, index) {
+      let msg = "";
+      if (index == 0) {
+        msg =
+          "本条主数据被为主数据，删除后将同时删除历史关联数据和当前表中数据!!";
+      } else {
+        msg = `确认删除你在${activity.uploadTime}上传的这条历史数据吗？`;
+      }
+      this.$confirm(msg, "提示", {
+        comfirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(() => {
+          if (index == 0) {
+            this.deletePrimaryData(activity);
+          } else {
+            this.deleteHistoryData(activity);
+          }
+        })
+        .catch(() => {
+          this.$message("罢了 罢了");
+        });
+    },
+    deletePrimaryData(activity) {
+      this.$axios
+        .post("/api/acbi/deletePrimaryData", activity)
+        .then(({ data }) => {
+          if (data.success) {
+            this.$message.success("主要数据及其关联数据删除成功");
+          } else {
+            this.$message.warning("主要数据及其关联数据删除失败");
+          }
+          this.$emit("loadTimeLine");
+          this.$emit("getTableData");
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("删除失败!!发生错误");
+        });
+    },
+    deleteHistoryData(activity) {
+      this.$axios
+        .get("/api/acbi/deleteHistoryData", {
+          params: {
+            id: activity.id
+          }
+        })
+        .then(({ data }) => {
+          if (data.success) {
+            this.$message.success("历史数据删除成功！");
+          } else {
+            this.$message.warning("历史数据删除失败！");
+          }
+          this.getHistoryFileUploadTimeLine();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$message.error("历史数据删除失败！还发生了些发生错误");
+        });
+    }
+  },
+  filters: {
+    contentFormat(val) {
+      return val.substring(0, 30);
+    }
+  }
 };
 </script>
 
 <style scoped>
 @import "../../../../assets/css/mycss/timeline-item.css";
 @import "../../../../assets/css/mycss/timeline.css";
+</style>
+<style lang="less">
+.resizeNone {
+  .el-textarea__inner {
+    //el_input中的隐藏属性
+    resize: none; //主要是这个样式
+  }
+}
 </style>

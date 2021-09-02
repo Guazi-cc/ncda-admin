@@ -72,4 +72,5 @@ public interface AcBiMapper {
      * 恢复所有被删除的数据
      */
     void recoverData();
+
 }

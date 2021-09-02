@@ -45,4 +45,12 @@ public interface AcBilUploadRecordMapper {
      * @return
      */
     List<ExtAccountBillUploadRecord> getAllYearAndMonth();
+
+    List<ExtAccountBillUploadRecord> getHistoryFileUploadTimeLine(ExtAccountBillUploadRecord accountBillUploadRecord);
+
+    List<ExtAccountBillUploadRecord> getCurrentFileUploadTimeLine();
+
+    Integer deletePrimaryData(ExtAccountBillUploadRecord accountBillUploadRecord);
+
+    Integer deleteHistoryData(String id);
 }

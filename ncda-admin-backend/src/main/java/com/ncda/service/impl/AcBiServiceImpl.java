@@ -168,6 +168,36 @@ public class AcBiServiceImpl implements AcBiService {
     }
 
     @Override
+    public List<ExtAccountBillUploadRecord> getHistoryFileUploadTimeLine(ExtAccountBillUploadRecord accountBillUploadRecord) {
+        return acBilUploadRecordMapper.getHistoryFileUploadTimeLine(accountBillUploadRecord);
+    }
+
+    @Override
+    public List<ExtAccountBillUploadRecord> getCurrentFileUploadTimeLine() {
+        return acBilUploadRecordMapper.getCurrentFileUploadTimeLine();
+    }
+
+    @Override
+    public Integer deletePrimaryData(ExtAccountBillUploadRecord accountBillUploadRecord) {
+        try {
+            // 文件记录表主数据删除（删除同年月的所有数据）
+            Integer integer = acBilUploadRecordMapper.deletePrimaryData(accountBillUploadRecord);
+            Calendar calendar = AcBiUtil.dateToCalendar(accountBillUploadRecord.getDate());
+            // 删除账单表中同年月的数据
+            Integer count = acBiMapper.deleteDataByYearMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public Integer deleteHistoryData(String id) {
+        return acBilUploadRecordMapper.deleteHistoryData(id);
+    }
+
+    @Override
     public Integer saveType(ExtAccountBillType accountBillType) {
         return acBiTypeMapper.saveType(accountBillType);
     }

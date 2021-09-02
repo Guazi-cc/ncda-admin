@@ -2,18 +2,18 @@
   <div>
     <div class="search-box">
       <el-row type="flex">
-        <el-col :span="5">
+        <el-col :xs="8" :sm="4" :md="5" :lg="4" :xl="1">
           <span class="search-label">名称：</span>
           <el-input
             v-model="searchForm.itemName"
             placeholder="请输入内容"
-            style="width: 160px !important;"
+            style="width: 70% !important;"
             size="mini"
             clearable
             @keyup.enter.native="searchClick"
           ></el-input>
         </el-col>
-        <el-col :span="5">
+        <el-col :span="4">
           <span class="search-label">月份：</span>
           <el-date-picker
             v-model="searchForm.yearMonth"
@@ -22,7 +22,7 @@
             size="mini"
             value-format="yyyy-MM-dd"
             format="yyyy年MM月"
-            style="width: 160px !important;"
+            style="width: 70% !important;"
             clearable
           >
           </el-date-picker
@@ -33,7 +33,7 @@
             v-model="searchForm.type"
             placeholder="请选择"
             size="mini"
-            style="width: 160px !important;"
+            style="width: 70% !important;"
             clearable
           >
             <el-option
@@ -51,7 +51,7 @@
             v-model="searchForm.moneyState"
             placeholder="请选择"
             size="mini"
-            style="width: 160px !important;"
+            style="width: 70% !important;"
             clearable
           >
             <el-option
@@ -62,7 +62,7 @@
             >
             </el-option> </el-select
         ></el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <el-button type="primary" size="mini" @click="searchClick"
             >搜索</el-button
           >
@@ -197,6 +197,7 @@
       @closeUploadDialog="closeUploadDialog"
       @setPreviewTableData="setPreviewTableData"
       @openPreviewDialog="openPreviewDialog"
+      @getTableData="getTableData"
     ></UploadDialog>
 
     <!-- 上传成功预览Dialog  -->
@@ -577,7 +578,6 @@ export default {
         typeOneName: "",
         typeKeyword: ""
       },
-      // 高级设置（TODO 可继续优化）
       sticSearchForm: {
         monthStart: "",
         monthEnd: "",
@@ -716,30 +716,12 @@ export default {
     openPreviewDialog() {
       this.previewDialogVisible = true;
     },
-    /***************文件上传相关方法*******************/
-    handleUploadChange(file, fileList) {
-      // 文件状态改变时的钩子
-      this.uploadForm.fileList = fileList;
-    },
-    handleUploadRemove(file, fileList) {
-      // 文件列表移除文件时的钩子
-      this.uploadForm.fileList = fileList;
-    },
-    handleUploadExceed(files, fileList) {
-      // 文件超出个数限制时的钩子
-      this.$message.warning(`只允许选择一个文件`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    /************************************************/
     savePreviewData() {
+      /* 根据关键词给数据分类 */
       const data = acBiUtil.analysisType(
         this.previewTableData,
         this.typeOptions
       );
-      console.log(data);
-      debugger;
       this.$axios
         .post("/api/acbi/saveUploadData", data)
         .then(res => {
