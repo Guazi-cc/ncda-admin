@@ -102,11 +102,11 @@ export default {
             this.$message.warning("主要数据及其关联数据删除失败");
           }
           this.$emit("loadTimeLine");
-          this.$emit("getTableData");
+          this.$emit("loadData");
         })
         .catch(err => {
           console.log(err);
-          this.$message.error("删除失败!!发生错误");
+          this.$message.error("主要数据及其关联数据删除失败!!发生错误");
         });
     },
     deleteHistoryData(activity) {

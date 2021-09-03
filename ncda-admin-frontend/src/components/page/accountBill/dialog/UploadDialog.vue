@@ -3,7 +3,7 @@
   <el-dialog
     title="账单上传"
     :visible.sync="uploadDialogVisible"
-    width="40%"
+    width="35%"
     :before-close="closeUploadDialog"
     @open="uploadDialogOpen"
   >
@@ -77,7 +77,7 @@
                       :date="item.date"
                       style="padding: 5px;"
                       @loadTimeLine="getCurrentFileUploadTimeLine"
-                      @getTableData="getTableData"
+                      @loadData="loadData"
                     ></TimeLine>
                   </div>
                 </template>
@@ -97,10 +97,16 @@
           <div class="t-i-1">
             若想使用账本功能，请按正确的格式填写或上传文件。
           </div>
-          <div class="t-i-1">①第一行为标题,切记一定要包含年份</div>
-          <div class="t-i-1">②正文部分,开头第一项是日期，格式: 月.日 每一项用 <strong>/</strong> 分隔。默认为支出，若为收入则数字前应有<strong>+</strong></div>
-          <div class="t-i-1">③每日结束后应用回车作为结尾</div>
-          <div class="t-i-1">④多余的东西都别加</div>
+          <div class="t-i-1">①第一行为标题，切记一定要包含年份</div>
+          <div class="t-i-1">
+            ②正文部分,开头第一项是日期(格式: 月.日) 后面为账单具体内容，每一项用
+            <strong>/</strong>
+            分隔。账单项目默认为支出，若为收入则数字前应有<strong>+</strong>
+          </div>
+          <div class="t-i-1">③每日账单之间用换行作为分隔</div>
+          <div class="t-i-1">
+            ④建议每次上传一个月的数据，若同一个月份上传多次，则只保留最后一次的上传
+          </div>
           <h4>填写示例：</h4>
           <el-input
             type="textarea"
@@ -143,7 +149,8 @@ export default {
         fileList: []
       },
       currentFileUploadTimeLine: [],
-      example: "2021.5\n5.1/消费丙15/消费乙88/收入甲+40\n5.2/工资+1888\n5.3/捐款500/晚饭1.5\n5.4/捡钱+0.1"
+      example:
+        "2021.5\n5.1/消费丙15/消费乙88/收入甲+40\n5.2/工资+1888\n5.3/捐款500/晚饭1.5\n5.4/捡钱+0.1"
     };
   },
   mounted() {},
@@ -294,8 +301,8 @@ export default {
       this.$emit("setPreviewTableData", data);
       this.$emit("openPreviewDialog");
     },
-    getTableData() {
-      this.$emit("getTableData");
+    loadData() {
+      this.$emit("loadData");
     }
   },
   filters: {

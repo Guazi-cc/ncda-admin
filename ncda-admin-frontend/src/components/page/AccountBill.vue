@@ -198,37 +198,19 @@
       @closeUploadDialog="closeUploadDialog"
       @setPreviewTableData="setPreviewTableData"
       @openPreviewDialog="openPreviewDialog"
-      @getTableData="getTableData"
+      @loadData="loadData"
     ></UploadDialog>
 
     <!-- 上传成功预览Dialog  -->
-    <el-dialog
-      title="账单预览"
-      width="35%"
-      :visible.sync="previewDialogVisible"
-    >
-      <div style="height: 500px;">
-        <el-table height="450px" :data="previewTableData" size="mini">
-          <el-table-column property="date" label="日期" width="180" sortable>
-          </el-table-column>
-          <el-table-column property="itemName" label="名称" width="180">
-          </el-table-column>
-          <el-table-column property="money" label="金额">
-            <template slot-scope="scope">
-              <span v-if="scope.row.moneyState == 1" class="money-state-in"
-                >+{{ scope.row.money }}</span
-              >
-              <span v-else class="money-state-out">-{{ scope.row.money }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="savePreviewData" size="mini"
-            >保 存</el-button
-          >
-        </span>
-      </div>
-    </el-dialog>
+    <PreviewDialog
+      :previewDialogVisible="previewDialogVisible"
+      :typeOptions="typeOptions"
+      :previewTableData="previewTableData"
+      @closePreviewDialog="closePreviewDialog"
+      @loadData="loadData"
+      @openCompare="openCompare"
+      @loadTimeLine="reloadTimeLine"
+    ></PreviewDialog>
 
     <!-- 比较Dialog  -->
     <el-dialog
@@ -505,10 +487,10 @@
 <script>
 import { CodeDiff } from "v-code-diff";
 import Util from "@/assets/js/util";
-import acBiUtil from "@/assets/js/acBiUtil";
 import CalendarHeatmap from "@/components/page/accountBill/chart/CalendarHeatmap";
 import EditDialog from "@/components/page/accountBill/dialog/EditDialog";
 import UploadDialog from "@/components/page/accountBill/dialog/UploadDialog";
+import PreviewDialog from "@/components/page/accountBill/dialog/PreviewDialog";
 
 export default {
   name: "Table",
@@ -516,7 +498,8 @@ export default {
     CodeDiff,
     CalendarHeatmap,
     EditDialog,
-    UploadDialog
+    UploadDialog,
+    PreviewDialog
   },
   data() {
     return {
@@ -717,57 +700,17 @@ export default {
     openPreviewDialog() {
       this.previewDialogVisible = true;
     },
-    savePreviewData() {
-      /* 根据关键词给数据分类 */
-      const data = acBiUtil.analysisType(
-        this.previewTableData,
-        this.typeOptions
-      );
-      this.$axios
-        .post("/api/acbi/saveUploadData", data)
-        .then(res => {
-          const { data } = res;
-          if (data.success) {
-            this.previewDialogVisible = false;
-            this.$message({
-              message: "数据保存成功！",
-              type: "success",
-              customClass: "my-msg"
-            });
-            this.loadData();
-            this.$refs['uploadDialog'].getCurrentFileUploadTimeLine();
-          } else {
-            if (
-              this.$util.isEmpty(data.data.oldContent) &&
-              this.$util.isEmpty(data.data.newContent)
-            ) {
-              this.$message({
-                message: `数据保存失败，${data.message}`,
-                type: "error",
-                customClass: "my-msg"
-              });
-              return;
-            }
-            this.$message({
-              message: `数据保存失败，${data.message}`,
-              type: "warning",
-              customClass: "my-msg"
-            });
-            this.previewDialogVisible = false;
-            this.compareForm.oldStr = data.data.oldContent;
-            this.compareForm.newStr = data.data.newContent;
-            this.compareForm.newData = data.data.newData;
-            this.compareDialogVisible = true;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message({
-            message: "数据保存失败，程序出现了异常",
-            type: "error",
-            customClass: "my-msg"
-          });
-        });
+    closePreviewDialog() {
+      this.previewDialogVisible = false;
+    },
+    reloadTimeLine() {
+      this.$refs["uploadDialog"].getCurrentFileUploadTimeLine();
+    },
+    openCompare(data) {
+      this.compareForm.oldStr = data.oldContent;
+      this.compareForm.newStr = data.newContent;
+      this.compareForm.newData = data.newData;
+      this.compareDialogVisible = true;
     },
     compareDataNoSave() {
       this.$confirm("将保留原始数据并删除新数据，你真的要这样做吗？", "提示", {
@@ -778,7 +721,7 @@ export default {
           this.compareDialogVisible = false;
         })
         .catch(() => {
-          this.$message("达咩~")
+          this.$message("达咩~");
         });
     },
     compareDataSave() {
@@ -799,7 +742,7 @@ export default {
                   customClass: "my-msg"
                 });
                 this.loadData();
-                this.$refs['uploadDialog'].getCurrentFileUploadTimeLine();
+                this.$refs["uploadDialog"].getCurrentFileUploadTimeLine();
               } else {
                 this.$message({
                   message: "数据更新失败",
@@ -1239,14 +1182,7 @@ export default {
   font-size: 14px;
   color: #606266;
 }
-.money-state-out {
-  font-size: 14px;
-  color: #67c23a;
-}
-.money-state-in {
-  font-size: 14px;
-  color: #f56c6c;
-}
+
 .my-msg {
   z-index: 9999 !important;
 }
@@ -1303,5 +1239,13 @@ export default {
 <style>
 .main {
   padding-bottom: 0px !important;
+}
+.money-state-out {
+  font-size: 14px;
+  color: #67c23a;
+}
+.money-state-in {
+  font-size: 14px;
+  color: #f56c6c;
 }
 </style>
