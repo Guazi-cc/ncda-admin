@@ -178,6 +178,6 @@ public class AcBiController {
     @GetMapping("/getWordCloudData")
     public ResultData getWordCloudData() {
         List<ChartEntiey> wordCloudData = acBiService.getWordCloudData();
-        return ResultData.createSuccessResult("WordClous数据查询成功", wordCloudData);
+        return ResultData.createSuccessResult("WordCloud数据查询成功", wordCloudData);
     }
 }
