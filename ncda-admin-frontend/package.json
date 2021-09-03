@@ -13,6 +13,7 @@
     "core-js": "^3.6.5",
     "echarts": "^5.1.2",
     "echarts-liquidfill": "^3.0.0",
+    "echarts-wordcloud": "^2.0.0",
     "element-ui": "^2.15.5",
     "file-saver": "^2.0.5",
     "mockjs": "^1.1.0",

@@ -868,13 +868,6 @@ export default {
 .search-box {
   margin-bottom: 10px;
 }
-.upload-box {
-  height: 308px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-}
 .search-label {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
@@ -882,9 +875,6 @@ export default {
   color: #606266;
 }
 
-.my-msg {
-  z-index: 9999 !important;
-}
 .compare-box {
   position: relative;
   height: 450px;
@@ -935,5 +925,8 @@ export default {
 .money-state-in {
   font-size: 14px;
   color: #f56c6c;
+}
+.my-msg {
+  z-index: 9999 !important;
 }
 </style>

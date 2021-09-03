@@ -135,4 +135,16 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.bar-chart {
+  margin: 0 auto;
+  width: 95%;
+  height: 300px;
+  .border-radius(8px);
+  background-color: @boxBgColor;
+  box-shadow: 0 0 5px transparent;
+  &:hover {
+    box-shadow: 0 0 5px @mainColor;
+  }
+}
+</style>

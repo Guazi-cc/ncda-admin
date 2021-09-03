@@ -64,13 +64,9 @@
                   &nbsp;
                   <i class="header-icon el-icon-date"></i>
                   上传日期：{{ item.uploadTime | dateFormat }}
-                  <!-- &nbsp;&nbsp;
-                  <el-button type="text" @click.stop="clickTest"
-                    >查看</el-button
-                  > -->
                 </template>
                 <template>
-                  <div style="margin: 0px 5px 0px 5px;">
+                  <div style="margin: 0 5px;">
                     <span>上传记录：</span>
                     <TimeLine
                       ref="uploadRecordTL"
