@@ -53,7 +53,7 @@ const routes = [
       },
       {
         path: '/accountBill',
-        component: () => import('@/components/page/AccountBill'),
+        component: () => import('@/components/page/accountBill/AccountBill'),
         meta: {
           title: '我的账本'
         }

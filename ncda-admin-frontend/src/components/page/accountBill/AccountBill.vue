@@ -385,13 +385,12 @@
 </template>
 
 <script>
-import Util from "@/assets/js/util";
-import CalendarHeatmap from "@/components/page/accountBill/chart/CalendarHeatmap";
-import EditDialog from "@/components/page/accountBill/dialog/EditDialog";
-import UploadDialog from "@/components/page/accountBill/dialog/UploadDialog";
-import PreviewDialog from "@/components/page/accountBill/dialog/PreviewDialog";
-import CompareDialog from "@/components/page/accountBill/dialog/CompareDialog";
-import SticDialog from "@/components/page/accountBill/dialog/SticDialog";
+import CalendarHeatmap from "./chart/CalendarHeatmap";
+import EditDialog from "./dialog/EditDialog";
+import UploadDialog from "./dialog/UploadDialog";
+import PreviewDialog from "./dialog/PreviewDialog";
+import CompareDialog from "./dialog/CompareDialog";
+import SticDialog from "./dialog/SticDialog";
 
 export default {
   name: "Table",
