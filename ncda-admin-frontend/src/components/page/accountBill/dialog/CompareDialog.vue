@@ -27,18 +27,18 @@
 import { CodeDiff } from "v-code-diff";
 
 export default {
-	props: ["compareDialogVisible", "compareForm"],
-	components: {
-		CodeDiff
-	},
-	methods: {
+  props: ["compareDialogVisible", "compareForm"],
+  components: {
+    CodeDiff
+  },
+  methods: {
     compareDataNoSave() {
       this.$confirm("将保留原始数据并删除新数据，你真的要这样做吗？", "提示", {
         comfirmButtonText: "确定",
         cancelButtonText: "取消"
       })
         .then(() => {
-					this.$emit("closeCompareDialog")
+          this.$emit("closeCompareDialog");
         })
         .catch(() => {
           this.$message("达咩~");
@@ -60,9 +60,9 @@ export default {
                   type: "success",
                   customClass: "my-msg"
                 });
-								this.$emit("closeCompareDialog")
-								this.$emit('loadData')
-								this.$emit("reloadTimeLine")
+                this.$emit("closeCompareDialog");
+                this.$emit("loadData");
+                this.$emit("reloadTimeLine");
               } else {
                 this.$message({
                   message: "数据更新失败",
@@ -81,9 +81,21 @@ export default {
             });
         })
         .catch(() => {});
-    },
-	}
+    }
+  }
 };
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.compare-box {
+  position: relative;
+  height: 450px;
+  overflow: auto;
+}
+.compare-title {
+  display: inline-block;
+  width: 50%;
+  font-size: 14px;
+  color: #606266;
+}
+</style>

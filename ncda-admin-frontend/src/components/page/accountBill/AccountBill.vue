@@ -69,7 +69,7 @@
           <el-button type="primary" size="mini" @click="openSticDialog"
             >统计分析</el-button
           >
-          <el-button type="primary" size="mini" @click="typeManagement"
+          <el-button type="primary" size="mini" @click="openTypeManageDialog"
             >分类管理</el-button
           >
           <el-button @click="openUploadDialog" type="primary" size="mini"
@@ -465,14 +465,14 @@ export default {
     closeSticDialog() {
       this.sticDialogVisible = false;
     },
-    typeManagement() {
-      this.typeDialogVisible = true;
-    },
     openAdvancedSetting() {
       this.advancedSettingShow = true;
     },
     closeAdvancedSettingDialog() {
       this.advancedSettingShow = false;
+    },
+    openTypeManageDialog() {
+      this.typeDialogVisible = true;
     },
     closeTypeManageDialog() {
       this.typeDialogVisible = false;
@@ -616,38 +616,6 @@ export default {
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   font-size: 14px;
   color: #606266;
-}
-
-.compare-box {
-  position: relative;
-  height: 450px;
-  overflow: auto;
-}
-.compare-title {
-  display: inline-block;
-  width: 50%;
-  font-size: 14px;
-  color: #606266;
-}
-.stic-box {
-  position: relative;
-  height: 450px;
-  overflow: auto;
-}
-.type-box {
-  position: relative;
-  height: 500px;
-  overflow: auto;
-}
-.chart {
-  width: 100%;
-  height: 300px;
-  .border-radius(8px);
-  background-color: #fff;
-  box-shadow: 0 0 5px transparent;
-  &:hover {
-    box-shadow: 0 0 5px @mainColor;
-  }
 }
 .hidden-div {
   width: 30px;

@@ -231,10 +231,12 @@ export default {
         .catch(() => {});
     },
     closeDialog() {
-      this.$emit("closeTypeManageDialog")
+      this.$emit("closeTypeManageDialog");
     }
   }
 };
 </script>
 
-<style></style>
+<style lang="less" scoped>
+
+</style>

@@ -179,7 +179,7 @@ export default {
             name: "访问来源",
             type: "pie",
             radius: "50%",
-            roseType: 'radius',
+            roseType: "radius",
             data: [
               { value: 1048, name: "搜索引擎" },
               { value: 735, name: "直接访问" },
@@ -301,7 +301,6 @@ export default {
 }
 .char-box {
   height: 400px;
-  .border-radius(8px);
 }
 .chart {
   margin: 0 auto;
@@ -312,5 +311,10 @@ export default {
   &:hover {
     box-shadow: 0 0 5px @mainColor;
   }
+}
+.stic-box {
+  position: relative;
+  height: 450px;
+  overflow: auto;
 }
 </style>
