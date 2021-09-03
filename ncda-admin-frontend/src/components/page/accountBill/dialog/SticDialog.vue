@@ -72,7 +72,12 @@
             </el-row>
             <el-row class="margin-b-20">
               <el-col :span="24">
-                <div id="bar" class="bar-chart"></div>
+                <BarChart
+                  ref="barChart"
+                  :sticSearchForm="sticSearchForm"
+                  class="bar-chart"
+                ></BarChart>
+                <!-- <div id="bar" class="bar-chart"></div> -->
               </el-col>
             </el-row>
           </div>
@@ -87,8 +92,13 @@
 </template>
 
 <script>
+import BarChart from "../chart/BarChart";
+
 export default {
   props: ["sticDialogVisible", "moneyStateOptions"],
+  components: {
+    BarChart
+  },
   data() {
     return {
       sticSearchForm: {
@@ -103,14 +113,15 @@ export default {
   methods: {
     sticDialogOpen() {
       this.$nextTick(() => {
-        this.drawBar();
+        this.$refs.barChart.drawBar();
+        // this.drawBar();
       });
       this.sticActiveName = "first";
     },
     handleClick({ paneName }) {
       if (paneName === "first") {
         this.$nextTick(() => {
-          this.drawBar();
+          this.$refs.barChart.drawBar();
         });
       } else if (paneName === "second") {
         this.$nextTick(() => {
@@ -120,138 +131,15 @@ export default {
       } else {
       }
     },
-    drawBar() {
-      this.$axios
-        .post("/api/acbi/selectBarChartData", {
-          startTime: this.startTimeFormatter(this.sticSearchForm.monthStart),
-          endTime: this.EndTimeFormatter(this.sticSearchForm.monthEnd),
-          moneyState: this.sticSearchForm.moneyState,
-          xdataType: this.sticSearchForm.xdataType
-        })
-        .then(res => {
-          const { data } = res;
-          let xData;
-          if (this.sticSearchForm.xdataType === "0") {
-            xData = data.data.map(({ date }) => date.substring(0, 7));
-          } else {
-            xData = data.data.map(({ typeOneName }) => typeOneName);
-          }
-          const yData = data.data.map(({ money }) => money);
-          const title = "数据の统计";
-          this.chartBar.setOption({
-            title: Object.assign({}, this.$util.defaultEchartsOpt.title, {
-              text: title
-            }),
-            tooltip: {
-              trigger: "item",
-              formatter: "{a} <br/>{b} : {c}"
-            },
-            xAxis: {
-              type: "category",
-              data: xData,
-              axisLine: {
-                lineStyle: {
-                  color: "#999"
-                }
-              },
-              axisLabel: {
-                margin: 10,
-                textStyle: {
-                  fontSize: 12
-                }
-              }
-            },
-            yAxis: {
-              type: "value",
-              splitLine: {
-                lineStyle: {
-                  color: ["#D4DFF5"]
-                }
-              },
-              axisTick: {
-                show: false
-              },
-              axisLine: {
-                lineStyle: {
-                  color: "#999"
-                }
-              },
-              axisLabel: {
-                margin: 10,
-                textStyle: {
-                  fontSize: 12
-                }
-              }
-            },
-            series: [
-              {
-                name: title,
-                data: yData,
-                type: "bar",
-                symbol: "triangle",
-                symbolSize: 20,
-                lineStyle: {
-                  normal: {
-                    color: "green",
-                    width: 4,
-                    type: "dashed"
-                  }
-                },
-                barWidth: 25,
-                itemStyle: {
-                  normal: {
-                    // barBorderRadius: 30,
-                    // color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    //   {
-                    //     offset: 0,
-                    //     color: "#00feff"
-                    //   },
-                    //   {
-                    //     offset: 0.5,
-                    //     color: "#027eff"
-                    //   },
-                    //   {
-                    //     offset: 1,
-                    //     color: "#0286ff"
-                    //   }
-                    // ])
-                  }
-                }
-              }
-            ]
-          });
-        });
-    },
     drawRadarChart() {},
-    startTimeFormatter(param) {
-      if (this.$util.isEmpty(param)) {
-        let date = new Date();
-        date.setFullYear(new Date().getFullYear());
-        date.setMonth(0);
-        date.setDate(1);
-        // 今年1月1日
-        return new Date(date).Format("yyyy-MM-dd");
-      }
-      return param;
-    },
-    EndTimeFormatter(param) {
-      if (param == null || param == "") {
-        return new Date().Format("yyyy-MM-dd");
-      }
-      let monthLast = this.$util.monthLastDate(new Date(param)); // 当月最后一天
-      return this.$util.dateToString(new Date(monthLast), "yyyy-MM-dd");
-    },
     barChartSearchClick() {
-      this.drawBar();
+      this.$refs.barChart.drawBar();
     },
     closeSticDialog() {
-      this.$emit("closeSticDialog")
+      this.$emit("closeSticDialog");
     }
   },
   computed: {
-    chartBar() {
-      return this.$echarts.init(this.$util.getDom("bar"));
-    },
     chrtRadar() {
       return this.$echarts.init(this.$util.getDom("radarChart"));
     }
