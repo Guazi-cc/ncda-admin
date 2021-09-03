@@ -229,158 +229,21 @@
     ></SticDialog>
 
     <!-- 高级设置 -->
-    <el-dialog
-      title="高级设置"
-      :visible.sync="advancedSettingShow"
-      width="550px"
-      @open="advancedSettingOpen"
-    >
-      <el-form
-        ref="advancedSettingForm"
-        :model="advancedSettingForm"
-        label-width="100px"
-        :rules="advancedSettingRules"
-      >
-        <el-form-item label="热力图最大值" prop="heatmapMax">
-          <el-input-number
-            v-model="advancedSettingForm.heatmapMax"
-            controls-position="right"
-            :min="10"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="金额最大值" prop="moneyMax">
-          <el-input-number
-            v-model="advancedSettingForm.moneyMax"
-            controls-position="right"
-            :precision="2"
-            :step="0.1"
-            :min="0.0"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="金额最小值" prop="moneyMin">
-          <el-input-number
-            v-model="advancedSettingForm.moneyMin"
-            controls-position="right"
-            :precision="2"
-            :step="0.1"
-            :min="0.0"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="过滤关键词" prop="filterKeyword">
-          <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容，关键词之间用空格分隔"
-            v-model="advancedSettingForm.filterKeyword"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            @click="saveAdvancedSetting"
-            class="pull-right margin-l-25"
-            >确定</el-button
-          >
-          <el-button @click="advancedSettingShow = false" class="pull-right"
-            >取消</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <AdvancedSettingDialog
+      :advancedSettingShow="advancedSettingShow"
+      :advancedSettingForm="advancedSettingForm"
+      @closeAdvancedSettingDialog="closeAdvancedSettingDialog"
+      @getAdvancedSetting="getAdvancedSetting"
+      @loadData="loadData"
+    ></AdvancedSettingDialog>
 
     <!-- 分类管理 -->
-    <el-dialog title="分类管理" :visible.sync="typeDialogVisible" width="450px">
-      <div style="height: 400px">
-        <div class="margin-b-10">
-          <el-button
-            icon="el-icon-plus"
-            title="新增"
-            size="mini"
-            @click="openAddTypeDialog('新增')"
-          ></el-button>
-        </div>
-        <el-table
-          ref="tableRef"
-          :data="typeOptions"
-          style="width: 99%"
-          border
-          stripe
-          highlight-current-row
-          height="360px"
-          size="mini"
-        >
-          <el-table-column type="index" label="序号" width="50">
-          </el-table-column>
-          <el-table-column property="typeOneName" label="名称" width="70">
-          </el-table-column>
-          <el-table-column
-            property="typeKeyword"
-            label="关键词"
-            show-overflow-tooltip
-            width="145"
-          >
-          </el-table-column>
-          <el-table-column label="操作" width="140" align="center">
-            <template slot-scope="scope">
-              <el-button
-                circle
-                icon="el-icon-edit"
-                type="primary"
-                title="编辑"
-                size="small"
-                @click="openEditTypeDialog(scope.row)"
-              ></el-button>
-              <el-button
-                circle
-                icon="el-icon-delete"
-                type="danger"
-                title="删除"
-                size="small"
-                @click="typeDelete(scope.row)"
-              ></el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-dialog
-          width="30%"
-          :title="innerDialogTitle"
-          :visible.sync="typeInnerVisible"
-          append-to-body
-          @close="typeInnerDialogClose"
-        >
-          <el-form
-            ref="typeManageForm"
-            :model="typeManageForm"
-            label-width="70px"
-            :rules="typeManageRules"
-          >
-            <el-form-item label="分类名" prop="typeOneName">
-              <el-input
-                placeholder="请输入分类名"
-                v-model="typeManageForm.typeOneName"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="关键词" prop="typeKeyword">
-              <el-input
-                type="textarea"
-                :rows="2"
-                placeholder="请输入本类关键词，词与词之间用空格分隔"
-                v-model="typeManageForm.typeKeyword"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="typeInnerVisible = false"
-              >取 消</el-button
-            >
-            <el-button type="primary" size="mini" @click="saveOrUpdateType"
-              >确 定</el-button
-            >
-          </div>
-        </el-dialog>
-      </div>
-    </el-dialog>
+    <TypeManageDialog
+      :typeDialogVisible="typeDialogVisible"
+      :typeOptions="typeOptions"
+      @closeTypeManageDialog="closeTypeManageDialog"
+      @getOneType="getOneType"
+    ></TypeManageDialog>
   </div>
 </template>
 
@@ -391,6 +254,8 @@ import UploadDialog from "./dialog/UploadDialog";
 import PreviewDialog from "./dialog/PreviewDialog";
 import CompareDialog from "./dialog/CompareDialog";
 import SticDialog from "./dialog/SticDialog";
+import AdvancedSettingDialog from "./dialog/AdvancedSettingDialog";
+import TypeManageDialog from "./dialog/TypeManageDialog";
 
 export default {
   name: "Table",
@@ -400,14 +265,15 @@ export default {
     UploadDialog,
     PreviewDialog,
     CompareDialog,
-    SticDialog
+    SticDialog,
+    AdvancedSettingDialog,
+    TypeManageDialog
   },
   data() {
     return {
       screenHeight: 0, // 屏幕高度
       loading: false,
       tableData: [], // 表格数据
-      typeManageTableData: [],
       previewTableData: [], // 预览表格数据
       typeOptions: [],
       // 编辑弹窗表单
@@ -432,12 +298,6 @@ export default {
           { required: true, message: "金额不能为空", trigger: "blur, change" }
         ]
       },
-      typeManageRules: {
-        typeOneName: [
-          { required: true, message: "类型名不能为空", trigger: "blur, change" }
-        ]
-      },
-      advancedSettingRules: {},
       moneyStateOptions: [
         {
           value: "1",
@@ -459,19 +319,13 @@ export default {
         moneyState: "", // 收入支出状态
         date: "" // 年月日，点击热力图按年月日搜索中会用到
       },
-      typeManageForm: {
-        typeOneName: "",
-        typeKeyword: ""
-      },
       isShowEditDialog: false, // 编辑弹窗
       uploadDialogVisible: false, // 上传弹窗
       previewDialogVisible: false, // 预览弹窗
       compareDialogVisible: false, // 对比弹窗
       sticDialogVisible: false, // 统计弹窗
       typeDialogVisible: false, // 类型弹窗
-      typeInnerVisible: false,
       advancedSettingShow: false, // 高级设置弹窗
-      // sticActiveName: "first", // 统计图表弹窗的tab
       compareForm: {
         oldStr: "",
         newStr: "",
@@ -483,14 +337,8 @@ export default {
         moneyMin: 0,
         filterKeyword: ""
       },
-      defaultProps: {
-        children: "twoTypeList",
-        label: "label"
-      },
       currentYear: new Date().getFullYear(),
-      heatmapMax: 200,
-      hiddenNum: 1,
-      innerDialogTitle: ""
+      hiddenNum: 1
     };
   },
   mounted() {
@@ -501,6 +349,11 @@ export default {
     });
   },
   methods: {
+    // 加载图数据和表数据
+    loadData() {
+      this.loadChart();
+      this.getTableData();
+    },
     getTableData() {
       this.loading = true;
       this.$axios
@@ -540,6 +393,11 @@ export default {
           console.log(err);
           this.$message.error("分类加载失败");
         });
+    },
+    loadChart() {
+      this.$nextTick(() => {
+        this.$refs.calendarHeatmap.drawCalendarHeatmap();
+      });
     },
     handleRowClick(row, event, column) {
       // 仅选中当前行
@@ -598,6 +456,27 @@ export default {
     closePreviewDialog() {
       this.previewDialogVisible = false;
     },
+    closeCompareDialog() {
+      this.compareDialogVisible = false;
+    },
+    openSticDialog() {
+      this.sticDialogVisible = true;
+    },
+    closeSticDialog() {
+      this.sticDialogVisible = false;
+    },
+    typeManagement() {
+      this.typeDialogVisible = true;
+    },
+    openAdvancedSetting() {
+      this.advancedSettingShow = true;
+    },
+    closeAdvancedSettingDialog() {
+      this.advancedSettingShow = false;
+    },
+    closeTypeManageDialog() {
+      this.typeDialogVisible = false;
+    },
     reloadTimeLine() {
       this.$refs["uploadDialog"].getCurrentFileUploadTimeLine();
     },
@@ -606,9 +485,6 @@ export default {
       this.compareForm.newStr = data.newContent;
       this.compareForm.newData = data.newData;
       this.compareDialogVisible = true;
-    },
-    closeCompareDialog() {
-      this.compareDialogVisible = false;
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
@@ -648,49 +524,6 @@ export default {
       sums[3] = "N/A";
       sums[4] = "N/A";
       return sums;
-    },
-    openSticDialog() {
-      this.sticDialogVisible = true;
-    },
-    closeSticDialog() {
-      this.sticDialogVisible = false;
-    },
-    typeManagement() {
-      this.typeDialogVisible = true;
-    },
-    loadChart() {
-      this.$nextTick(() => {
-        this.$refs.calendarHeatmap.drawCalendarHeatmap();
-      });
-    },
-    openAdvancedSetting() {
-      this.advancedSettingShow = true;
-    },
-    advancedSettingOpen() {
-      this.getAdvancedSetting();
-    },
-    // 加载图数据和表数据
-    loadData() {
-      this.loadChart();
-      this.getTableData();
-    },
-    saveAdvancedSetting() {
-      this.$axios
-        .post("/api/acbi/saveAdvancedSetting", this.advancedSettingForm)
-        .then(res => {
-          const { data } = res;
-          if (data.success) {
-            this.$message.success("设置成功");
-            this.advancedSettingShow = false;
-            this.loadData();
-          } else {
-            this.$message.warning("设置失败");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message.error("高级设置保存失败");
-        });
     },
     async getAdvancedSetting() {
       this.$axios
@@ -747,96 +580,6 @@ export default {
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]));
-    },
-    typeDelete(row) {
-      this.$confirm("确认删除本条分类", "提示", {
-        comfirmButtonText: "确定",
-        cancelButtonText: "取消"
-      })
-        .then(() => {
-          this.$axios
-            .get("/api/acbi/deleteType", {
-              params: {
-                typeId: row.typeId
-              }
-            })
-            .then(({ data }) => {
-              if (data.success) {
-                this.$message.success("删除成功！");
-                this.getOneType();
-              } else {
-                this.$message.warning("删除失败");
-              }
-            })
-            .catch(err => {
-              console.log(err);
-              thie.$message.error("删除失败!!发生错误");
-            });
-        })
-        .catch(() => {});
-    },
-    openAddTypeDialog() {
-      this.innerDialogTitle = "新增分类";
-      this.typeInnerVisible = true;
-    },
-    openEditTypeDialog(row) {
-      this.innerDialogTitle = "编辑分类";
-      this.$nextTick(() => {
-        // 回显数据延迟赋值，为了让表单先清空
-        this.typeManageForm = JSON.parse(JSON.stringify(row));
-      });
-
-      this.typeInnerVisible = true;
-    },
-    saveOrUpdateType() {
-      this.$refs.typeManageForm.validate(isValid => {
-        if (!isValid) return;
-        if (this.innerDialogTitle.includes("新增")) {
-          this.saveType();
-        } else {
-          this.updateType();
-        }
-      });
-    },
-    saveType() {
-      this.$axios
-        .post("/api/acbi/saveType", this.typeManageForm)
-        .then(res => {
-          const { data } = res;
-          if (data.success) {
-            this.$message.success("分类保存成功");
-            this.getOneType();
-          } else {
-            this.$message.warning("分类保存失败");
-          }
-          this.typeInnerVisible = false;
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message.error("分类保存失败，发生了一些错误哈哈");
-          this.typeInnerVisible = false;
-        });
-    },
-    updateType() {
-      this.$axios
-        .post("/api/acbi/updateType", this.typeManageForm)
-        .then(res => {
-          const { data } = res;
-          if (data.success) {
-            this.$message.success("分类更新成功");
-            this.getOneType();
-          } else {
-            this.$message.warning("分类更新失败");
-          }
-          this.typeInnerVisible = false;
-        })
-        .catch(err => {
-          console.log(err);
-          this.$message.error("分类更新失败，发生了一些错误哈哈");
-        });
-    },
-    typeInnerDialogClose() {
-      this.$refs["typeManageForm"].resetFields();
     }
   },
   computed: {
@@ -928,5 +671,8 @@ export default {
 }
 .my-msg {
   z-index: 9999 !important;
+}
+.t-i-1 {
+  text-indent: 1em;
 }
 </style>

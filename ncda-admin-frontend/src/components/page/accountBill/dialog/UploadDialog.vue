@@ -320,9 +320,6 @@ export default {
   align-items: center;
   background-color: #fff;
 }
-.t-i-1 {
-  text-indent: 1em;
-}
 </style>
 <style lang="less">
 .resizeNone {
