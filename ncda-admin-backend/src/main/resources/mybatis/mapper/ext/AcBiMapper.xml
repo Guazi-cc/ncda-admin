@@ -14,9 +14,12 @@
     </resultMap>
 
     <resultMap id="ChartResultMap" type="com.ncda.entity.ext.ChartEntiey">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
         <result column="fdate" property="date" jdbcType="DATE"/>
         <result column="DATE" property="date" jdbcType="DATE"/>
         <result column="MONEY" property="money" jdbcType="DECIMAL"/>
+        <result column="ITEM_NAME" property="itemName" jdbcType="VARCHAR"/>
+        <result column="TYPE_ONE_NAME" property="typeOneName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -164,14 +167,28 @@
             a.DATE
     </select>
 
-    <select id="getWordCloudData" resultType="com.ncda.entity.ext.ChartEntiey">
+    <select id="getWordCloudData" resultMap="ChartResultMap">
         SELECT
-            ID id,
-            ITEM_NAME itemName
+            ID,
+            ITEM_NAME
         FROM
             account_bill
         WHERE
             DEL_STATE = '0'
+    </select>
+
+    <select id="getPieChartDataByYear" resultMap="ChartResultMap">
+        SELECT
+            b.TYPE_ONE_NAME,
+            SUM(MONEY) money
+        FROM
+            account_bill a
+                LEFT JOIN account_bill_type b ON a.TYPE = b.TYPE_ID
+        WHERE
+            YEAR ( DATE ) = #{ 0 }
+          AND DEL_STATE = '0'
+        GROUP BY TYPE
+        HAVING TYPE IS NOT NULL
     </select>
 
     <update id="deleteAcBiTypeByTypeId" parameterType="string">

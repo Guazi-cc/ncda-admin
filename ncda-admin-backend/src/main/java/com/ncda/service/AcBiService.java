@@ -93,4 +93,6 @@ public interface AcBiService {
     Integer deleteHistoryData(String id);
 
     List<ChartEntiey> getWordCloudData();
+
+    List<ChartEntiey> getPieChartDataByYear(String year);
 }

@@ -180,4 +180,10 @@ public class AcBiController {
         List<ChartEntiey> wordCloudData = acBiService.getWordCloudData();
         return ResultData.createSuccessResult("WordCloud数据查询成功", wordCloudData);
     }
+
+    @GetMapping("/getPieChartDataByYear")
+    public ResultData getPieChartDataByYear(String year) {
+        List<ChartEntiey> pieChartData = acBiService.getPieChartDataByYear(year);
+        return ResultData.createSuccessResult("pie图按年份查成功了", pieChartData);
+    }
 }

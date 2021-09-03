@@ -207,6 +207,11 @@ public class AcBiServiceImpl implements AcBiService {
     }
 
     @Override
+    public List<ChartEntiey> getPieChartDataByYear(String year) {
+        return acBiMapper.getPieChartDataByYear(year);
+    }
+
+    @Override
     public List<ChartEntiey> getWordCloudData() {
         return acBiMapper.getWordCloudData();
     }

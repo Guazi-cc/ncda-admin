@@ -74,4 +74,6 @@ public interface AcBiMapper {
     void recoverData();
 
     List<ChartEntiey> getWordCloudData();
+
+    List<ChartEntiey> getPieChartDataByYear(String year);
 }
