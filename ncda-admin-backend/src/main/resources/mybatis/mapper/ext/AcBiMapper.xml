@@ -164,6 +164,16 @@
             a.DATE
     </select>
 
+    <select id="getWordCloudData" resultType="com.ncda.entity.ext.ChartEntiey">
+        SELECT
+            ID id,
+            ITEM_NAME itemName
+        FROM
+            account_bill
+        WHERE
+            DEL_STATE = '0'
+    </select>
+
     <update id="deleteAcBiTypeByTypeId" parameterType="string">
         UPDATE account_bill
         SET TYPE = NULL

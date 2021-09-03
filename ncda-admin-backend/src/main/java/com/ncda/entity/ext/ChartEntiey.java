@@ -11,6 +11,10 @@ import java.util.Date;
  */
 public class ChartEntiey {
 
+    private Integer id;
+
+    private String itemName;
+
     @JsonFormat(pattern="yyyy-MM-dd", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
@@ -18,6 +22,22 @@ public class ChartEntiey {
     private BigDecimal money;
 
     private String typeOneName;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
 
     public Date getDate() {
         return date;

@@ -174,4 +174,10 @@ public class AcBiController {
         }
         return ResultData.createFailResultData("历史上传数据删除失败");
     }
+
+    @GetMapping("/getWordCloudData")
+    public ResultData getWordCloudData() {
+        List<ChartEntiey> wordCloudData = acBiService.getWordCloudData();
+        return ResultData.createSuccessResult("WordClous数据查询成功", wordCloudData);
+    }
 }

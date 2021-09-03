@@ -207,6 +207,11 @@ public class AcBiServiceImpl implements AcBiService {
     }
 
     @Override
+    public List<ChartEntiey> getWordCloudData() {
+        return acBiMapper.getWordCloudData();
+    }
+
+    @Override
     public Integer saveType(ExtAccountBillType accountBillType) {
         return acBiTypeMapper.saveType(accountBillType);
     }

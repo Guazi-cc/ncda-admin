@@ -73,4 +73,5 @@ public interface AcBiMapper {
      */
     void recoverData();
 
+    List<ChartEntiey> getWordCloudData();
 }

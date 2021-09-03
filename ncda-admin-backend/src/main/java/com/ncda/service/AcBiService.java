@@ -91,4 +91,6 @@ public interface AcBiService {
     Integer deletePrimaryData(ExtAccountBillUploadRecord accountBillUploadRecord);
 
     Integer deleteHistoryData(String id);
+
+    List<ChartEntiey> getWordCloudData();
 }
