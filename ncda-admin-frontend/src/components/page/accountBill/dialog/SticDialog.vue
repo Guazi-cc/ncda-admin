@@ -312,7 +312,7 @@ export default {
   padding: 10px;
 }
 .char-box {
-  height: 400px;
+  height: 390px;
 }
 .chart {
   margin: 0 auto;

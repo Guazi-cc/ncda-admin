@@ -4,7 +4,7 @@
     title="高级设置"
     :visible.sync="advancedSettingShow"
     width="550px"
-		:before-close="closeDialog"
+    :before-close="closeDialog"
     @open="getAdvancedSetting"
   >
     <el-form

@@ -2,7 +2,7 @@
   <div>
     <div class="search-box">
       <el-row type="flex">
-        <el-col :xs="8" :sm="4" :md="5" :lg="4" :xl="1">
+        <el-col :xs="8" :sm="4" :md="5" :lg="4" :xl="4">
           <span class="search-label">名称：</span>
           <el-input
             v-model="searchForm.itemName"

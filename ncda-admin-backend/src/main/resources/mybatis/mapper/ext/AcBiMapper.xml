@@ -104,7 +104,7 @@
         SELECT
             <choose>
                 <when test="xdataType == '1'.toString()">
-                    b.TYPE_ONE_NAME typeOneName,
+                    b.TYPE_ONE_NAME,
                 </when>
                 <otherwise>
                     DATE_FORMAT( DATE, '%Y-%m-01' ) fdate,
@@ -169,12 +169,15 @@
 
     <select id="getWordCloudData" resultMap="ChartResultMap">
         SELECT
-            ID,
-            ITEM_NAME
+            ITEM_NAME,
+            COUNT(ITEM_NAME) id
         FROM
             account_bill
         WHERE
             DEL_STATE = '0'
+        GROUP BY ITEM_NAME
+        ORDER BY id DESC
+            LIMIT 0, 100
     </select>
 
     <select id="getPieChartDataByYear" resultMap="ChartResultMap">

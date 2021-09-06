@@ -78,7 +78,11 @@ const routes = [
   {
     path: '/404',
     component: () => import('../components/page/404.vue')
-  }
+  },
+  {
+    path: '/todo/accountBill',
+    component: () => import('@/components/page/accountBill/AccountBill'),
+  },
 ]
 
 const router = new VueRouter({
