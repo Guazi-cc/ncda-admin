@@ -38,7 +38,6 @@ public class AcBiServiceImpl implements AcBiService {
 
     @Override
     public List<ExtAccountBill> getAccountBill(ExtAccountBill accountBill) {
-//        accountBill.setFilterKeyword(AcBiUtil.strReplace(accountBill.getFilterKeyword(), ' ', '|'));
         return acBiMapper.getAccountBill(accountBill);
     }
 

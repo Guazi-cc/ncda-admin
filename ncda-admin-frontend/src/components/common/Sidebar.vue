@@ -94,6 +94,12 @@ export default {
           path: "/test",
           icon: "el-icon-tickets"
         }
+        ,
+        {
+          title: "Exchange",
+          path: "/exchange",
+          icon: "el-icon-tickets"
+        }
       ]
     };
   },

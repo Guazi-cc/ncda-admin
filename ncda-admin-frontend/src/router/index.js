@@ -64,6 +64,13 @@ const routes = [
         meta: {
           title: '其他'
         }
+      },
+      {
+        path: '/exchange',
+        component: () => import('@/components/page/exchange/Exchange'),
+        meta: {
+          title: 'exchange'
+        }
       }
     ]
   },

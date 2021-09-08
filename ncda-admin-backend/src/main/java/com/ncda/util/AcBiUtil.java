@@ -18,7 +18,7 @@ public class AcBiUtil {
 
     public static String strReplace(String str, String delimiter) {
         if (!CommonUtil.strIsNull(str)) {
-            return String.join("|", str.split("\\s+"));
+            return String.join(delimiter, str.split("\\s+"));
         }
         return str;
     }
