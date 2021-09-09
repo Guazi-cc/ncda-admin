@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ncda.dao.ext.ExtTodoListMapper" >
+  <resultMap id="BaseResultMap" type="com.ncda.entity.ext.ExtTodoList" >
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="CONTENT" jdbcType="VARCHAR" property="content" />
+    <result column="STATUS" jdbcType="BIT" property="status" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="COMPLETE_TIME" jdbcType="TIMESTAMP" property="completeTime" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="DEL_STATE" jdbcType="BIT" property="delState" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, CONTENT, STATUS, CREATE_TIME, COMPLETE_TIME, USER_ID, DEL_STATE
+  </sql>
+
+  <insert id="addTodoList" parameterType="com.ncda.entity.ext.ExtTodoList" >
+    INSERT INTO todo_list (CONTENT, STATUS, CREATE_TIME, DEL_STATE)
+    VALUES (#{ content }, false, current_timestamp, false)
+  </insert>
+
+  <update id="updateTodoList" parameterType="com.ncda.entity.ext.ExtTodoList" >
+    update todo_list
+    <set >
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      COMPLETE_TIME = #{completeTime,jdbcType=TIMESTAMP},
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="removeTodoList" parameterType="com.ncda.entity.ext.ExtTodoList">
+    UPDATE todo_list
+    SET DEL_STATE = true
+    WHERE ID = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="recoverTodoList" parameterType="com.ncda.entity.ext.ExtTodoList">
+    UPDATE todo_list
+    SET DEL_STATE = false
+    WHERE ID = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteTodoList" parameterType="com.ncda.entity.ext.ExtTodoList">
+    DELETE FROM todo_list
+    WHERE ID = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <select id="getTodoList" resultMap="BaseResultMap">
+    ( SELECT
+        <include refid="Base_Column_List" />
+      FROM
+        todo_list
+      WHERE
+        STATUS = 0
+      ORDER BY
+        create_time DESC
+      LIMIT 999999999 )
+    UNION ALL
+    (
+      SELECT
+        <include refid="Base_Column_List" />
+      FROM
+        todo_list
+      WHERE
+        STATUS = 1
+      ORDER BY
+        COMPLETE_TIME DESC
+      LIMIT 999999999
+    )
+  </select>
+
+
+</mapper>

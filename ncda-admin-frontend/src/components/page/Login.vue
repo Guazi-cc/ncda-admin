@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrapper">
     <div class="login-main">
-      <h3 class="login-title">后台管理系统模板</h3>
+      <h3 class="login-title">MAA</h3>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
         <el-form-item prop="username">
           <el-input v-model="ruleForm.username" placeholder="用户名"></el-input>
