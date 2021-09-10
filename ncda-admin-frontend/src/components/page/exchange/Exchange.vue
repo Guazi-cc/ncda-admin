@@ -28,6 +28,7 @@
                   <span style="font-size: 12px;">102.5</span>
                   <div style="display: inline; width: 20px;">
                     <el-progress
+                      :width="50"
                       :text-inside="true"
                       :stroke-width="15"
                       :percentage="50"
