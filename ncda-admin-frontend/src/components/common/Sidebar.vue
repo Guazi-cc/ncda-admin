@@ -92,7 +92,7 @@ export default {
         {
           title: "其他",
           path: "/test",
-          icon: "el-icon-tickets"
+          icon: "el-icon-paperclip"
         }
         ,
         {
@@ -118,6 +118,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+// @import "../../assets/css/mycss/icon.css";
 .el-menu {
   height: 100%;
   border: none;

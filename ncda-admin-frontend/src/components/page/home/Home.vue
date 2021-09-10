@@ -72,7 +72,10 @@
       <el-tabs v-model="activeName">
         <el-tab-pane label="待办事项" name="first">
           <div class="todolist-box">
-            <el-table :data="todoList" style="width: 100%">
+            <el-table
+              :data="todoList.filter(e => !e.status)"
+              style="width: 100%"
+            >
               <el-table-column type="index" width="50">
                 <template slot-scope="scope">
                   <el-checkbox
@@ -91,14 +94,7 @@
               <el-table-column
                 prop="content"
                 label="内容"
-                width="220"
-                show-overflow-tooltip
-              >
-              </el-table-column>
-              <el-table-column
-                prop="completeTime"
-                label="完成时间"
-                width="180"
+                width="420"
                 show-overflow-tooltip
               >
               </el-table-column>
@@ -116,7 +112,49 @@
             </el-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="回收站" name="second"
+        <el-tab-pane label="已完成" name="second">
+          <div class="todolist-box">
+            <el-table
+              :data="todoList.filter(e => e.status)"
+              style="width: 100%"
+            >
+              <el-table-column type="index" width="50">
+                <template slot-scope="scope">
+                  <el-checkbox
+                    v-model="scope.row.status"
+                    @change="changeSatus(scope.row)"
+                  ></el-checkbox>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="completeTime"
+                label="完成时间"
+                width="180"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column
+                prop="content"
+                label="内容"
+                width="420"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column label="操作" width="80">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    icon="el-icon-delete"
+                    circle
+                    @click="removeTodoList(scope.row)"
+                  ></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="回收站" name="thrid"
           ><div class="todolist-box">
             <el-table :data="delTodoList" style="width: 100%">
               <el-table-column type="index" width="50">

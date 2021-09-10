@@ -31,8 +31,8 @@ export default {
         theme: "light", // 主题颜色
         language: "zh-cn", //语言
         ranges: ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"], // 聚合选项
-        symbol: "BTC", // 交易代号
-        symbolName: "BTC/USD", // 交易名称
+        symbol: "CDC", // 交易代号
+        symbolName: "CDC/USDT", // 交易名称
         intervalTime: 3000, // k线更新周期 毫秒
         depthWidth: 50 // 深度图宽度
       },
