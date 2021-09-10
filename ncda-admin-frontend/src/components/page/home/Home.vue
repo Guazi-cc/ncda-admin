@@ -560,7 +560,7 @@ export default {
 }
 </style>
 <style lang="less">
-.el-card__body {
+.home .el-card__body {
   padding-top: 0px;
 }
 </style>

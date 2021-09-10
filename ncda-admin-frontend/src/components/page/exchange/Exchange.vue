@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="24">
+      <el-col :span="16">
         <!-- :klineParams="klineParams" :klineData="klineData" 绑定下面data数据 
         用于自定制数据传输到vue-kline, ref="callMethods"绑定一个DOM事件 用于调用接口  --->
         <Vue-kline
@@ -9,6 +9,22 @@
           :klineData="klineData"
           ref="callMethods"
         ></Vue-kline>
+      </el-col>
+      <el-col :span="8">
+        <el-card shadow="never">
+          <div class="yoyo">
+            <div class="title">
+              <h4 style="display: inline">{{traNm}}</h4>
+              <h3 style="display: inline">{{price}}</h3>
+              <span>+10%</span>
+            </div>
+          </div>
+        </el-card>
+        <el-card shadow="never">
+          <div class="yoyo">
+            <div>title</div>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -18,7 +34,6 @@
 import VueKline from "vue-kline"; //当前页引入vue-kline
 import myData from "@/assets/data";
 
-
 export default {
   components: {
     VueKline
@@ -26,8 +41,8 @@ export default {
   data() {
     return {
       klineParams: {
-        width: 800, // k线窗口宽
-        height: 600, // k线窗口高
+        width: 780, // k线窗口宽
+        height: 650, // k线窗口高
         theme: "light", // 主题颜色
         language: "zh-cn", //语言
         ranges: ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"], // 聚合选项
@@ -36,7 +51,9 @@ export default {
         intervalTime: 3000, // k线更新周期 毫秒
         depthWidth: 50 // 深度图宽度
       },
-      klineData: {}
+      klineData: {},
+      traNm: 'CDC/USDT',
+      price: 400
     };
   },
   mounted() {
@@ -55,12 +72,22 @@ export default {
       //   });
       console.log(myData);
       setTimeout(() => {
-        this.klineData = myData
-      }, 800)
+        this.klineData = myData;
+      }, 800);
     }
   },
   computed: {}
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.yoyo {
+  height: 285px;
+  // background-color: rgb(136, 120, 120);
+}
+.title {
+  width: 60%;
+  margin: 0 auto;
+  background-color: rgb(175, 90, 90);
+}
+</style>

@@ -5,7 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import '@/assets/css/common.less'
 import '@/assets/css/variable.less'
-import '@/assets/css/theme/459f75/index.css'
+import '@/assets/css/theme/459f75/index.mini.css'
 // import 'element-ui/lib/theme-chalk/index.css';
 import util from "@/assets/js/util";
 
