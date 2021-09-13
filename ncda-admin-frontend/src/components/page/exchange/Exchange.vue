@@ -48,7 +48,7 @@
           <div class="transaction-box">
             <el-row :gutter="20">
               <el-col :span="12"
-                ><el-button style="width: 100%" type="danger"
+                ><el-button @click="maichu" style="width: 100%" type="danger"
                   >卖出</el-button
                 ></el-col
               >
@@ -164,7 +164,7 @@ export default {
       num: 0,
       select: "1",
       input1: 0,
-      total: 98524560511.21,
+      total: 6565464564,
       activeName: "first"
     };
   },
@@ -181,6 +181,9 @@ export default {
   beforeMount() {},
   created() {},
   methods: {
+    maichu() {
+      this.$message.success("卖个屁");
+    },
     formatTooltip(val) {
       return val + "%";
     },
@@ -206,8 +209,8 @@ export default {
       this.input1 = this.total * (val / 100);
     },
     inputChange(val) {
-      debugger;
-      this.num = val;
+      let percentage = val / this.total;
+      this.num = Math.round(percentage * 100);
     }
   },
   computed: {}
