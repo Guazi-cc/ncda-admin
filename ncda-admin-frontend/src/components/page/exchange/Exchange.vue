@@ -85,8 +85,8 @@
                     placeholder="请选择"
                     style="whdth: 50%;"
                   >
-                    <el-option label="金额" value="1"></el-option>
-                    <el-option label="数量" value="2"></el-option>
+                    <el-option label="金额" value="1">金额</el-option>
+                    <el-option label="数量" value="2">数量</el-option>
                   </el-select>
                   <template slot="append">{{
                     select === "1" ? "USDT" : "CDC"
@@ -137,9 +137,8 @@
 import VueKline from "vue-kline"; //当前页引入vue-kline
 import myData from "@/assets/data";
 import "@/assets/css/border.less";
+import { Decimal } from "decimal.js";
 
-let klineWidth;
-let nnn = 685;
 export default {
   components: {
     VueKline
@@ -164,8 +163,9 @@ export default {
       num: 0,
       select: "1",
       input1: 0,
-      total: 6565464564,
-      activeName: "first"
+      total: 10000,
+      activeName: "first",
+      changeFlag: false
     };
   },
   mounted() {
@@ -173,7 +173,7 @@ export default {
     let klineWhth = klineDiv.offsetWidth - 100;
     klineWidth = Number(klineWhth);
     console.log(klineDiv);
-    debugger;
+    // debugger;
     setTimeout(() => {
       this.requestData(); // 进入页面时执行 requestData()
     }, 500);
@@ -206,11 +206,26 @@ export default {
       }, 1);
     },
     numChange(val) {
-      this.input1 = this.total * (val / 100);
+      // (val / 100);
+      debugger;
+      if (!this.changeFlag) {
+        this.input1 = new Decimal(this.total)
+          .mul(new Decimal(val).div(new Decimal(100)))
+          .toNumber();
+      }
+      this.changeFlag = false;
     },
     inputChange(val) {
-      let percentage = val / this.total;
-      this.num = Math.round(percentage * 100);
+      // let percentage = val / this.total;
+      val = Number(val) > this.total ? this.total : Number(val);
+      // this.input1 = val;
+      debugger;
+      let percentage = new Decimal(val).div(new Decimal(this.total)).toNumber();
+      percentage = percentage > 1 ? 1 : percentage;
+      this.num = Math.round(
+        new Decimal(percentage).mul(new Decimal(100).toNumber())
+      );
+      this.changeFlag = true;
     }
   },
   computed: {}
